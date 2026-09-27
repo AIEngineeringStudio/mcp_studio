@@ -1,7 +1,7 @@
 # MCP Apps: Progressive Learning Notes
 
 **Goal:** Understand how an AI conversation, an MCP tool, a backend, and an
-interactive UI work together.
+embedded UI work together.
 
 - Read the sections in order on your first pass.
 - Each section adds one part to the same hotel-search example.
@@ -26,55 +26,124 @@ interactive UI work together.
 **MCP (Model Context Protocol)** defines how an AI application communicates with
 servers that expose capabilities and data. 
 
-**MCP Apps** adds a standard way to connect those capabilities to an interactive user interface (UI).
+**MCP Apps** extends that connection with UI resources a host can display.
 
-The **host** is the application containing the conversation and the UI. 
+The **host** is the application that runs the conversation and displays the UI.
+“Host” is a general role; another MCP Apps compatible application could fill it.
+In this hotel example, **ChatGPT is the host**.
 
-The **LLM (large language model)** is the model the host uses to interpret requests.
+The **LLM (large language model)** is the model the host uses to interpret
+requests and select tools.
 
-They have different responsibilities.
+An **MCP client** is the host's connection to an MCP server.
 
-```text
-User ↔ Host
-         ├── LLM: interprets requests and selects tools
-         ├── MCP client ↔ MCP server ↔ Backend ↔ Database
-         └── Widget: interactive UI embedded by the host
-```
+### Terms used in these notes
 
-The MCP client is the host's connection to the MCP server. 
+| Term          | Meaning in this guide                                                                 |
+|---------------|---------------------------------------------------------------------------------------|
+| UI            | What a person sees and may interact with; it can also be read-only.                   |
+| UI resource   | Developer-supplied HTML, CSS, and JavaScript served by the MCP server.                |
+| Webpage       | The HTML document loaded from the UI resource. It need not have a public website URL. |
+| Iframe        | The embedded browser container that holds the webpage and isolates it from the host.  |
+| Widget (View) | The rendered UI running in that iframe. It can be read-only or interactive.           |
 
-A **widget**, also called a **View** or **UI component**, 
-is the interactive page displayed inside the host.
-This document uses “widget” consistently.
+From here on, **widget** means the rendered View. **Iframe** means its container;
+**UI resource** means the code the host loads to create it.
 
-| Part                          | Main responsibility                                                             | Hotel example                                      |
+### Roles at a glance
+
+| Part                          | Responsibility                                                                  | Hotel example                                      |
 |-------------------------------|---------------------------------------------------------------------------------|----------------------------------------------------|
-| LLM                           | Interpret intent, choose tools & arguments, interpret results, decide next step | Turn “king rooms in Phoenix” into search arguments |
-| Host                          | Execute tool calls through its client, embed the widget, route messages         | Connect the conversation, server, and hotel UI     |
-| MCP server                    | Expose tools and resources through MCP                                          | Offer `searchRooms` and the hotel UI resource      |
+| LLM                           | Interpret the request; select a tool and its arguments                          | Turn “king rooms in Phoenix” into search arguments |
+| Host                          | Run the conversation, call tools through its MCP client, and display the widget | ChatGPT                                            |
+| MCP client                    | Exchange MCP messages with the server on the host's behalf                      | Send `tools/call` and receive the result           |
+| MCP server                    | Expose tools and UI resources                                                   | Offer `searchRooms` and the hotel UI resource      |
 | Backend / application service | Enforce authorization and business rules                                        | Check access, availability, and booking rules      |
 | Database                      | Store data and enforce database constraints                                     | Store rooms and reservations                       |
-| Widget                        | Render data; manage interaction, local UI state, and accessibility              | Show room cards and handle filter clicks           |
+| Widget                        | Render data and handle user actions when present                                | Show room cards and handle refresh clicks          |
 
-The backend may be a separate service or application code within the MCP server.
-A separate service and database are choices for this example, not requirements
-for learning MCP Apps.
+The backend can be a separate service or code within the MCP server. A separate
+service and database are choices for this example, not MCP Apps requirements.
 
-**Key distinction:** 
-- The model selects a capability. 
-- The application validates and executes it. 
-- The host manages the UI connection. 
-- A tool result is not inherently trustworthy simply because it came through MCP.
+### How they connect
 
-The server–host–widget separation is described in the
-[official MCP Apps architecture](https://apps.extensions.modelcontextprotocol.io/api/documents/overview.html#architecture).
+```text
+                        ┌───────────────┐
+User ◀─────────────────▶│ Host/Runtime  │◀──────────────▶ LLM (interprets requests
+                        │ (e.g. ChatGPT)│                 and selects tools + arguments)
+                        └───────┬───────┘
+                                │
+               tools/call       │          Host loads UI resource via MCP client
+               ┌────────────────┴───────────────────────┐
+               │ ▲ tool result: content                 │  Mounts iframe
+               │ │ + optional structuredContent         │  Sends ui/notifications/tool-result
+               ▼                                        ▼
+           MCP client                           Widget in iframe
+               │                                        │
+               ▼                                        ▼
+           MCP server                              JavaScript
+             (Tool)                                     │  Reads params.structuredContent
+               │                                        ▼  (if present)
+               ▼                                   DOM rendering
+            Backend                                     │
+               │                                        ▼
+               ▼                                   Visible UI
+            Database                                    │ user clicks button (Pattern B)
+                                                        ▼
+                                                 UI JavaScript
+                                                        │ tools/call via Host / MCP client
+                                                        ▼
+                                                    MCP tool (same server)
+                                                        │ tool result via Host / MCP client
+                                                        │ (includes structuredContent)
+                                                        ▼
+                                                 UI JavaScript
+                                                        │
+                                                        ▼
+                                            Re-render existing widget
+```
+
+### Read the diagram in order
+
+1. **Discover the tool and UI.** The server advertises a tool definition with
+   `_meta.ui.resourceUri`, which points to a `ui://` resource. This link belongs
+   to the tool definition, not to the tool result.
+
+2. **Run the tool.** The LLM selects the tool; the host calls it through its MCP
+   client. The backend applies its rules and returns data through the server.
+   The tool result has `content` and may have `structuredContent`.
+
+3. **Show the widget.** The host fetches the UI resource, loads its webpage in
+   an iframe,
+   and sends the completed result with `ui/notifications/tool-result`. The widget
+   can read `params.structuredContent` and render it. The host may mount the
+   iframe while the tool is still running.
+
+4. **Handle a widget click (Pattern B).** Widget JavaScript calls a known tool
+   through the host. The result returns to that JavaScript, which updates the
+   existing widget. This click does not require the LLM to select the tool again.
+
+**Responsibility boundary:**
+
+- The model selects capabilities
+- The application validates and executes them
+- The host connects the server and widget
+- The widget renders the result.
+
+Passing data through MCP does not make it inherently trustworthy—authorization
+and business rules still belong in the application.
+
+See the
+official [MCP Apps architecture and lifecycle](https://apps.extensions.modelcontextprotocol.io/api/documents/overview.html)
+for the host, server, iframe, and message flow.
 
 ## 2. Separate the three data flows
 
 ### A. Conversation
 
 ```text
-User text → Host / LLM → Assistant text
+User text ──▶ Host (Eg. ChatGPT) ──▶ LLM
+User      ◀── Host (Eg. ChatGPT) ◀── LLM reply
 ```
 
 Example: “What is a king room?” may need only a conversational response.
@@ -83,8 +152,8 @@ Example: “What is a king room?” may need only a conversational response.
 
 ```text
 LLM selects tool + arguments
-    → Host's MCP client → MCP server's tool → Backend → Database
-    ← Host receives result ← MCP tool ← Backend ← Database
+    ──▶ Host's MCP client     ──▶ MCP server's tool ──▶ Backend ──▶ Database
+    ◀── Host receives result  ◀── MCP tool          ◀── Backend ◀──
 ```
 
 Example: “Show available king rooms in Phoenix” needs application data.
@@ -93,8 +162,9 @@ The host can use the result in the conversation and deliver it to a widget.
 ### C. UI interaction
 
 ```text
-User action → Widget JavaScript → Host → MCP tool → Backend
-                  ↑                ← Tool result ←
+User action → Widget JavaScript ──▶ Host ──▶ MCP tool     ──▶ Backend
+                  ▲                      ◀── Tool result  ◀──
+                  │
                   └── Update the existing widget
 ```
 
@@ -148,8 +218,9 @@ These fields are defined by the
 Conceptually, there are two consumers:
 
 ```text
-Tool result → Host ──┬──→ Conversation / model context
-                     └──→ Widget rendering
+                                      ┌────▶ Conversation / model context
+Tool result ──▶ Host (Eg. ChatGPT) ───┤
+                                      └────▶ Widget rendering
 ```
 
 Do not assume both consumers receive an identical representation. What is
@@ -162,16 +233,18 @@ parsing the sentence “Found 1 king room…”?
 
 ## 4. Connect the tool to a UI resource
 
-The tool supplies data. The **UI resource** supplies presentation code, usually
-HTML with CSS and JavaScript. In this architecture, the developer creates that
-code ahead of time; the LLM does not need to generate it for every search.
+The tool supplies data. The **UI resource** supplies the webpage's HTML, CSS,
+and JavaScript. The developer creates that code ahead of time; the LLM does not
+need to generate it for every search. The host loads the resource to create the
+widget; the resource itself is the source code.
 
 ```text
-MCP server
-    ├── Tool: searchRooms
-    │      └── UI metadata points to ui://hotel-search/app.html
-    └── Resource: ui://hotel-search/app.html
-           └── Hotel UI code
+             ┌──▶ Tool: searchRooms
+             │       └───▶ UI metadata points to ──▶ ui://hotel-search/app.html
+MCP server ──┤            (_meta.ui.resourceUri)
+             │
+             └──▶ UI resource: ui://hotel-search/app.html
+                      └──▶ Hotel UI code (HTML, CSS, JavaScript)
 ```
 
 A resource URI is an identifier the host can ask the MCP server to read. It is
@@ -231,18 +304,19 @@ which changes: the UI resource, the tool result, or both?
 
 ## 5. Follow the result into the widget
 
-An **iframe** is an embedded web page. An MCP Apps host loads the widget in a
-sandboxed iframe, which restricts its access to the surrounding application.
+An **iframe** is an embedded browser container, not the webpage itself. An MCP
+Apps host loads the UI resource's webpage into a sandboxed iframe. The rendered
+UI inside is the widget; the sandbox restricts its access to the host.
 
 The simplified lifecycle is:
 
 1. **Discover:** The host learns the tool definition and its UI resource link.
-2. **Load:** The host reads the resource and embeds the widget.
+2. **Load:** The host reads the UI resource and loads its webpage into an iframe.
 3. **Initialize:** The widget and host establish their communication bridge.
 4. **Deliver:** The host sends tool input and the completed tool result.
-5. **Render:** Widget JavaScript updates the visible page.
+5. **Render:** Widget JavaScript updates the webpage's DOM to show the result.
 
-The host can load the UI while the tool is still running. This is not necessarily
+The host can load the widget while the tool is still running. This is not necessarily
 “wait for all data, then create the iframe.” See the
 [MCP Apps lifecycle](https://apps.extensions.modelcontextprotocol.io/api/documents/overview.html#lifecycle).
 
@@ -285,7 +359,14 @@ inside `params`; it is not the whole message. See the
 [tool-result notification contract](https://apps.extensions.modelcontextprotocol.io/api/interfaces/app.McpUiToolResultNotification.html).
 
 ```text
-Host → Bridge message → Widget JavaScript → DOM update → Visible room card
+Host (Eg. ChatGPT)
+      │
+      ▼
+  Bridge message
+JSON-RPC tool-result notification
+      │
+      ▼
+Widget JavaScript ──▶ DOM update ──▶ Visible room card
 ```
 
 The **DOM (Document Object Model)** is the browser's representation of the page.
@@ -308,8 +389,11 @@ the [official widget example](https://apps.extensions.modelcontextprotocol.io/ap
 ### LLM-driven: start from an intent
 
 ```text
-“Show king rooms” → LLM selects searchRooms → Host calls tool
-    → Host displays linked widget and delivers result
+User request (“Show king rooms”) ──▶ Host (Eg. ChatGPT) ──▶ LLM selects searchRooms tool
+                                      │
+                                      ├──▶ Host calls tool ──▶ Tool result ──▶ Host
+                                      │
+                                      └──▶ Host displays linked widget and delivers result
 ```
 
 A separate render tool is an optional application design: the model could call a
@@ -322,9 +406,12 @@ actual resource loading, iframe mounting, and message delivery.
 ### UI-driven: start from an explicit control
 
 ```text
-“Refresh” click → Widget → Host → searchRooms
-                   ↑        ← Result ←
-                   └── Render updated room data
+“Refresh” click ──▶ Widget ──▶ Host   ──▶ searchRooms
+                    ▲   ▲
+                    │   │
+                    │   └───── Result ◀──
+                    │
+                    └── Render updated room data
 ```
 
 With the SDK, `app.callServerTool()` returns the result to the widget's calling
@@ -356,8 +443,8 @@ User request: **“Show me king rooms in Phoenix for October 10–13, 2026.”**
 8. A **user interaction** can update local UI state or request another tool call
    through the host.
 
-In an MCP Apps-capable host, this can produce chat text plus an interactive hotel
-UI. A host without this extension can still use a suitable text tool result.
+In an MCP Apps-capable host, this can produce chat text plus a hotel widget.
+A host without this extension can still use a suitable text tool result.
 See [progressive enhancement](https://apps.extensions.modelcontextprotocol.io/api/documents/overview.html#progressive-enhancement).
 
 ## 8. Review and explain it professionally
@@ -385,13 +472,9 @@ See [progressive enhancement](https://apps.extensions.modelcontextprotocol.io/ap
   the UI resource link.
 - **A separate render tool is optional.** A data-returning tool can already be
   linked to a widget.
-- **A widget's tool call goes through the host.** The UI does not need the LLM to
+- **A widget's tool call goes through the host.** The widget does not need the LLM to
   interpret each button click.
 - **MCP is a protocol, not a guarantee of business correctness.** Validate inputs,
   permissions, and application rules at the appropriate boundaries.
 
-*Editorial note: Repeated explanations have been consolidated, tool names have
-been standardized on `searchRooms`, and conceptual placeholders have been
-replaced with concrete JSON examples. Protocol details were checked against the
-linked official documentation on September 26, 2026. Original source attributions
-were not included in the curated notes; these links support the verification.*
+*Editorial note: Protocol details were checked against the linked official documentation on September 26, 2026.*
