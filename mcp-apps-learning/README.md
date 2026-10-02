@@ -53,11 +53,11 @@ versions recorded in `uv.lock`. It also installs the commands declared in the
 
 The `mcp-apps` PyProject command is the recommended way to run these lessons.
 
-| Command                             | Server                 |
-|-------------------------------------|------------------------|
-| `uv run --locked mcp-apps`          | Hello server (default) |
-| `uv run --locked mcp-apps hello`    | Hello server           |
-| `uv run --locked mcp-apps customer` | Customer server        |
+| Command                                 | Server                 |
+|-----------------------------------------|------------------------|
+| `uv run --locked mcp-apps run`          | Hello server (default) |
+| `uv run --locked mcp-apps run hello`    | Hello server           |
+| `uv run --locked mcp-apps run customer` | Customer server        |
 
 The servers use the **Streamable HTTP** transport by default. Stop a running
 server with <kbd>Control</kbd>+<kbd>C</kbd> before starting another server on
@@ -68,7 +68,7 @@ the same default port.
 The main launcher accepts `stdio`, `sse`, or `streamable-http`:
 
 ```shell
-uv run --locked mcp-apps customer --transport stdio
+uv run --locked mcp-apps run customer --transport stdio
 ```
 
 Use `stdio` when an MCP client starts the server as a child process and
@@ -76,18 +76,18 @@ communicates through standard input and output.
 
 ## Test with MCP Inspector
 
-`mcp dev` starts MCP Inspector and connects to the selected server over
-`stdio`:
+Use the same launcher with the `dev` command. It resolves the selected lesson
+through the registry, installs the local project in editable mode, starts MCP
+Inspector, and connects over `stdio`:
 
 ```shell
-uv run --locked mcp dev \
-  mcp_apps_learning/lessons/register_tool_resource/server.py
+uv run --locked mcp-apps dev hello
 ```
 
 For the structured-data lesson:
 
 ```shell
-uv run --locked mcp dev mcp_apps_learning/lessons/structured_data/server.py
+uv run --locked mcp-apps dev customer
 ```
 
 Use Inspector to list the available tools, call a tool, and inspect its result
@@ -139,7 +139,8 @@ Use the same small pattern for each new lesson:
 2. Add an empty `__init__.py` file.
 3. Add `server.py` containing the lesson's `mcp` server and a `main()` function.
 4. Add one entry to `LESSONS` in `mcp_apps_learning/registry.py`.
-5. Run the lesson with `uv run --locked mcp-apps <lesson_name>`.
+5. Run the lesson with `uv run --locked mcp-apps run <lesson_name>`.
+6. Inspect it with `uv run --locked mcp-apps dev <lesson_name>`.
 
 The shared launcher discovers every server through the registry. New lesson
 packages do not need to be added to the build configuration because they live
