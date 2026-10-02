@@ -51,15 +51,13 @@ versions recorded in `uv.lock`. It also installs the commands declared in the
 
 ## Run a lesson server
 
-The PyProject commands are the recommended way to run these lessons.
+The `mcp-apps` PyProject command is the recommended way to run these lessons.
 
-| Command                             | Server                   |
-|-------------------------------------|--------------------------|
-| `uv run --locked mcp-apps`          | Hello server (default)   |
-| `uv run --locked mcp-apps hello`    | Hello server             |
-| `uv run --locked mcp-apps customer` | Customer server          |
-| `uv run --locked hello-server`      | Hello server directly    |
-| `uv run --locked customer-server`   | Customer server directly |
+| Command                             | Server                 |
+|-------------------------------------|------------------------|
+| `uv run --locked mcp-apps`          | Hello server (default) |
+| `uv run --locked mcp-apps hello`    | Hello server           |
+| `uv run --locked mcp-apps customer` | Customer server        |
 
 The servers use the **Streamable HTTP** transport by default. Stop a running
 server with <kbd>Control</kbd>+<kbd>C</kbd> before starting another server on
@@ -97,7 +95,7 @@ and associated MCP App resource.
 
 ## Run through the MCP CLI
 
-The PyProject commands above are shorter for everyday use. You can also run a
+The PyProject command above is shorter for everyday use. You can also run a
 server file explicitly through the MCP CLI:
 
 ```shell
@@ -115,7 +113,6 @@ uv run --locked mcp run mcp_apps_learning/lessons/structured_data/server.py \
 
 ```text
 mcp-apps-learning/
-├── main.py
 ├── mcp_apps_learning/
 │   ├── cli.py
 │   ├── registry.py
@@ -128,7 +125,6 @@ mcp-apps-learning/
 └── uv.lock
 ```
 
-- `main.py` provides a file-based compatibility entry point.
 - `mcp_apps_learning/cli.py` implements the `mcp-apps` launcher.
 - `mcp_apps_learning/registry.py` maps short lesson names to server modules.
 - Every directory under `mcp_apps_learning/lessons/` owns one lesson server.
@@ -143,17 +139,15 @@ Use the same small pattern for each new lesson:
 2. Add an empty `__init__.py` file.
 3. Add `server.py` containing the lesson's `mcp` server and a `main()` function.
 4. Add one entry to `LESSONS` in `mcp_apps_learning/registry.py`.
-5. Optionally add a dedicated command under `[project.scripts]` in
-   `pyproject.toml`.
-6. Run `uv lock`, followed by `uv sync --locked`, after changing
-   `pyproject.toml`.
+5. Run the lesson with `uv run --locked mcp-apps <lesson_name>`.
 
 The shared launcher discovers every server through the registry. New lesson
 packages do not need to be added to the build configuration because they live
-under the existing `mcp_apps_learning` package.
+under the existing `mcp_apps_learning` package. The single `mcp-apps` command
+also means `pyproject.toml` does not grow as lessons are added.
 
 ## Professional articulation
 
-This project exposes each MCP lesson as a separate server while providing one
-shared command-line launcher. PyProject entry points give the servers stable
-commands, and the lockfile keeps the learning environment reproducible.
+This project exposes each MCP lesson as a separate server behind one shared
+command-line launcher. A central registry makes new lessons discoverable, and
+the lockfile keeps the learning environment reproducible.

@@ -8,8 +8,6 @@ dependencies = [
 
 [project.scripts]
 mcp-apps = "mcp_apps_learning.cli:main"
-hello-server = "mcp_apps_learning.lessons.register_tool_resource.server:main"
-customer-server = "mcp_apps_learning.lessons.structured_data.server:main"
 
 [build-system]
 requires = ["uv_build>=0.10.9,<0.11.0"]
