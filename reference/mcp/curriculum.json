@@ -1,0 +1,500 @@
+[
+  {
+    "id": 1,
+    "title": "Why MCP exists",
+    "path": "concepts/01-why-mcp.md",
+    "prerequisites": [],
+    "outcome": "Explain the integration problem MCP solves and when a direct function is sufficient.",
+    "archive_sources": [
+      "conversations/chunks/01-mcp-chunk1.md",
+      "docs/[DONE]mcp.md"
+    ],
+    "official_reference": "https://modelcontextprotocol.io/specification/2026-07-28"
+  },
+  {
+    "id": 2,
+    "title": "Host, client, model, and server",
+    "path": "concepts/02-host-client-server.md",
+    "prerequisites": [
+      1
+    ],
+    "outcome": "Locate each participant and assign responsibility for one tool invocation.",
+    "archive_sources": [
+      "conversations/chatgpt/1_FirstMCPTool_InProcess.md",
+      "definitions.md"
+    ],
+    "official_reference": "https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture"
+  },
+  {
+    "id": 3,
+    "title": "JSON-RPC requests, responses, and notifications",
+    "path": "concepts/03-json-rpc.md",
+    "prerequisites": [
+      2
+    ],
+    "outcome": "Read a message envelope and distinguish request identity from business identity.",
+    "archive_sources": [
+      "docs/code-flow.md",
+      "conversations/chunks/02-mcp-chunk2.md"
+    ],
+    "official_reference": "https://modelcontextprotocol.io/specification/2026-07-28/basic/index"
+  },
+  {
+    "id": 4,
+    "title": "Protocol versions and capability discovery",
+    "path": "concepts/04-versions-discovery.md",
+    "prerequisites": [
+      3
+    ],
+    "outcome": "Explain modern request metadata and recognize a legacy initialization trace.",
+    "archive_sources": [
+      "conversations/chatgpt/81_MCP_Elicitation.md",
+      "docs/[DONE]mcp-learning-guide.md"
+    ],
+    "official_reference": "https://modelcontextprotocol.io/specification/2026-07-28/basic/index"
+  },
+  {
+    "id": 5,
+    "title": "Tools and their contracts",
+    "path": "concepts/05-tool-contracts.md",
+    "prerequisites": [
+      2,
+      3
+    ],
+    "outcome": "Design a narrow tool with a clear input, result, side effect, and failure contract.",
+    "archive_sources": [
+      "definitions.md",
+      "conversations/chatgpt/1_FirstMCPTool_InProcess.md",
+      "conversations/chunks/05-mcp-chunk5.md"
+    ],
+    "official_reference": "https://modelcontextprotocol.io/specification/2026-07-28/server/tools"
+  },
+  {
+    "id": 6,
+    "title": "FastMCP registration and dispatch",
+    "path": "concepts/06-fastmcp-registry.md",
+    "prerequisites": [
+      5
+    ],
+    "outcome": "Trace how a Python function becomes a discoverable MCP tool.",
+    "archive_sources": [
+      "definitions.md",
+      "conversations/chatgpt/1_FirstMCPTool_InProcess.md"
+    ],
+    "official_reference": "https://gofastmcp.com/docs/getting-started/welcome"
+  },
+  {
+    "id": 7,
+    "title": "The first client and in-memory testing",
+    "path": "concepts/07-in-memory-client.md",
+    "prerequisites": [
+      4,
+      6
+    ],
+    "outcome": "Run a deterministic MCP interaction without an LLM or a network service.",
+    "archive_sources": [
+      "conversations/chatgpt/1_FirstMCPTool_InProcess.md",
+      "_learning_resources/mcp_notes2.md"
+    ],
+    "official_reference": "https://gofastmcp.com/docs/clients/client"
+  },
+  {
+    "id": 8,
+    "title": "stdio and subprocess boundaries",
+    "path": "concepts/08-stdio-processes.md",
+    "prerequisites": [
+      7
+    ],
+    "outcome": "Run the same service in a child process and explain stdin, stdout, and stderr.",
+    "archive_sources": [
+      "conversations/chatgpt/2_Real_stdio_Subprocess.md",
+      "_learning_resources/troubleshoot.md"
+    ],
+    "official_reference": "https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio"
+  },
+  {
+    "id": 9,
+    "title": "Resources, URIs, and templates",
+    "path": "concepts/09-resources.md",
+    "prerequisites": [
+      5,
+      7
+    ],
+    "outcome": "Represent readable context with a URI and distinguish resource reads from tool actions.",
+    "archive_sources": [
+      "conversations/chatgpt/3_Resources_Prompts.md",
+      "docs/[DONE]mcp-learning-guide2.md"
+    ],
+    "official_reference": "https://modelcontextprotocol.io/specification/2026-07-28/server/resources"
+  },
+  {
+    "id": 10,
+    "title": "Reusable MCP prompts",
+    "path": "concepts/10-prompts.md",
+    "prerequisites": [
+      9
+    ],
+    "outcome": "Retrieve a parameterized prompt and explain why retrieval does not run a model.",
+    "archive_sources": [
+      "conversations/chatgpt/3_Resources_Prompts.md",
+      "definitions.md"
+    ],
+    "official_reference": "https://modelcontextprotocol.io/specification/2026-07-28/server/prompts"
+  },
+  {
+    "id": 11,
+    "title": "Streamable HTTP",
+    "path": "concepts/11-streamable-http.md",
+    "prerequisites": [
+      4,
+      8
+    ],
+    "outcome": "Move a working MCP contract across a network and recognize modern HTTP behavior.",
+    "archive_sources": [
+      "conversations/chatgpt/5_StreamableHttp_Uvicorn.md",
+      "conversations/streamable/streamable-3.md"
+    ],
+    "official_reference": "https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http"
+  },
+  {
+    "id": 12,
+    "title": "Progress, streaming, and final results",
+    "path": "concepts/12-progress-streaming.md",
+    "prerequisites": [
+      11
+    ],
+    "outcome": "Distinguish work progress from returned data, SSE framing, and model-token streaming.",
+    "archive_sources": [
+      "conversations/streamable/streamable-3.md",
+      "conversations/streamable/streamable-4.md",
+      "_learning_resources/walkthrough_doc.md"
+    ],
+    "official_reference": "https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/progress"
+  },
+  {
+    "id": 13,
+    "title": "Elicitation and additional user input",
+    "path": "concepts/13-elicitation.md",
+    "prerequisites": [
+      4,
+      5
+    ],
+    "outcome": "Explain how an MCP operation obtains missing information without inventing a user's answer.",
+    "archive_sources": [
+      "conversations/chatgpt/81_MCP_Elicitation.md",
+      "conversations/auth/How_it_works.md"
+    ],
+    "official_reference": "https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/mrtr"
+  },
+  {
+    "id": 14,
+    "title": "Continuation state and safe reentry",
+    "path": "concepts/14-continuation-state.md",
+    "prerequisites": [
+      13
+    ],
+    "outcome": "Preserve a multi-round operation's context without trusting client-controlled state.",
+    "archive_sources": [
+      "conversations/chatgpt/83_Multi_round_elicitation.md",
+      "_learning_resources/enhancements.md"
+    ],
+    "official_reference": "https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/mrtr"
+  },
+  {
+    "id": 15,
+    "title": "Async I/O and concurrent requests",
+    "path": "concepts/15-async-concurrency.md",
+    "prerequisites": [
+      7
+    ],
+    "outcome": "Explain where async helps and why shared mutable state needs a separate design.",
+    "archive_sources": [
+      "conversations/chatgpt/4_ServiceLayer_Persistence_AsyncIO.md",
+      "conversations/auth/04B-MCP_server-AuthN.md"
+    ],
+    "official_reference": "https://docs.python.org/3/library/asyncio-task.html"
+  },
+  {
+    "id": 16,
+    "title": "Service layers and persistence",
+    "path": "concepts/16-service-persistence.md",
+    "prerequisites": [
+      5,
+      15
+    ],
+    "outcome": "Separate MCP translation from business rules and durable storage.",
+    "archive_sources": [
+      "conversations/chatgpt/4_ServiceLayer_Persistence_AsyncIO.md",
+      "_learning_resources/walkthrough_doc.md"
+    ],
+    "official_reference": "https://www.postgresql.org/docs/current/tutorial-transactions.html"
+  },
+  {
+    "id": 17,
+    "title": "Application lifespan and dependency ownership",
+    "path": "concepts/17-application-lifespan.md",
+    "prerequisites": [
+      15,
+      16
+    ],
+    "outcome": "Assign startup and shutdown responsibility for shared dependencies.",
+    "archive_sources": [
+      "conversations/chatgpt/6_FastAPI_LifecycleManagement.md",
+      "_learning_resources/walkthrough_doc.md"
+    ],
+    "official_reference": "https://fastapi.tiangolo.com/advanced/events/"
+  },
+  {
+    "id": 18,
+    "title": "Uvicorn, workers, and process state",
+    "path": "concepts/18-process-runtime.md",
+    "prerequisites": [
+      11,
+      17
+    ],
+    "outcome": "Separate the HTTP runtime from the application and reason about multiple workers.",
+    "archive_sources": [
+      "conversations/chatgpt/7_Uvicorn_ProcessRuntime.md",
+      "conversations/chatgpt/5_StreamableHttp_Uvicorn.md"
+    ],
+    "official_reference": "https://github.com/Kludex/uvicorn/blob/main/docs/settings.md"
+  },
+  {
+    "id": 19,
+    "title": "Host validation, Origin, and CORS",
+    "path": "concepts/19-origin-cors.md",
+    "prerequisites": [
+      11
+    ],
+    "outcome": "Explain what browser-related transport checks protect and why they are not authentication.",
+    "archive_sources": [
+      "_learning_resources/fastmcp_transport_security.md",
+      "conversations/chatgpt/5_StreamableHttp_Uvicorn.md"
+    ],
+    "official_reference": "https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http"
+  },
+  {
+    "id": 20,
+    "title": "OAuth discovery and delegated access",
+    "path": "concepts/20-oauth-discovery.md",
+    "prerequisites": [
+      11,
+      19
+    ],
+    "outcome": "Trace how a client finds the authorization server for a protected MCP resource.",
+    "archive_sources": [
+      "conversations/auth/03-OAuth_Protected_Resource_Discovery.md",
+      "conversations/auth/02-MCP-Server-OAuth-Protected-Tools-Resources.md"
+    ],
+    "official_reference": "https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization/authorization-server-discovery"
+  },
+  {
+    "id": 21,
+    "title": "Authorization, scopes, and tenant isolation",
+    "path": "concepts/21-authorization.md",
+    "prerequisites": [
+      16,
+      20
+    ],
+    "outcome": "Enforce who can do what to which record, independently of tool visibility.",
+    "archive_sources": [
+      "conversations/auth/01-Secure-MCP-gateway.md",
+      "conversations/auth/04B-MCP_server-AuthN.md",
+      "conversations/chatgpt/10_TLS_AuthN_AuthZ_Observability.md"
+    ],
+    "official_reference": "https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization"
+  },
+  {
+    "id": 22,
+    "title": "Reverse proxies and TLS",
+    "path": "concepts/22-proxy-tls.md",
+    "prerequisites": [
+      11,
+      18,
+      19
+    ],
+    "outcome": "Explain where a proxy sits and diagnose route, trust, and buffering failures.",
+    "archive_sources": [
+      "conversations/chatgpt/9_Docker_DockerCompose.md",
+      "conversations/chatgpt/10_TLS_AuthN_AuthZ_Observability.md",
+      "conversations/streamable/streamable-7.md"
+    ],
+    "official_reference": "https://nginx.org/en/docs/http/ngx_http_proxy_module.html"
+  },
+  {
+    "id": 23,
+    "title": "Configuration and reproducible environments",
+    "path": "concepts/23-configuration.md",
+    "prerequisites": [
+      7,
+      17
+    ],
+    "outcome": "Separate configuration from code and validate required production settings at startup.",
+    "archive_sources": [
+      "_learning_resources/walkthrough_doc.md",
+      "_learning_resources/enhancements.md",
+      "_learning_resources/troubleshoot.md"
+    ],
+    "official_reference": "https://docs.pydantic.dev/latest/concepts/pydantic_settings/"
+  },
+  {
+    "id": 24,
+    "title": "Docker packaging and networking",
+    "path": "concepts/24-containers.md",
+    "prerequisites": [
+      18,
+      22,
+      23
+    ],
+    "outcome": "Explain image, container, network, and volume boundaries without confusing them with MCP.",
+    "archive_sources": [
+      "conversations/chatgpt/9_Docker_DockerCompose.md",
+      "_learning_resources/troubleshoot.md"
+    ],
+    "official_reference": "https://docs.docker.com/build/building/multi-platform/"
+  },
+  {
+    "id": 25,
+    "title": "Timeouts, cancellation, retries, and idempotency",
+    "path": "concepts/25-reliability.md",
+    "prerequisites": [
+      14,
+      16,
+      18
+    ],
+    "outcome": "Design a retry policy around operation outcomes rather than connection symptoms.",
+    "archive_sources": [
+      "conversations/chunks/04-mcp-chunk4.md",
+      "conversations/streamable/streamable-6.md",
+      "_learning_resources/enhancements.md"
+    ],
+    "official_reference": "https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/cancellation"
+  },
+  {
+    "id": 26,
+    "title": "Pagination, caching, and subscriptions",
+    "path": "concepts/26-pagination-cache.md",
+    "prerequisites": [
+      9,
+      11,
+      21
+    ],
+    "outcome": "Keep large catalogs and resources bounded, fresh, and isolated by caller.",
+    "archive_sources": [
+      "_learning_resources/walkthrough_doc.md",
+      "_learning_resources/diagrams/diagrams_index.md",
+      "conversations/streamable/streamable-6.md"
+    ],
+    "official_reference": "https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/subscriptions"
+  },
+  {
+    "id": 27,
+    "title": "Testing and debugging MCP by layer",
+    "path": "concepts/27-testing.md",
+    "prerequisites": [
+      7,
+      8,
+      11,
+      21
+    ],
+    "outcome": "Choose checks that isolate the failing boundary and prove the intended behavior.",
+    "archive_sources": [
+      "conversations/chatgpt/11_AutomatedTests_Metrics_DistributedTracing.md",
+      "conversations/chunks/07-mcp-chunk7.md"
+    ],
+    "official_reference": "https://gofastmcp.com/docs/clients/client"
+  },
+  {
+    "id": 28,
+    "title": "Logs, metrics, and traces",
+    "path": "concepts/28-observability.md",
+    "prerequisites": [
+      18,
+      27
+    ],
+    "outcome": "Select operational evidence that explains a slow or failed tool call.",
+    "archive_sources": [
+      "conversations/chatgpt/11_AutomatedTests_Metrics_DistributedTracing.md",
+      "_learning_resources/enhancements.md"
+    ],
+    "official_reference": "https://opentelemetry.io/docs/concepts/signals/"
+  },
+  {
+    "id": 29,
+    "title": "Scaling and MCP gateways",
+    "path": "concepts/29-scaling-gateways.md",
+    "prerequisites": [
+      18,
+      21,
+      25,
+      28
+    ],
+    "outcome": "Add routing and shared infrastructure only when requirements justify their cost.",
+    "archive_sources": [
+      "conversations/auth/01-Secure-MCP-gateway.md",
+      "conversations/chunks/04-mcp-chunk4.md",
+      "conversations/streamable/streamable-6.md"
+    ],
+    "official_reference": "https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning"
+  },
+  {
+    "id": 30,
+    "title": "Optional extensions and deprecated features",
+    "path": "concepts/30-extensions.md",
+    "prerequisites": [
+      4,
+      9,
+      13
+    ],
+    "outcome": "Separate core MCP from Apps, Tasks, Skills, and compatibility-only features.",
+    "archive_sources": [
+      "_learning_resources/interactive/mcp-learning-app.tsx",
+      "_learning_resources/requirements/01-requirements.md",
+      "conversations/chunks/08-mcp-chunk8.md"
+    ],
+    "official_reference": "https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning"
+  },
+  {
+    "id": 31,
+    "title": "Reading and migrating legacy MCP examples",
+    "path": "concepts/31-legacy-migration.md",
+    "prerequisites": [
+      4,
+      11,
+      13,
+      30
+    ],
+    "outcome": "Identify an archived example's protocol and framework before adapting it.",
+    "archive_sources": [
+      "docs/code-flow.md",
+      "conversations/chunks/03-mcp-chunk3(Duplicate).md",
+      "conversations/chatgpt/81_MCP_Elicitation.md"
+    ],
+    "official_reference": "https://modelcontextprotocol.io/specification/2026-07-28/changelog"
+  },
+  {
+    "id": 32,
+    "title": "A ticket service grown one requirement at a time",
+    "path": "concepts/32-capstone.md",
+    "prerequisites": [
+      1,
+      5,
+      9,
+      10,
+      14,
+      16,
+      21,
+      25,
+      27,
+      28
+    ],
+    "outcome": "Connect the individual concepts into a staged implementation with explicit evidence.",
+    "archive_sources": [
+      "conversations/chunks/capstone.md",
+      "_learning_resources/requirements/00-requirements.md",
+      "_learning_resources/requirements/01-requirements.md"
+    ],
+    "official_reference": "https://modelcontextprotocol.io/specification/2026-07-28"
+  }
+]
+

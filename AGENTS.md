@@ -27,6 +27,18 @@ skills in `.agents/`:
   run, debugged, or configured in the PyCharm IDE. It defines the required
   plugins, Python/`uv` interpreter setup, and Run/Debug configurations for both
   PyCharm Professional (Apple Silicon Mac) and PyCharm Community (Intel Mac).
+- Additionally, load **`mcp-progressive-tutor`**
+  (`.agents/mcp-progressive-tutor/SKILL.md`) for progressive MCP lessons,
+  concept explanations, and guided MCP builds. Its maintained course lives in
+  `reference/mcp/learning/`, with source provenance in `reference/mcp/catalog/`.
+  Use its concept order for MCP learning; retain `ai-study-tutor` for numbered
+  AI architecture cases. MCP guide numbers are not AI curriculum case numbers.
+  Teach without forced quizzes or comprehension gates unless requested.
+- Additionally, load **`gen-ui-tutor`** (`.agents/gen-ui-tutor/SKILL.md`) for
+  generative UI and the boundaries among A2UI, AG-UI, MCP Apps, and A2A.
+  Its comparison and learning tracks live in
+  `.agents/gen-ui-tutor/MCP-LEARNING-TRACKS.md`. Use `mcp-progressive-tutor`
+  for core MCP concepts and `ai-study-tutor` for numbered AI design cases.
 - Additionally, load **`design-pattern-tutor`** for learning, comparing, or
   practicing software design patterns, pattern selection, and learning-focused
   design reviews. It covers object-oriented, architectural, data, messaging,
@@ -84,7 +96,7 @@ skills above.
 When creating or reorganizing technical documentation, tutorials, reference
 guides, or engineering explanations in Markdown, load **`technical-docs-styling`
 **
-(`.agents/technical-docs-styling/SKILL.md`) for content structure,
+(`.agents/tech-docs-styling/SKILL.md`) for content structure,
 learning design, accessibility, and scannability. Apply it together with
 **`markdown-authoring`** (`.agents/markdown-authoring/SKILL.md`) for
 general Markdown conventions and print-friendly source formatting.
