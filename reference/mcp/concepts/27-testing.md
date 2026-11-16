@@ -17,7 +17,7 @@ configuration. A successful HTTP status cannot establish tenant isolation.
 
 ## Run the supplied checks
 
-After [lab setup](../learning/labs/README.md), run these from the lab directory:
+After [lab setup](../labs/README.md), run these from the lab directory:
 
 ```bash
 uv run python -m unittest -v test_domain.py test_protocol.py

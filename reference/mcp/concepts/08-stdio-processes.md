@@ -21,7 +21,7 @@ The client typically owns the child process lifetime.
 
 ## Run and inspect
 
-After [lab setup](../learning/labs/README.md), run:
+After [lab setup](../labs/README.md), run:
 
 ```bash
 uv run python client.py stdio
@@ -33,7 +33,7 @@ Expected final output:
 stdio: tool, resource, and prompt checks passed
 ```
 
-In [client.py](../learning/labs/client.py), `StdioTransport` launches
+In [client.py](../labs/client.py), `StdioTransport` launches
 `sys.executable` with an absolute path to `server.py`. The executable is the
 same interpreter running the client, which reduces dependency mismatches.
 Resolving the server relative to the client file avoids reliance on the

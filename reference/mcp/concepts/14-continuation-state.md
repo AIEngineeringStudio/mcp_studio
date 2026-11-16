@@ -36,7 +36,7 @@ arguments, and expiry; enforce single-use server-side when required.
 
 ## A concrete operation
 
-The [simulation](../learning/labs/continuation_model.py) stores an intent under
+The [simulation](../labs/continuation_model.py) stores an intent under
 `op-1`, bound to Alice and T-100. It rejects Bob before returning even a
 previously recorded result. It treats `accept` plus `approved=false` as no
 action. Replaying Alice's successful operation returns its recorded outcome.

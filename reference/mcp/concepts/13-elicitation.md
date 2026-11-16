@@ -57,7 +57,7 @@ weak evidence of informed intent.
 
 ## Observe the local model
 
-Run the dependency-free [continuation simulation](../learning/labs/continuation_model.py):
+Run the dependency-free [continuation simulation](../labs/continuation_model.py):
 
 ```bash
 python3 reference/mcp/learning/labs/continuation_model.py

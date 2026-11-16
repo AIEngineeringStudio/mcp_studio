@@ -31,7 +31,7 @@ Use a narrow operation such as `get_ticket` instead of an unrestricted
 `run_sql` when callers only need a ticket lookup. The narrower contract is
 easier to explain, validate, authorize, and test.
 
-In the [lab server](../learning/labs/server.py), the decorated handler delegates to
+In the [lab server](../labs/server.py), the decorated handler delegates to
 `lookup_ticket`. The function returns a copy of the fixture record, so a
 caller cannot mutate the stored dictionary merely by changing its result.
 

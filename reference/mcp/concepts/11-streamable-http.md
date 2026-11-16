@@ -21,7 +21,7 @@ separate business operation.
 
 ## Run the same contracts
 
-After [lab setup](../learning/labs/README.md), start the server in terminal 1:
+After [lab setup](../labs/README.md), start the server in terminal 1:
 
 ```bash
 uv run python server.py --http

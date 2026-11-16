@@ -15,7 +15,7 @@ Follow the numbered path for a first pass. For a targeted question, open the
 relevant guide and follow only its prerequisite links. Optional experiments
 demonstrate software behavior; there are no required quizzes.
 
-Start [lab setup](learning/labs/README.md) at guide 07. Check
+Start [lab setup](labs/README.md) at guide 07. Check
 [versions and compatibility](VERSIONS.md) before comparing wire messages.
 The [validation record](VALIDATION.md) states which examples actually ran.
 

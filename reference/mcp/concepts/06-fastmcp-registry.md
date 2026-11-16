@@ -34,7 +34,7 @@ register its functions without executing their business operations.
 
 ## Read the lab declaration
 
-The [server](../learning/labs/server.py) creates `FastMCP("Ticket learning service")`
+The [server](../labs/server.py) creates `FastMCP("Ticket learning service")`
 and applies `@mcp.tool` to `get_ticket`. The function's name, annotations,
 and docstring contribute to the exposed tool contract. The body delegates to
 ordinary application code.

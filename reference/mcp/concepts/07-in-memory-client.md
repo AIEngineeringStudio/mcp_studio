@@ -22,13 +22,13 @@ This still exercises a framework/protocol path. It is different from calling
 
 ## Run the supplied files
 
-Follow [lab setup](../learning/labs/README.md), then run from the lab directory:
+Follow [lab setup](../labs/README.md), then run from the lab directory:
 
 ```bash
 uv run python client.py memory
 ```
 
-Read [client.py](../learning/labs/client.py) beside [server.py](../learning/labs/server.py).
+Read [client.py](../labs/client.py) beside [server.py](../labs/server.py).
 The client enters `async with Client(mcp)`, lists tools, calls
 `get_ticket`, reads a ticket resource, and obtains a prompt.
 

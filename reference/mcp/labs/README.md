@@ -2,7 +2,7 @@
 
 These complete source files implement a synthetic ticket service. No model,
 credentials, database, Docker, or external business API is needed.
-Read [the version baseline](../../VERSIONS.md) for the tested runtime and limits.
+Read [the version baseline](../VERSIONS.md) for the tested runtime and limits.
 
 ## Workspace-local setup
 

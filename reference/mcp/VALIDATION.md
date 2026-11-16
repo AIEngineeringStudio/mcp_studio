@@ -62,5 +62,5 @@ python3 reference/mcp/catalog/validate_library.py
 ```
 
 It verifies source hashes, local navigation, guide prerequisites, required skill
-metadata, and code syntax. The [lab instructions](learning/labs/README.md) provide the
+metadata, and code syntax. The [lab instructions](labs/README.md) provide the
 commands for the executable checks.
