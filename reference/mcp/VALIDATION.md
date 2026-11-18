@@ -1,6 +1,6 @@
 # Validation record
 
-Examples executed: 2026-11-15. Final library check: 2026-11-16.
+Examples executed: 2026-11-15 and 2026-11-18. Final library check: 2026-11-16.
 Scope: newly authored course and synthetic examples.
 
 ## Executed examples
@@ -17,6 +17,12 @@ Dependencies resolved in the isolated lab project and are recorded in
   The verification helper terminated the process it started.
 - Continuation model: decline, cross-user rejection, and sequential replay
   checks passed. This is a domain simulation, not an MCP MRTR implementation.
+- Calendar authorization: the MCP SDK served Protected Resource Metadata and a
+  `401` discovery challenge; read and write tokens received different private
+  tool catalogs; Bob could read only Bob's synthetic calendar; a direct
+  hidden-tool call was denied; an authorized write used a mock downstream
+  credential distinct from the inbound MCP bearer token.
+  This is a local concept simulation, not a live provider OBO or calendar call.
 
 The first HTTP attempt was prevented from binding by the execution environment.
 The permitted localhost check then passed. Initial dependency access also

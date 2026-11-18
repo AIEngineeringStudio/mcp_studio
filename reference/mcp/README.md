@@ -86,11 +86,13 @@ These numbers identify course concepts, not AI curriculum cases.
 19. [Host validation, Origin, and CORS](concepts/19-origin-cors.md)
    Explain what browser-related transport checks protect and why they are not authentication.
 
-20. [OAuth discovery and delegated access](concepts/20-oauth-discovery.md)
-   Trace how a client finds the authorization server for a protected MCP resource.
+20. [OAuth discovery and delegated calendar access](concepts/20-oauth-discovery.md)
+   Trace how a client finds the authorization server for a protected MCP resource
+   and keeps an MCP token separate from a downstream calendar credential.
 
-21. [Authorization, scopes, and tenant isolation](concepts/21-authorization.md)
-   Enforce who can do what to which record, independently of tool visibility.
+21. [Authorization, tool visibility, and calendar isolation](concepts/21-authorization.md)
+   Enforce who can discover and call calendar tools, then apply user, tenant,
+   record, and downstream-provider policy.
 
 22. [Reverse proxies and TLS](concepts/22-proxy-tls.md)
    Explain where a proxy sits and diagnose route, trust, and buffering failures.
@@ -131,6 +133,9 @@ These numbers identify course concepts, not AI curriculum cases.
 
 The supplied lab demonstrates tools, resources, and prompts through memory,
 stdio, and HTTP. A separate domain model demonstrates approval and replay.
+The calendar authorization lab demonstrates Protected Resource Metadata,
+scope-filtered tool discovery, direct-call enforcement, and a mock downstream
+credential broker without using real accounts or secrets.
 Production chapters contain worked design explanations; they are not
 prebuilt deployments. The capstone provides the implementation progression.
 

@@ -1,7 +1,8 @@
 # MCP concept labs
 
-These complete source files implement a synthetic ticket service. No model,
-credentials, database, Docker, or external business API is needed.
+These complete source files implement a synthetic ticket service and a
+synthetic calendar authorization boundary. No model, real credential, database,
+Docker, calendar account, or external business API is needed.
 Read [the version baseline](../VERSIONS.md) for the tested runtime and limits.
 
 ## Workspace-local setup
@@ -9,7 +10,7 @@ Read [the version baseline](../VERSIONS.md) for the tested runtime and limits.
 From the project root, run these commands in order:
 
 ```bash
-cd reference/mcp/learning/labs
+cd reference/mcp/labs
 export UV_CACHE_DIR="$PWD/.uv-cache"
 export UV_PYTHON_INSTALL_DIR="$PWD/.python"
 uv sync --locked --python 3.14.3
@@ -38,6 +39,12 @@ resolution for this concept snapshot.
   approval, caller isolation, and sequential replay.
 - [verify_http.py](verify_http.py): starts a temporary server, verifies HTTP,
   and stops only its own process.
+- [auth_calendar_server.py](auth_calendar_server.py): publishes OAuth Protected
+  Resource Metadata, validates fake bearer tokens, filters tools by scope, and
+  models a separate downstream calendar credential.
+- [verify_auth_calendar.py](verify_auth_calendar.py): starts the calendar server
+  and verifies discovery, authorization, direct-call denial, user isolation,
+  and mock OBO.
 
 ## Run each boundary
 
@@ -47,12 +54,15 @@ uv run python client.py memory
 uv run python client.py stdio
 uv run python continuation_model.py
 uv run python verify_http.py
+uv run python verify_auth_calendar.py
 ```
 
-Expected results: three domain tests and two protocol tests pass; each client mode reports
-`tool, resource, and prompt checks passed`; the domain model reports its
-decline/identity/replay checks passed. Server diagnostics may also appear on
-stderr, separately from protocol stdout.
+Expected results: three domain tests and two protocol tests pass; each client
+mode reports `tool, resource, and prompt checks passed`; the domain model
+reports its decline/identity/replay checks passed; and the calendar check
+reports that discovery, private visibility, denial, user isolation, and mock
+delegation passed.
+Server diagnostics may also appear on stderr, separately from protocol stdout.
 
 For the manual HTTP flow, use two terminals in this directory:
 
@@ -79,6 +89,12 @@ The client also asserts that the negotiated protocol is `2026-07-28`.
 The continuation simulation is not MCP wire code or a real approval UI. It is
 sequential and in-memory. Durable storage, atomic consumption, signed state,
 OAuth, and actual MRTR callbacks are separate implementation exercises.
+
+The calendar lab uses real MCP HTTP authorization middleware but fake token
+records and a mock downstream credential broker. It is not a real authorization
+server, Microsoft Entra OBO exchange, Google consent flow, or Calendar API. Read
+[OAuth discovery](../concepts/20-oauth-discovery.md) and
+[authorization](../concepts/21-authorization.md) for the production evolution.
 
 ## Diagnose the boundary
 
