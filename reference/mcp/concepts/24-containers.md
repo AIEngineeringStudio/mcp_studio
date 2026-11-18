@@ -10,7 +10,7 @@ An image is a packaged filesystem and runtime configuration. A container is a
 running instance of that image. A volume stores data independently of a
 container's writable layer.
 
-```text
+```
 host port --> proxy container --> app container --> database
                                       |
                               persistent storage

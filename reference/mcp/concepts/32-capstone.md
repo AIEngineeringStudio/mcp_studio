@@ -65,7 +65,7 @@ metrics, and traces. Containerize after the runtime and networking concepts
 are understood. Evidence: shutdown is bounded, dependencies fail clearly,
 telemetry can locate a slow call, and secrets do not enter logs or images.
 
-```text
+```
 Host --> MCP client --> HTTPS entry --> MCP application
                                            |
                                      ticket service

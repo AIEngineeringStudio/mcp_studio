@@ -15,7 +15,7 @@ Modern MCP carries this interaction through a Multi Round-Trip Request
 (MRTR). The server returns an input-required result. The client obtains the
 requested input and reissues the original operation with responses.
 
-```text
+```
 Client                          Server
   | ---- close ticket ----------> |
   | <--- input required: reason - |

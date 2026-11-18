@@ -23,7 +23,7 @@ event has.
 
 ## Trace one report
 
-```text
+```
 call report
     |
     +---- progress 10/100

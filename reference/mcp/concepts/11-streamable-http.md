@@ -9,7 +9,7 @@
 HTTP lets the server run independently of a particular client process. The
 client needs an endpoint address and the server needs to listen on a socket.
 
-```text
+```
 Client process -- HTTP POST /mcp --> Server process --> ticket service
                <-- JSON or SSE ---
 ```
@@ -35,7 +35,7 @@ uv run python client.py http
 
 Expected final line:
 
-```text
+```
 http: tool, resource, and prompt checks passed
 ```
 

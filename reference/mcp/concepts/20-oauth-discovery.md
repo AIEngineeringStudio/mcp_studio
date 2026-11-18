@@ -13,7 +13,7 @@ The MCP server is the protected resource server. The authorization server
 interacts with the user as needed and issues tokens. The client obtains a
 token and presents it to the resource server.
 
-```text
+```
 Client --> MCP endpoint
        <-- authentication challenge / metadata location
 Client --> protected-resource metadata

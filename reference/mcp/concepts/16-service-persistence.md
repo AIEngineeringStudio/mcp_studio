@@ -10,7 +10,7 @@ The initial handler can return a fixture directly. As requirements add access
 checks, validation, updates, and history, a large handler becomes difficult to
 test and reuse.
 
-```text
+```
 MCP handler --> application service --> repository --> storage
 translation     business operation     data access
 ```

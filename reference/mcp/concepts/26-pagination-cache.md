@@ -10,7 +10,7 @@ A small server returns a few tools. A large server might expose hundreds.
 A ticket search might return thousands of records. Pagination divides a list
 into bounded pieces and supplies a continuation cursor.
 
-```text
+```
 first request --> page A + cursor
 next(cursor) --> page B + cursor
 next(cursor) --> page C + no next cursor

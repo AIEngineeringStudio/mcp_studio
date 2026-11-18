@@ -10,7 +10,7 @@ A client asks to close a ticket. The database commits, but the network drops
 before the response arrives. The client sees failure while the business action
 has succeeded.
 
-```text
+```
 request --> commit --> response lost
    |
    +---- retry?

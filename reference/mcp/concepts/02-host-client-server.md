@@ -6,15 +6,47 @@
 
 ## Separate decisions from execution
 
-- A **host** is the application coordinating the user experience. 
+### The main participants
 
-- A **model** generates text and may propose tool calls. 
+```
+Host
+└── Client
+    └── Server
+        ├── Tools
+        ├── Resources
+        └── Prompts
+```
 
-- An **MCP client** is the protocol-speaking component used by the host. 
+#### Host
 
-- An **MCP server** exposes operations or context.
+A MCP host is the **application containing the AI experience**.
+It orchestrates MCP clients.
 
-```text
+**Examples:** AI desktop application, IDE, agent runtime, or chat application.
+
+#### Client
+
+An MCP client is the **protocol participant inside the host** that communicates
+with one MCP server.
+
+Professional wording:
+
+> “The host owns the user interaction, while its MCP client manages protocol
+> communication with the server.”
+
+#### Server
+
+An MCP server is a program that **exposes capabilities and context**.
+
+It does **not necessarily contain an LLM**. It may simply expose database
+queries, API calls, calculations, files, or business operations.
+
+A technically accurate sentence would be:
+> “The host creates an MCP client which negotiates capabilities with the
+> server over the stdio transport.”
+
+
+```
 +---------------------- Host ----------------------+
 | User interface --> orchestration <--> model      |
 |                         |                        |

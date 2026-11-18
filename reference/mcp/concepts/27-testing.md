@@ -8,7 +8,7 @@
 
 Testing should follow the responsibility boundaries already introduced.
 
-```text
+```
 domain rules --> repository --> MCP contracts --> transport --> host workflow
 ```
 

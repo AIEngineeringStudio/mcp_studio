@@ -10,7 +10,7 @@ Uvicorn accepts network connections, handles HTTP, and calls an ASGI application
 The application routes work and performs MCP processing. The business service
 owns domain behavior.
 
-```text
+```
 socket --> Uvicorn --> ASGI application --> MCP handler --> service
 ```
 

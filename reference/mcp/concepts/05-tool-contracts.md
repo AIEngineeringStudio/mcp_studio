@@ -10,7 +10,7 @@ Our requirement is to read one ticket by its identifier. A good contract names
 the operation, describes its purpose, defines valid arguments, and explains
 what callers can expect.
 
-```text
+```
 get_ticket(ticket_id="T-100")
            |
            v

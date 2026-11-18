@@ -39,7 +39,7 @@ specific website's genuine users can call the service.
 
 ## A concrete request path
 
-```text
+```
 Browser --> proxy --> MCP endpoint --> authentication --> tool policy
             |
         preserves intended

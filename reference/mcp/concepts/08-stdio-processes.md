@@ -9,7 +9,7 @@
 The in-memory client imports the server object. The stdio client launches
 another Python process and communicates through its standard input and output.
 
-```text
+```
 Client process                     Server process
 write ---------------------------> stdin
 read  <--------------------------- stdout
@@ -29,7 +29,7 @@ uv run python client.py stdio
 
 Expected final output:
 
-```text
+```
 stdio: tool, resource, and prompt checks passed
 ```
 

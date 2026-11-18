@@ -11,7 +11,7 @@ application. It can handle TLS certificates, route paths, apply limits, and
 balance traffic. TLS encrypts communication and supports server identity
 verification.
 
-```text
+```
 Client -- HTTPS --> reverse proxy -- HTTP or HTTPS --> application
                          |
                  certificate and routing

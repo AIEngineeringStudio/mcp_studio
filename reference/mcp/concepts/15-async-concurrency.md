@@ -10,7 +10,7 @@ A ticket lookup may spend most of its time waiting for a database. Async I/O
 lets the event loop do other work during that wait. It does not make a CPU-heavy
 calculation faster merely because its function uses `async def`.
 
-```text
+```
 Request A: start ---- await database ------- resume
 Request B:             start -- await -- resume
 Event loop: switches work at cooperative suspension points

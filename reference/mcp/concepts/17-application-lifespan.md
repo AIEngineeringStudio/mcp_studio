@@ -10,7 +10,7 @@ Creating a new connection pool inside every tool call wastes resources.
 Creating it at import time can hide failures and complicate testing.
 Application lifespan gives long-lived dependencies an explicit owner.
 
-```text
+```
 start process
     |
 validate settings

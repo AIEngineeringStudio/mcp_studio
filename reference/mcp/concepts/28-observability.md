@@ -20,7 +20,7 @@ telemetry describes actual runtime behavior.
 
 ## Trace the ticket lookup
 
-```text
+```
 host operation
     +-- MCP call
           +-- authorize

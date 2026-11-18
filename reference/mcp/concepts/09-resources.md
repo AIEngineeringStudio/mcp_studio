@@ -12,7 +12,7 @@ identifier. In our example, `ticket://T-100` names the ticket representation.
 The custom URI does not imply a public web URL. The MCP client sends a
 resource-read operation to the server, which resolves the URI.
 
-```text
+```
 resource URI --> resources/read --> template match --> record --> content
 ticket://T-100                      ticket://{ticket_id}
 ```

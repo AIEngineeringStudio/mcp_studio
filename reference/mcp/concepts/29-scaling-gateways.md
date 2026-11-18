@@ -14,7 +14,7 @@ A gateway is an intermediary that presents a controlled entry point to one or
 more services. It can route tools, normalize names, apply broad policy, and
 collect operational evidence.
 
-```text
+```
 Host --> gateway ----> ticket server --> ticket store
                 |
                 +----> document server --> document store

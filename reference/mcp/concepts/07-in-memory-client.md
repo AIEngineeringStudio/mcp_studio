@@ -10,7 +10,7 @@ Before introducing a subprocess, HTTP, credentials, or a model, verify that
 client and server agree about one operation. The in-memory client supplies
 this small test boundary.
 
-```text
+```
 One Python process
 +------------------------------------------------+
 | Client --> MCP dispatch --> get_ticket --> data |
@@ -34,7 +34,7 @@ The client enters `async with Client(mcp)`, lists tools, calls
 
 Expected output:
 
-```text
+```
 memory: tool, resource, and prompt checks passed
 ```
 

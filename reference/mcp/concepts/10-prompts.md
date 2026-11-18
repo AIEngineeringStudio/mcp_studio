@@ -10,7 +10,7 @@ Suppose support staff repeatedly need the same kind of ticket summary:
 current status, confirmed facts, and missing information. A prompt component
 lets the server offer a reusable interaction template.
 
-```text
+```
 prompts/list --> choose summarize_ticket
                          |
 prompts/get(ticket_id) --> rendered messages

@@ -1,30 +1,66 @@
 # Why MCP exists
 
-**Outcome:** Explain the integration problem MCP solves and when a direct function is sufficient.
+**Outcome:** Explain the integration problem MCP solves and when a direct
+function is sufficient.
 
 **Prerequisites:** None.
 
 ## Begin with a real requirement
 
-A support assistant needs the status of ticket T-100. The language model does
+A support assistant needs the status of ticket `T-100`. The language model does
 not own the ticket database. It needs an application to fetch the record and
 return evidence it can use in an answer.
 
+Suppose program A wants to call capabilities exposed by program B.
+Without a shared protocol, A must know B's proprietary API:
+
 Start with the ordinary application function `lookup_ticket("T-100")`.
 If one Python program is the only caller, a direct function call may satisfy
-the entire requirement. MCP becomes useful when several AI applications need
+the entire requirement.
+
+```
+A ───── custom integration ─────> B
+```
+
+Custom integration has to handle discovery, argument typing, invocation,
+error handling, and session management.
+
+Now imagine 20 AI applications and 100 external systems.
+Without standardization:
+
+```
+20 clients × 100 integrations = integration mess
+```
+
+Without a common agreement, each host needs a different adapter for every
+service.
+
+### MCP to the rescue
+
+MCP becomes useful when several AI applications need
 to discover and call the same service through a common interface.
+
+MCP defines a common contract and standardizes those conversations.
+MCP standardizes the host-facing boundary.
+
+```
+                       MCP interface
+                      ┌──────────────┐
+Support host   ─────  Client <──────> Server ─── Database
+                      Client <──────> Server ─── Git
+                      Client <──────> Server ─── SaaS API
+Developer host ─────  Client <──────> Server ─── Filesystem
+                      └──────────────┘
+```
 
 **Protocol:**
 
 > A shared agreement about message structure, meaning, and valid interaction.
 > A protocol allows independently built programs to communicate.
 
-Without a common agreement, each host needs a different adapter for every
-service. MCP standardizes the host-facing boundary. The server still needs
-an adapter to its actual database or upstream API.
+The server still needs an adapter to its actual database or upstream API.
 
-```text
+```
 Support host ----+
                  +---- MCP interface ---- Ticket server ---- Records
 Developer host --+
@@ -53,6 +89,21 @@ MCP supplies a common way to expose tools, readable resources, and reusable
 prompts. It does not itself create a reasoning loop, pick a model, guarantee a
 correct answer, or grant permission to a user.
 
+```
+WITHOUT MCP:                          WITH MCP:
+─────────────────────────────────     ─────────────────────────────────
+• Custom integration per tool         • Standard interface for all tools
+• Tight coupling                      • Loose coupling
+• Hard to swap tools                  • Easy to add/remove tools
+• Vendor lock-in                      • Interoperability
+• No standard discovery               • Built-in tool discovery
+```
+
+> MCP does not:
+> > - define how your LLM or agent should reason
+> > - run a model
+> > - decide when a model should use a tool
+
 An existing REST API can remain the system of record. An MCP server can call
 that API. Rewriting the business service is not a prerequisite for adopting
 MCP. Likewise, a server can perform useful work without calling an LLM at all.
@@ -69,9 +120,9 @@ can reduce host-specific integration code. The benefit depends on reuse and
 interoperability; an extra network service still adds deployment and failure
 costs.
 
-If ticket T-100 does not exist, the system should expose that failure as a
-controlled result or error. It should not ask the model to invent a plausible
-ticket.
+If the user provides a ticket ID that does not exist, the system should expose
+that failure as a controlled result or error. It should not ask the model to
+invent a plausible ticket.
 
 **Professional articulation:**
 
@@ -82,7 +133,8 @@ ticket.
 
 - [Archive: conversations/chunks/01-mcp-chunk1.md](../../conversations/chunks/01-mcp-chunk1.md)
 - [Archive: docs/mcp.md](../../docs/%5BDONE%5Dmcp.md)
-- [Official reference](https://modelcontextprotocol.io/specification/2026-07-28) — checked 2026-11-15.
+- [Official reference](https://modelcontextprotocol.io/specification/2026-07-28) —
+  checked 2026-11-15.
 
 Next: [Host, client, model, and server](02-host-client-server.md).
 

@@ -18,7 +18,7 @@ for discovery and validation.
 
 > Selecting and invoking the component that matches an incoming request.
 
-```text
+```
 Python function + annotations + description
                     |
                  decorator

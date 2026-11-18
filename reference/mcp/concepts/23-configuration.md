@@ -14,7 +14,7 @@ Environment variables are strings supplied to a process. A `.env` file is
 a local convenience for populating configuration; it is not a secret vault.
 Typed settings convert and validate those values into a consistent model.
 
-```text
+```
 environment / local .env
           |
        validation

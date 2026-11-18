@@ -14,7 +14,7 @@ Three choices are useful: recompute from authenticated data, store state on the
 server under an opaque handle, or carry protected continuation state through
 the client. Choose based on sensitivity, size, lifetime, and durability.
 
-```text
+```
 NEEDS_REASON --> NEEDS_APPROVAL --> APPLIED
                      |
                      +----------> NOT_APPLIED

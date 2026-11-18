@@ -13,7 +13,7 @@ A token with `tickets:read` may allow a kind of operation. It does not
 necessarily permit every ticket in every tenant. A tenant is a customer or
 organizational boundary whose records must remain isolated.
 
-```text
+```
 verified caller + operation + target record + current policy
                               |
                               v
