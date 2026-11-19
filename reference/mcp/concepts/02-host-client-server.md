@@ -173,4 +173,4 @@ server's access checks.
 - [Archived definitions](../../temp/definitions.md)
 - [Official MCP architecture guide](https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture)
 
-Next: [JSON-RPC requests, responses, and notifications](03B-json-rpc.md).
+Next: [JSON-RPC requests, responses, and notifications](03-json-rpc.md).

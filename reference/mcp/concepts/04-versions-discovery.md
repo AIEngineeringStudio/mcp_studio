@@ -4,7 +4,7 @@
 successful connection does not prove that every optional feature is supported.
 
 **Prerequisites:**
-[03: JSON-RPC requests, responses, and notifications](03B-json-rpc.md).
+[03: JSON-RPC requests, responses, and notifications](03-json-rpc.md).
 
 ## Three kinds of version answer different questions
 

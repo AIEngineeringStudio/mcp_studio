@@ -5,7 +5,7 @@ input schema, result, side effects, and failures.
 
 **Prerequisites:**
 [02: Host, model, client, and server](02-host-client-server.md) and
-[03: JSON-RPC requests, responses, and notifications](03B-json-rpc.md).
+[03: JSON-RPC requests, responses, and notifications](03-json-rpc.md).
 
 **MCP Tool:** A named function the server exposes that the AI client can call.
 

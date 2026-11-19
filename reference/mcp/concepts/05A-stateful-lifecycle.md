@@ -5,7 +5,7 @@ phases without confusing connection state, an optional HTTP session, and
 durable application state.
 
 **Prerequisites:**
-[03: JSON-RPC requests, responses, and notifications](03B-json-rpc.md)
+[03: JSON-RPC requests, responses, and notifications](03-json-rpc.md)
 and [04: Protocol versions and capability discovery](04-versions-discovery.md).
 
 ## Version boundary
