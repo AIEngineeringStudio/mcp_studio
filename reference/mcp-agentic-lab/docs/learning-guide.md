@@ -77,7 +77,7 @@ MCP_LAB_TRACE_EXPORTER=none uv run mcp-lab-client
 
 Expected high-level result:
 
-```text
+```
 Available tools: add, divide
 ...
 "result": 15.0
@@ -91,7 +91,7 @@ MCP_LAB_TRACE_EXPORTER=none uv run mcp-lab-agent "Add 20 and 22"
 
 Expected result:
 
-```text
+```
 The result is 42.0.
 ```
 
@@ -103,7 +103,7 @@ output easier to read. Tracing is covered later.
 MCP separates the application that wants capabilities from the application that
 provides them.
 
-```text
+```
 ┌──────────────────────────────────────────────────────────────────┐
 │ Host application                                                 │
 │                                                                  │
@@ -162,7 +162,7 @@ readable document or data item than an action.
 
 This project exposes `notes://{topic}`, for example:
 
-```text
+```
 notes://mcp
 notes://json-rpc
 notes://tracing
@@ -221,7 +221,7 @@ are deliberately studying or extending the protocol.
 
 ## 6. Repository map `[Level 1]`
 
-```text
+```
 mcp-agentic-lab/
 ├── pyproject.toml              dependencies, commands, and tool settings
 ├── uv.lock                     reproducible dependency resolution
@@ -259,7 +259,7 @@ mcp-agentic-lab/
 
 The project deliberately records the same interaction at several layers.
 
-```text
+```
 AgentModel
     │ decision: ToolCall or FinalAnswer
     ▼
@@ -303,7 +303,7 @@ Start with `src/mcp_lab/observability/config.py`.
 `Settings` is a Pydantic settings model. Every field maps to an environment
 variable prefixed with `MCP_LAB_`. For example:
 
-```text
+```
 server_transport  -> MCP_LAB_SERVER_TRANSPORT
 server_port       -> MCP_LAB_SERVER_PORT
 trace_exporter    -> MCP_LAB_TRACE_EXPORTER
@@ -319,7 +319,7 @@ settings instance instead of reparsing `.env` repeatedly.
 
 Configuration precedence is effectively:
 
-```text
+```
 explicit Settings constructor values
         over
 environment variables
@@ -488,13 +488,13 @@ The rest of the client flow is transport-neutral.
 
 Without recording, the subprocess hierarchy could be:
 
-```text
+```
 client process ──starts──► server process
 ```
 
 With the wiretap enabled, it becomes:
 
-```text
+```
 client process ──starts──► stdio proxy ──starts──► server process
 ```
 
@@ -541,7 +541,7 @@ IDs, or metadata matter.
 
 This is the most useful first code flow to learn.
 
-```text
+```
 1. shell starts mcp-lab-client
 2. client builds StdioServerParameters for stdio_proxy
 3. SDK starts stdio_proxy as a child
@@ -563,7 +563,7 @@ This is the most useful first code flow to learn.
 
 The key topology is:
 
-```text
+```
 ObservedMCPClient
   stdin/stdout
       │
@@ -579,7 +579,7 @@ MCPServer ──decoded middleware───────► var/server-wire.jsonl
 
 `stdio_proxy.py` runs two `_forward` coroutines with `asyncio.gather`:
 
-```text
+```
 client stdin  ──► child stdin     direction=client_to_server
 child stdout  ──► client stdout   direction=server_to_client
 ```
@@ -618,7 +618,7 @@ uv run mcp-lab-client --url http://127.0.0.1:8000/mcp
 
 The flow is now:
 
-```text
+```
 ObservedMCPClient
       │ HTTP POST containing JSON-RPC
       ▼
@@ -713,7 +713,7 @@ It is used instead of one large JSON array because:
 
 Every record contains:
 
-```text
+```
 timestamp      UTC timestamp
 direction      client_to_server or server_to_client
 vantage_point  where the observation was made
@@ -757,7 +757,7 @@ large tool result from exhausting memory or filling a disk unexpectedly.
 
 `WireRecordingMiddleware` runs around every decoded inbound MCP message:
 
-```text
+```
 record request
 start timer
     call next middleware/handler
@@ -858,7 +858,7 @@ framework.
 
 `AgentModel` and `ToolGateway` are Python `Protocol` interfaces.
 
-```text
+```
 ToolCallingAgent
     ├── depends on AgentModel protocol
     └── depends on ToolGateway protocol
@@ -886,7 +886,7 @@ This is an adapter pattern: each side keeps its natural data model.
 
 `ToolCallingAgent.run()` performs:
 
-```text
+```
 DISCOVER tools
     │
     ▼
@@ -951,7 +951,7 @@ valid JSON object per line.
 
 Together, the test pyramid is:
 
-```text
+```
 few live transport checks       stdio and HTTP commands
         ▲
 MCP in-process integration      real SDK + real server
@@ -1150,7 +1150,7 @@ provider claims to enforce a schema.
 
 Wrap a `ToolGateway` rather than modifying the agent loop:
 
-```text
+```
 ToolCallingAgent
       │
       ▼

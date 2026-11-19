@@ -6,7 +6,7 @@
 
 Small order API:
 
-```text
+```
 HTTP
  ↓
 Application Service
@@ -46,7 +46,7 @@ Optionally show a DI container.
 
 Core lesson:
 
-```text
+```
 Dependency Injection != DI framework
 ```
 
@@ -105,7 +105,7 @@ domain imports SQL, queue, vendor HTTP SDK.
 
 Version B:
 
-```text
+```
         Application Core
              |
           Ports

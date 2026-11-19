@@ -5,7 +5,7 @@ statelessness changes discovery, HTTP routing, additional-input flows, and
 application state ownership.
 
 **Prerequisites:**
-[03: JSON-RPC requests, responses, and notifications](03-json-rpc.md),
+[03: JSON-RPC requests, responses, and notifications](03B-json-rpc.md),
 [04: Protocol versions and capability discovery](04-versions-discovery.md), and
 [05A: Stateful connection lifecycle](05A-stateful-lifecycle.md).
 

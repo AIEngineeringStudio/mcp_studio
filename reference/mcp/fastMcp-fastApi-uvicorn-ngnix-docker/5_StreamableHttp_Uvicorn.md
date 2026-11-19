@@ -5,7 +5,7 @@
 Keep the MCP components and service layer unchanged, but replace stdio with a
 network boundary:
 
-```text
+```
 ┌──────────────────────────────┐
 │ MCP client process           │
 └──────────────┬───────────────┘
@@ -49,7 +49,7 @@ uv add uvicorn
 
 Your dependency boundary is now:
 
-```text
+```
 FastMCP     MCP implementation
 Uvicorn     ASGI application server
 aiosqlite   Async database adapter
@@ -86,7 +86,7 @@ if __name__ == "__main__":
 Because importing `server.py` does not execute that block, the same MCP server
 can support two deployment adapters:
 
-```text
+```
 server.py
 ├── executed directly → stdio
 └── imported by app.py → HTTP
@@ -131,7 +131,7 @@ above. [FastMCP](https://gofastmcp.com/deployment/http)
 
 It establishes a clean distinction:
 
-```text
+```
 server.py
 └── Defines MCP capabilities
 
@@ -159,7 +159,7 @@ stateless_http = True
 
 The conceptual difference is:
 
-```text
+```
 Stateful
 
 Request 1 → Worker A → create session in Worker A memory
@@ -234,7 +234,7 @@ uv run uvicorn app:app \
 
 The application is now available at:
 
-```text
+```
 http://127.0.0.1:8000/mcp
 ```
 
@@ -243,7 +243,7 @@ endpoint at `/mcp`. [FastMCP](https://gofastmcp.com/deployment/http)
 
 ## Meaning of `app:app`
 
-```text
+```
 app:app
 │   │
 │   └── Python attribute named app
@@ -287,7 +287,7 @@ ASGI means **Asynchronous Server Gateway Interface**.
 It is a Python interface between an application server and an asynchronous
 Python application.
 
-```text
+```
 Network client
     │
     │ TCP + HTTP
@@ -324,7 +324,7 @@ Your application service owns:
 
 This responsibility split is important:
 
-```text
+```
 Uvicorn does not understand MCP tools.
 FastMCP does not implement arithmetic rules.
 ArithmeticService does not understand HTTP.
@@ -350,7 +350,7 @@ The three parameters mean:
 
 A simplified request flow:
 
-```text
+```
 1. Uvicorn accepts TCP connection
 2. Uvicorn parses HTTP request
 3. Uvicorn creates ASGI scope
@@ -485,7 +485,7 @@ uv run python test_http_client.py
 
 Expected output shape:
 
-```text
+```
 Tools:
 - add
 - multiply
@@ -529,7 +529,7 @@ Operand 'a' has value 2000000...
 
 ## stdio
 
-```text
+```
 Client starts
     │
     └── launches server subprocess
@@ -543,7 +543,7 @@ The client owns the server lifecycle.
 
 ## HTTP
 
-```text
+```
 Uvicorn starts
     │
     └── server remains available
@@ -576,7 +576,7 @@ You can verify this directly:
 
 A tool call now travels approximately like this:
 
-```text
+```
 FastMCP client
     │
     │ JSON-RPC request inside HTTP POST
@@ -606,7 +606,7 @@ interaction. [Model Context Protocol](https://modelcontextprotocol.io/specificat
 On connections using the modern `2026-07-28` protocol, FastMCP clients also
 attach routing headers such as:
 
-```text
+```
 Mcp-Method: tools/call
 Mcp-Name: add
 ```
@@ -626,7 +626,7 @@ Avoid this incorrect statement:
 
 More accurately:
 
-```text
+```
 MCP
 └── Application protocol based on JSON-RPC
 
@@ -636,13 +636,13 @@ Streamable HTTP
 
 The same operation:
 
-```text
+```
 tools/call → add
 ```
 
 can travel through:
 
-```text
+```
 stdio
 or
 Streamable HTTP
@@ -681,7 +681,7 @@ app = mcp.http_app()
 
 because the target architecture specifically separates:
 
-```text
+```
 FastMCP application
 from
 Uvicorn process runtime
@@ -734,7 +734,7 @@ servers. [FastMCP](https://gofastmcp.com/deployment/http)
 
 One Uvicorn worker usually contains:
 
-```text
+```
 One process
 └── One event loop
     ├── request task A
@@ -746,7 +746,7 @@ When request A awaits database I/O, the event loop can run request B.
 
 This is concurrency, not CPU parallelism.
 
-```text
+```
 Async concurrency:
 one process interleaves waiting tasks
 
@@ -779,7 +779,7 @@ uv run python test_http_client.py
 
 Expected layer:
 
-```text
+```
 Transport connection failure
 ```
 
@@ -802,7 +802,7 @@ MCP_URL = "http://127.0.0.1:8000/wrong"
 
 Expected layer:
 
-```text
+```
 HTTP routing failure
 ```
 
@@ -820,7 +820,7 @@ MCP_URL = "http://127.0.0.1:9000/mcp"
 
 Expected layer:
 
-```text
+```
 TCP connection failure
 ```
 
@@ -834,7 +834,7 @@ Send a request using an unapproved `Host` header.
 
 Expected result:
 
-```text
+```
 HTTP 403 Forbidden
 ```
 
@@ -858,7 +858,7 @@ await client.call_tool(
 
 Expected layer:
 
-```text
+```
 HTTP works
 MCP dispatch works
 Service executes
@@ -868,7 +868,7 @@ ToolError is returned
 
 This distinction is crucial:
 
-```text
+```
 Connection error ≠ protocol error ≠ business error
 ```
 
@@ -910,7 +910,7 @@ Connection error ≠ protocol error ≠ business error
 
 # Completion Check
 
-```text
+```
 [ ] Uvicorn is a direct project dependency
 [ ] app.py exposes an ASGI application
 [ ] Uvicorn binds only to 127.0.0.1
@@ -931,7 +931,7 @@ Connection error ≠ protocol error ≠ business error
 The next increment introduces FastAPI as the application composition and
 lifecycle owner:
 
-```text
+```
 FastAPI lifespan startup
 ├── validate configuration
 ├── initialize repository

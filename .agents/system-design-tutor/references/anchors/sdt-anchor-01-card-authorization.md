@@ -40,7 +40,7 @@ DECLINED from a timeout.
 
 ## 7. Minimum viable architecture (ASCII)
 
-```text
+```
 Merchant -> API/Auth -> Authorization service -> Processor adapter -> External processor
                        |                 |
                        +----> transactional DB + outbox -> downstream consumers

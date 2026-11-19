@@ -39,7 +39,7 @@ reconciliation matches; exceptions with ownership and resolution history.
 
 ## 7. Minimum viable architecture (ASCII)
 
-```text
+```
 Capture records ---> Clearing/settlement workflow -> External partner/files
         |                        |                 |
         +--> Internal ledger ----+--> Matching engine <--+

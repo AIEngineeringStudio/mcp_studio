@@ -118,7 +118,7 @@ Use this stack unless the learner asks for another:
 - When the requirements call for a visual MCP interaction backed by a web API,
   teach these responsibilities in sequence:
 
-```text
+```
 MCP host
 +-- App Bridge (host-side)
     +-- sandboxed iframe

@@ -8,7 +8,7 @@ For an in-process bounded queue and workers, use the
 
 ### Lab
 
-```text
+```
 Producer → Queue → Consumer
 ```
 
@@ -43,7 +43,7 @@ Use broker-neutral language first.
 
 ### Lab
 
-```text
+```
 OrderPlaced
   ├→ Email
   ├→ Inventory

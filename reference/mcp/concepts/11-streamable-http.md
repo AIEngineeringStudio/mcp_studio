@@ -22,9 +22,15 @@ inherently freeze a user interface. Its limitation here is simpler: one JSON
 response carries one response object. It does not provide a standard stream for
 request-related MCP notifications before that final response.
 
-Modern Streamable HTTP solves that transport problem:
+Modern Streamable HTTP solves that transport problem.
 
-```text
+**Streamable HTTP MCP** allows:
+
+- Server to push partial results as they are ready.
+- Client to reply mid-stream (bidirectional).
+- Long-running tasks to report progress live.
+
+```
 MCP client                  /mcp                     MCP server
     |--- POST: one self-contained JSON-RPC request ----->|
     |<-- application/json: one final response -----------|
@@ -34,6 +40,35 @@ or
     |--- POST: one self-contained JSON-RPC request ----->|
     |<== text/event-stream: related notifications =======|
     |<== then the final JSON-RPC response ===============|
+```
+
+### Where It Is Used in Industry
+
+- **AI agent pipelines** — LLM tools calling APIs to stream results to agents.
+- **Data processing systems** — Batch jobs that report row-by-row progress.
+- **Enterprise dashboards** — Live ETL status feeds.
+- **DevOps tooling** — CI/CD pipelines streaming logs.
+- **Financial systems** — streaming trade confirmations.
+
+### Concrete Use Cases
+
+```
+┌──────────────────────┬─────────────────────┬──────────────────────────┐
+│ Use Case             │ Industry            │ Problem It Solves        │
+├──────────────────────┼─────────────────────┼──────────────────────────┤
+│ AI agent calls DB    │ Enterprise SaaS     │ Agent waits 30s for full │
+│ tool, streams rows   │                     │ result — now streams row │
+│ as they arrive       │                     │ by row, stays responsive │
+├──────────────────────┼─────────────────────┼──────────────────────────┤
+│ Data migration tool  │ FinTech / HealthTech│ No visibility into batch │
+│ reports progress,    │                     │ progress; user can now   │
+│ asks user to pause   │                     │ pause/resize mid-run     │
+│ or resize batch      │                     │                          │
+├──────────────────────┼─────────────────────┼──────────────────────────┤
+│ LLM document         │ Legal / Research    │ Full doc summary blocks  │
+│ summariser streams   │                     │ UI for 60s; streaming    │
+│ paragraph by para.   │                     │ shows output instantly   │
+└──────────────────────┴─────────────────────┴──────────────────────────┘
 ```
 
 **Endpoint:**
@@ -156,7 +191,8 @@ to exercise the actual method, metadata, and response handling.
 - [Archived streamable transport notes](../streamable/streamable-3.md)
 - [Legacy definitions and prerequisites](../elicitation/chunk-1.md)
 - [Legacy problem-first transport explanation](../elicitation/chunk-2.md)
-- [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http) — checked 2026-11-15.
+- [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http) —
+  checked 2026-11-15.
 
 Next: [Progress, streaming, and final results](12-progress-streaming.md).
 

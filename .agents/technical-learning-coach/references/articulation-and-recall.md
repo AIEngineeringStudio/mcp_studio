@@ -37,7 +37,7 @@ Ask the learner to explain the concept first in simple language.
 
 Then refine it through three levels:
 
-```text
+```
 Clear personal explanation
           ↓
 Precise technical explanation

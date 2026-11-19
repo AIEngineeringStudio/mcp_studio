@@ -50,7 +50,7 @@ These numbers identify course concepts, not AI curriculum cases.
 2. [Host, client, model, and server](concepts/02-host-client-server.md)
    Locate each participant and assign responsibility for one tool invocation.
 
-3. [JSON-RPC requests, responses, and notifications](concepts/03-json-rpc.md)
+3. [JSON-RPC requests, responses, and notifications](concepts/03B-json-rpc.md)
    Read a message envelope and distinguish request identity from business identity.
 
 4. [Protocol versions and capability discovery](concepts/04-versions-discovery.md)

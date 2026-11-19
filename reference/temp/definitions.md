@@ -9,7 +9,7 @@ Suppose you have a Python function that can search your company's documents.
 
 Conceptually:
 
-```text
+```
 search_documents("refund policy")
         |
         v
@@ -30,7 +30,7 @@ We need something between the AI client and our normal application code.
 
 That is one job of **FastMCP**.
 
-```text
+```
 MCP Client
     |
     | MCP messages
@@ -58,7 +58,7 @@ Think about a hotel reception desk.
 
 The receptionist has a list:
 
-```text
+```
 Room 101 -> Alice
 Room 102 -> Bob
 Room 103 -> Charlie
@@ -74,7 +74,7 @@ FastMCP does something similar.
 
 Its server needs to know:
 
-```text
+```
 What tools exist?
 What resources exist?
 What prompts exist?
@@ -82,7 +82,7 @@ What prompts exist?
 
 Conceptually:
 
-```text
+```
 FastMCP Server
 
 Component Registry
@@ -113,7 +113,7 @@ we mean:
 
 In MCP, the important server-side components include:
 
-```text
+```
 Tool
 Resource
 Prompt
@@ -127,7 +127,7 @@ A tool usually **does something**.
 
 Examples:
 
-```text
+```
 search_documents("refund")
 create_ticket(...)
 send_message(...)
@@ -141,13 +141,13 @@ A resource usually represents **information that can be read**.
 
 For example:
 
-```text
+```
 company://policies/refunds
 ```
 
 The client might read it to obtain:
 
-```text
+```
 Refund Policy
 -------------
 Customers may return...
@@ -159,13 +159,13 @@ A prompt represents a reusable prompt template.
 
 For example:
 
-```text
+```
 summarize-document
 ```
 
 which might produce instructions such as:
 
-```text
+```
 Summarize this document.
 Focus on:
 - decisions
@@ -179,14 +179,14 @@ Focus on:
 
 Imagine the client sends:
 
-```text
+```
 Call tool:
     search_documents
 ```
 
 FastMCP has to answer one important question:
 
-```text
+```
 Which Python component does
 "search_documents"
 refer to?
@@ -194,7 +194,7 @@ refer to?
 
 The registry provides that mapping.
 
-```text
+```
 Incoming request
 
 tool = "search_documents"
@@ -217,13 +217,13 @@ Without a registry, FastMCP would not know which application function should han
 
 The client may first ask:
 
-```text
+```
 What tools do you have?
 ```
 
 FastMCP can inspect its registered components and respond conceptually with:
 
-```text
+```
 Tools:
 
 search_documents
@@ -241,7 +241,7 @@ The AI does not necessarily know beforehand what your server can do.
 
 Instead:
 
-```text
+```
 Client
   |
   | "What tools exist?"
@@ -266,7 +266,7 @@ Now we have another problem.
 
 Your Python application understands concepts like:
 
-```text
+```
 function
 argument
 string
@@ -280,7 +280,7 @@ So something must translate between these two worlds.
 
 That is what we mean here by a **protocol adapter**.
 
-```text
+```
 MCP world                         Python world
 
 tool call                         function call
@@ -293,7 +293,7 @@ FastMCP performs much of this work for you.
 
 Its documentation describes this relationship as:
 
-```text
+```
 You write the application logic.
 FastMCP handles the protocol.
 ``` :chatgpt-content-reference{index="4"}
@@ -305,19 +305,19 @@ FastMCP handles the protocol.
 
 Suppose an AI wants to search for:
 
-```text
+```
 "vacation policy"
 ```
 
 The client decides to call:
 
-```text
+```
 search_documents
 ```
 
 The complete flow is approximately:
 
-```text
+```
 MCP Client
     |
     | tool call
@@ -361,7 +361,7 @@ This is the key mental model.
 
 FastMCP sits between:
 
-```text
+```
 Protocol communication
         |
      FastMCP
@@ -382,7 +382,7 @@ These are different responsibilities.
 
 Consider:
 
-```text
+```
 Client says:
 
 "Call search_documents
@@ -393,7 +393,7 @@ The **protocol side** understands the MCP request.
 
 Then the **registry side** determines:
 
-```text
+```
 search_documents
         |
         v
@@ -410,7 +410,7 @@ Imagine a restaurant.
 
 The customer speaks to a waiter.
 
-```text
+```
 Customer
    |
    v
@@ -426,7 +426,7 @@ The waiter performs two relevant jobs.
 
 The waiter knows:
 
-```text
+```
 Pizza
 Burger
 Salad
@@ -434,7 +434,7 @@ Salad
 
 That is similar to the **component registry**.
 
-```text
+```
 search_documents
 create_ticket
 get_customer
@@ -444,7 +444,7 @@ get_customer
 
 The customer says:
 
-```text
+```
 "I want a pizza without onions."
 ```
 
@@ -456,7 +456,7 @@ That resembles the **protocol adapter** role.
 
 So:
 
-```text
+```
 Restaurant analogy
 
 Menu knowledge
@@ -477,7 +477,7 @@ Without a framework such as FastMCP, your application would need considerably mo
 
 Conceptually you would have to deal with things such as:
 
-```text
+```
 Receive MCP request
         |
 Parse operation
@@ -507,7 +507,7 @@ A **transport** determines how those messages travel.
 
 For example:
 
-```text
+```
              MCP
         protocol rules
               |
@@ -520,14 +520,14 @@ FastMCP's official documentation shows servers and clients operating over transp
 
 Think of it like this:
 
-```text
+```
 Protocol  = language
 Transport = delivery mechanism
 ```
 
 Example:
 
-```text
+```
 English sentence
       |
       +-- spoken over telephone
@@ -541,7 +541,7 @@ The language can remain English while the delivery mechanism changes.
 
 Similarly:
 
-```text
+```
 MCP
  |
  +-- stdio
@@ -555,7 +555,7 @@ MCP
 
 For now, use this model:
 
-```text
+```
 +----------------------------------+
 | MCP Client                       |
 | AI application                   |
@@ -586,7 +586,7 @@ Each layer has a different responsibility.
 
 Decides:
 
-```text
+```
 I want to call search_documents.
 ```
 
@@ -594,7 +594,7 @@ I want to call search_documents.
 
 Handles:
 
-```text
+```
 What does this MCP request mean?
 
 Does search_documents exist?
@@ -610,7 +610,7 @@ How should I represent the result?
 
 Handles:
 
-```text
+```
 How do I actually search documents?
 ```
 
@@ -622,26 +622,26 @@ That separation is important.
 
 Suppose the client asks for:
 
-```text
+```
 delete_everything
 ```
 
 but your server registered only:
 
-```text
+```
 search_documents
 create_ticket
 ```
 
 The registry cannot find:
 
-```text
+```
 delete_everything
 ```
 
 Conceptually:
 
-```text
+```
 Client
   |
   | call delete_everything
@@ -668,7 +668,7 @@ FastMCP does **not automatically become the owner of your business data** simply
 
 Suppose:
 
-```text
+```
 search_documents
        |
        v
@@ -679,7 +679,7 @@ The database remains the system holding the documents.
 
 Conceptually:
 
-```text
+```
 MCP Client
      |
      v
@@ -696,7 +696,7 @@ FastMCP is the interface layer.
 
 Your application still determines:
 
-```text
+```
 where data lives
 how searches work
 what business rules apply
@@ -713,7 +713,7 @@ Do not memorize framework internals yet.
 
 Remember only this:
 
-```text
+```
 FastMCP
    |
    +-- remembers what the server exposes
@@ -735,7 +735,7 @@ Or in one sentence:
 
 This is the most important diagram.
 
-```text
+```
 AI / MCP Client
       |
       | 1. "What tools exist?"

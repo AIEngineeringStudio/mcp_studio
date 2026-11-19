@@ -38,7 +38,7 @@ recovery audit and reconciliation status.
 
 ## 7. Minimum viable architecture (ASCII)
 
-```text
+```
 Clients -> Global routing -> Region A API -> Primary state
                           |                    |
                           +----> Region B API -> Replica/failover state

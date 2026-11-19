@@ -39,7 +39,7 @@ token/session metadata and revocation signals.
 
 ## 7. Minimum viable architecture (ASCII)
 
-```text
+```
 User -> Enterprise IdP -> Federation broker -> App session/token
                                           |
 App/API -> Policy enforcement -> Decision service -> Policy store

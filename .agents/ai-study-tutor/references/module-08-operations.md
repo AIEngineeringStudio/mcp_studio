@@ -103,7 +103,7 @@ ledgers, canary rollouts and disaster recovery address different failure modes.
 
 ## Example baseline diagram for this module
 
-```text
+```
 +-----------------------------+
 |       User requirement      |
 +-----------------------------+

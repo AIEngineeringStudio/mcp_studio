@@ -4,7 +4,7 @@
 
 Refactor this:
 
-```text
+```
 MCP handler
 ├── validates business rules
 ├── calculates result
@@ -15,7 +15,7 @@ MCP handler
 
 into this:
 
-```text
+```
 MCP adapter
     │
     ▼
@@ -79,7 +79,7 @@ Problems:
 
 The improved direction is:
 
-```text
+```
 MCP
 FastAPI
 CLI
@@ -107,7 +107,7 @@ operations. [Aiosqlite](https://aiosqlite.omnilib.dev/en/stable/api.html?utm_sou
 
 # 3. Project Structure
 
-```text
+```
 mcp-first-principles/
 ├── data/
 │   └── calculations.db       generated at runtime
@@ -124,7 +124,7 @@ mcp-first-principles/
 
 The dependency direction is important:
 
-```text
+```
 server.py
     │
     ▼
@@ -245,7 +245,7 @@ They do not mention:
 That separation allows different adapters to translate the same application
 error differently:
 
-```text
+```
 OperandOutOfRangeError
 ├── MCP adapter  → ToolError
 ├── HTTP adapter → HTTP 422
@@ -454,7 +454,7 @@ to inherit from a particular base class.
 
 Both implementations satisfy the contract:
 
-```text
+```
 CalculationRepository
 ├── SQLiteCalculationRepository
 └── InMemoryCalculationRepository
@@ -466,7 +466,7 @@ Professional wording:
 
 This is an example of **dependency inversion**:
 
-```text
+```
 Bad:
 
 Service ──► SQLite directly
@@ -641,7 +641,7 @@ return await self._repository.save(...)
 
 is asynchronous because persistence involves an external resource.
 
-```text
+```
 CPU-only operation
     │
     └── ordinary def
@@ -678,7 +678,7 @@ parallelism. [Python documentation](https://docs.python.org/3/library/asyncio-ta
 
 Conceptually:
 
-```text
+```
 Task A: database write
     │
     ├── send database operation
@@ -691,7 +691,7 @@ Task A: database write
 
 A blocking call behaves differently:
 
-```text
+```
 Task A performs blocking call
     │
     └── event-loop thread cannot process Task B
@@ -713,7 +713,7 @@ await self._ensure_initialized()
 
 This is **lazy initialization**:
 
-```text
+```
 First request
 ├── create schema
 └── execute request
@@ -725,7 +725,7 @@ Later requests
 The lock prevents two concurrent first requests from initializing the repository
 simultaneously.
 
-```text
+```
 Request A ──► acquires lock ──► initializes
 Request B ──► waits for lock ──► sees initialized
 ```
@@ -739,7 +739,7 @@ Hidden weakness:
 
 The production direction is:
 
-```text
+```
 Application startup
 └── initialize infrastructure
 
@@ -957,7 +957,7 @@ behavior. [FastMCP](https://gofastmcp.com/servers/context)
 
 This is **dependency injection**:
 
-```text
+```
 Client supplies:
 ├── a
 └── b
@@ -994,7 +994,7 @@ raise ToolError(str(exc)) from exc
 
 The error flow is:
 
-```text
+```
 Business-rule failure
         │
         ▼
@@ -1017,13 +1017,13 @@ clients. [FastMCP](https://gofastmcp.com/servers/tools?utm_source=chatgpt.com)
 
 This distinction prevents errors such as these from leaking:
 
-```text
+```
 OperationalError: unable to open database file /internal/secret/path
 ```
 
 while still allowing useful client-facing messages:
 
-```text
+```
 Operand 'a' has value 2000000.
 Its absolute value must not exceed 1000000.
 ```
@@ -1089,7 +1089,7 @@ uv run python -m unittest -v test_service.py
 
 Expected shape:
 
-```text
+```
 test_add_returns_and_persists_result ... ok
 test_multiply_returns_expected_result ... ok
 test_rejects_operand_outside_business_limit ... ok
@@ -1198,7 +1198,7 @@ uv run python test_stdio_client.py
 
 Expected result shape:
 
-```text
+```
 Add result:
 {
     'id': 1,
@@ -1246,7 +1246,7 @@ it on disk.
 
 ## Step 1: Identify the use case
 
-```text
+```
 Calculate a result and record it.
 ```
 
@@ -1254,7 +1254,7 @@ This belongs to an application service.
 
 ## Step 2: Separate pure computation from side effects
 
-```text
+```
 Pure:
 add or multiply numbers
 
@@ -1278,7 +1278,7 @@ class SQLiteCalculationRepository:
 
 ## Step 5: Keep protocol translation at the edge
 
-```text
+```
 MCP inputs
     │
     ▼
@@ -1293,7 +1293,7 @@ MCP-compatible output
 
 ## Step 6: Test the center independently
 
-```text
+```
 In-memory repository
         │
         ▼
@@ -1302,7 +1302,7 @@ Application service
 
 ## Step 7: Add integration testing around the outside
 
-```text
+```
 FastMCP client
     │
     ▼
@@ -1361,7 +1361,7 @@ A professional summary:
 
 # 17. Completion Check
 
-```text
+```
 [ ] aiosqlite and pydantic are direct project dependencies
 [ ] Domain models are separate from MCP handlers
 [ ] Application errors do not import FastMCP
@@ -1381,7 +1381,7 @@ A professional summary:
 The next increment replaces stdio with **Streamable HTTP** and introduces the
 ASGI boundary:
 
-```text
+```
 MCP client
     │ HTTP
     ▼

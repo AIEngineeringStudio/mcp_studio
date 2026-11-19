@@ -1,5 +1,27 @@
 # Start here: the MCP mental model
 
+---
+
+## Key Terms
+
+| Term                | Definition                                  | Why It Matters                                |
+|---------------------|---------------------------------------------|-----------------------------------------------|
+| **MCP**             | Protocol for AI ↔ tool communication        | Lets any AI client call any MCP server        |
+| **Transport**       | The network layer that carries MCP messages | Determines speed, streaming, bidirectionality |
+| **Streamable HTTP** | Two-way streaming over HTTP                 | Replaces old SSE-only transport               |
+| **SSE**             | One-way server→client push over HTTP        | Used inside Streamable HTTP for push data     |
+| **Tool**            | A named function exposed by an MCP server   | The unit of capability the client can call    |
+| **Elicitation**     | Server asks client a mid-call question      | Enables multi-turn logic inside one call      |
+| **JSON-RPC 2.0**    | MCP message format (id + method + params)   | Standardizes request/response structure       |
+| **Session**         | A stateful client↔server connection         | Tracks conversation context across turns      |
+| **Chunk**           | A partial streamed response fragment        | Lets the client render data before complete   |
+| **Bidirectional**   | Both sides can send messages at any time    | Required for elicitation to work              |
+| **uvicorn**         | ASGI server that runs FastAPI apps          | Handles async HTTP connections                |
+| **LiteLLM**         | Library that wraps multiple LLM providers   | One interface → swap OpenAI, Anthropic, etc   |
+| **ASGI**            | Async Server Gateway Interface (Python)     |                                               |
+
+---
+
 This page is for a learner who has never used the Model Context Protocol (MCP).
 It gives you the few ideas and words needed before concept 01.
 
@@ -29,7 +51,7 @@ print(get_ticket("T-100"))
 
 Expected output:
 
-```text
+```
 {'id': 'T-100', 'status': 'open'}
 ```
 
@@ -39,7 +61,14 @@ another program through a standard interface.
 
 ## The smallest useful MCP picture
 
-```text
+**MCP (Model Context Protocol)** is an open protocol that lets AI models
+call external tools and resources over a standard interface.
+
+**Streamable HTTP transport** is the MCP transport layer that uses
+persistent HTTP connections to support real-time, bidirectional,
+multi-turn communication between a client and a server.
+
+```
 User
   |
   v
@@ -103,7 +132,7 @@ MCP standardizes three common server building blocks:
 > A reusable message template. Retrieving a prompt does not run a language
 > model by itself.
 
-```text
+```
 MCP server
   |-- tool:     perform an operation
   |-- resource: read identified content
@@ -118,7 +147,7 @@ memorize their wire messages now.
 
 Two layers work together:
 
-```text
+```
 MCP meaning:       "Call the get_ticket tool"
                          |
                          v

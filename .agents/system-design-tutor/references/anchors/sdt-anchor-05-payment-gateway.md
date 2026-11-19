@@ -38,7 +38,7 @@ references; webhook deliveries; adapter mapping/version.
 
 ## 7. Minimum viable architecture (ASCII)
 
-```text
+```
 Merchant -> API gateway/Auth -> Payment orchestration -> Provider adapter(s) -> PSP
                                 |                   |
                              Operation DB         Circuit state

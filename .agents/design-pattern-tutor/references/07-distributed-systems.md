@@ -48,7 +48,7 @@ Prerequisites:
 
 State model:
 
-```text
+```
 Closed → Open → Half-Open → Closed
 ```
 
@@ -86,7 +86,7 @@ per-user / per-tenant / per-endpoint limits.
 
 ### Start with dual-write failure
 
-```text
+```
 1. commit Order
 2. publish OrderCreated
 ```
@@ -95,7 +95,7 @@ Crash between steps.
 
 ### Derive
 
-```text
+```
 DB transaction:
   Order
   OutboxMessage
@@ -116,7 +116,7 @@ Teach:
 
 ### Lab
 
-```text
+```
 Create Order
 → Reserve Inventory
 → Charge Payment
@@ -142,7 +142,7 @@ Introduce only when read and write models have genuinely conflicting needs.
 
 Minimal idea:
 
-```text
+```
 Commands → change state
 Queries  → read state
 ```

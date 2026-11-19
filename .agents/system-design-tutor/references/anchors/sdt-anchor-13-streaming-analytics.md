@@ -38,7 +38,7 @@ archive/replay sources.
 
 ## 7. Minimum viable architecture (ASCII)
 
-```text
+```
 Producers -> Event broker -> Stream processors -> Aggregate store -> Dashboard API
                   |                 |
                Raw archive      Watermark/checkpoints

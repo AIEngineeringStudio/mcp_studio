@@ -38,7 +38,7 @@ feature update event log.
 
 ## 7. Minimum viable architecture (ASCII)
 
-```text
+```
 Payment request -> Risk API -> Policy/rules + model serving
                               |
                      Online feature view <- Stream processing <- Events

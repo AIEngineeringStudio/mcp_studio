@@ -4,7 +4,7 @@ Use at an interactive lesson boundary or when the learner asks to pause.
 Keep it short, omit unused fields, and fill it with observed evidence. State
 that it can be pasted into a future chat; do not claim it was saved as memory.
 
-```text
+```
 DESIGN PATTERN CHECKPOINT
 Language and example domain:
 Current pattern and lesson step:

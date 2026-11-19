@@ -11,7 +11,7 @@ can discover, which calls it may execute, and which user's events it may access.
 Authentication establishes a verified caller. Authorization decides whether
 that caller may perform one operation on one resource.
 
-```text
+```
 verified subject
     + client or agent identity
     + granted scopes
@@ -44,7 +44,7 @@ Missing, invalid, expired, or wrong-audience tokens receive HTTP `401` with a
 
 Map each MCP operation to its minimum permission:
 
-```text
+```
 list_calendar_events    -> calendar:read
 get_calendar_event      -> calendar:read
 create_calendar_event   -> calendar:write
@@ -96,7 +96,7 @@ An attacker can:
 
 Therefore, `tools/call` must evaluate the same policy again.
 
-```text
+```
                          +------------------------+
 tools/list  ------------>| shared policy registry|----> filtered catalog
                          +------------------------+
@@ -137,13 +137,13 @@ entitlement and revocation behavior is intentionally designed.
 
 The inbound token is intended for the MCP server:
 
-```text
+```
 audience = https://calendar.example.com/mcp
 ```
 
 The downstream token is intended for the provider:
 
-```text
+```
 audience = https://graph.microsoft.com
 ```
 
@@ -189,7 +189,7 @@ Do not claim that a human user performed the action.
 
 The calendar lab has three fake MCP tokens:
 
-```text
+```
 mcp-alice-read  -> calendar:read
 mcp-alice-write -> calendar:read + calendar:write
 mcp-bob-read    -> calendar:read for Bob's identity
@@ -293,7 +293,7 @@ tool, required policy, outcome, provider, and latency.
 
 Test at least these cases:
 
-```text
+```
 missing token
 invalid signature or inactive token
 expired token

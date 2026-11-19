@@ -110,7 +110,7 @@ different architecture boundaries, and none is universally supported.
 
 ## Example baseline diagram for this module
 
-```text
+```
 +-----------------------------+
 |       User requirement      |
 +-----------------------------+

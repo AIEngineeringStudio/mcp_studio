@@ -10,7 +10,7 @@ This is where `requestState` becomes necessary.
 
 Suppose our deployment flow needs two human interactions:
 
-```text
+```
 deploy_release(version="v1.7.3")
 
 Round 1
@@ -32,7 +32,7 @@ Perform deployment
 
 The logical workflow needs to remember:
 
-```text
+```
 environment = production
 ```
 
@@ -60,7 +60,7 @@ There is a problem.
 
 Conceptually:
 
-```text
+```
 ROUND 1 REQUEST
 inputResponses = none
 
@@ -79,7 +79,7 @@ inputResponses =
 
 Round 3 does **not** necessarily contain:
 
-```text
+```
 environment = production
 ```
 
@@ -87,13 +87,13 @@ FastMCP explicitly describes `ctx.request_state` as the mechanism for carrying s
 
 So this model is wrong:
 
-```text
+```
 inputResponses = conversation history
 ```
 
 Use this model:
 
-```text
+```
 inputResponses = answers produced by the immediately preceding round
 ```
 
@@ -105,7 +105,7 @@ inputResponses = answers produced by the immediately preceding round
 
 Maybe the original tool arguments contain enough information to derive the environment again.
 
-```text
+```
 original arguments
       |
       v
@@ -118,7 +118,7 @@ This is simplest when possible.
 
 For example:
 
-```text
+```
 pending_deployments[request_id] = {
     environment: "production"
 }
@@ -128,7 +128,7 @@ This works, but now the server owns workflow state.
 
 That creates operational requirements:
 
-```text
+```
 Replica A
    |
    | stores state
@@ -143,7 +143,7 @@ You need persistence, cleanup, concurrency handling, TTLs, etc.
 
 ### C. Carry it through `requestState`
 
-```text
+```
 Server
   |
   | produces state
@@ -169,7 +169,7 @@ The MCP specification explicitly says servers can encode needed context in `requ
 
 At the protocol level:
 
-```text
+```
 requestState = opaque string
 ```
 
@@ -177,7 +177,7 @@ The server creates it.
 
 The client must:
 
-```text
+```
 receive it
    ↓
 not inspect it
@@ -191,7 +191,7 @@ The specification is strict about this: the client must treat `requestState` as 
 
 That gives us:
 
-```text
+```
 ROUND 1
 
 Client
@@ -270,7 +270,7 @@ That phrasing is useful because it immediately exposes the security problem.
 
 Imagine the server sent state representing:
 
-```text
+```
 environment = production
 approval_stage = awaiting_confirmation
 deployment_id = 8271
@@ -278,7 +278,7 @@ deployment_id = 8271
 
 A malicious client might try changing it to:
 
-```text
+```
 environment = staging
 approval_stage = approved
 deployment_id = 8271
@@ -296,13 +296,13 @@ Different from encryption.
 
 Encryption asks:
 
-```text
+```
 Can the client read this?
 ```
 
 Integrity protection asks:
 
-```text
+```
 Can the client change this without detection?
 ```
 
@@ -318,7 +318,7 @@ FastMCP 4 provides a higher-level abstraction.
 
 Your tool sees:
 
-```text
+```
 ctx.request_state
 ```
 
@@ -326,7 +326,7 @@ as plaintext application state.
 
 When you return:
 
-```text
+```
 InputRequiredResult
     request_state = ...
 ```
@@ -335,7 +335,7 @@ FastMCP seals the state before putting it on the wire, then verifies and unseals
 
 So conceptually:
 
-```text
+```
 Your tool
     |
     | "environment=production"
@@ -362,7 +362,7 @@ Your tool
 
 This distinction matters:
 
-```text
+```
 MCP specification
     defines requestState semantics
 
@@ -378,7 +378,7 @@ Do not write the code yet.
 
 First define explicit phases:
 
-```text
+```
              first invocation
                     |
                     v
@@ -407,7 +407,7 @@ First define explicit phases:
 
 The state needed after round 2 could conceptually be:
 
-```text
+```
 phase = awaiting_approval
 environment = production
 version = v1.7.3
@@ -426,7 +426,7 @@ Professional terminology:
 
 You could infer the phase from available responses:
 
-```text
+```
 if "environment" present:
     must be round 2
 
@@ -440,14 +440,14 @@ It gets brittle quickly.
 
 A cleaner model is:
 
-```text
+```
 requestState
     phase = awaiting_approval
 ```
 
 Then your handler conceptually does:
 
-```text
+```
 state absent
     → ask environment
 
@@ -470,7 +470,7 @@ It is preferable to inferring workflow state from incidental data.
 
 Suppose the user starts with:
 
-```text
+```
 deploy_release(version="v1.7.3")
 ```
 
@@ -478,7 +478,7 @@ deploy_release(version="v1.7.3")
 
 Request:
 
-```text
+```
 arguments:
     version = v1.7.3
 
@@ -491,7 +491,7 @@ requestState:
 
 Server returns:
 
-```text
+```
 resultType:
     input_required
 
@@ -506,7 +506,7 @@ No persistent server state is required.
 
 Client retries:
 
-```text
+```
 arguments:
     version = v1.7.3
 
@@ -518,14 +518,14 @@ inputResponses:
 
 Server computes:
 
-```text
+```
 affected_instances = 6
 downtime = 90 seconds
 ```
 
 It now returns:
 
-```text
+```
 inputRequests:
     approval:
         "Deploy 6 production instances
@@ -543,7 +543,7 @@ requestState:
 
 Client retries:
 
-```text
+```
 arguments:
     version = v1.7.3
 
@@ -558,7 +558,7 @@ requestState:
 
 FastMCP verifies and exposes:
 
-```text
+```
 phase = awaiting_approval
 environment = production
 affected_instances = 6
@@ -566,7 +566,7 @@ affected_instances = 6
 
 Now the tool has everything required:
 
-```text
+```
 original argument
     version
 
@@ -590,7 +590,7 @@ and perform the deployment.
 
 Assume:
 
-```text
+```
 Round 2 handled by Replica A
 Round 3 handled by Replica B
 ```
@@ -599,7 +599,7 @@ FastMCP's default request-state protection uses a per-process key.
 
 Therefore:
 
-```text
+```
 Replica A
    |
    | seals state with Key A
@@ -618,7 +618,7 @@ FastMCP's documentation explicitly warns about this for horizontally scaled depl
 
 Architecture:
 
-```text
+```
                 Load Balancer
                 /           \
                /             \
@@ -646,7 +646,7 @@ Don't turn it into a database.
 
 Bad conceptual state:
 
-```text
+```
 requestState =
     entire customer record
     500 search results
@@ -657,7 +657,7 @@ requestState =
 
 Remember:
 
-```text
+```
 Server → client → server
 ```
 
@@ -667,7 +667,7 @@ FastMCP recommends keeping it small because it travels through the client on eac
 
 Better:
 
-```text
+```
 requestState =
     phase
     selected environment
@@ -683,7 +683,7 @@ Large durable state belongs elsewhere.
 
 For each piece of information ask:
 
-```text
+```
 Can I derive it again cheaply?
         |
       yes
@@ -752,13 +752,13 @@ The point after which an operation mutates durable/external state.
 
 Do not think:
 
-```text
+```
 requestState = session
 ```
 
 Think:
 
-```text
+```
 requestState =
 small, server-owned continuation state
 carried through the client

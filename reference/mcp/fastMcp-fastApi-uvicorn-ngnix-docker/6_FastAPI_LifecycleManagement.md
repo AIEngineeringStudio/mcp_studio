@@ -4,7 +4,7 @@
 
 Make FastAPI the application’s **composition root** and lifecycle owner:
 
-```text
+```
 Uvicorn process
     │
     ▼
@@ -36,7 +36,7 @@ uv add fastapi httpx
 
 Updated structure:
 
-```text
+```
 mcp-first-principles/
 ├── app.py
 ├── server.py
@@ -66,7 +66,7 @@ That was a temporary design. It meant the first real request could fail because 
 
 We now want:
 
-```text
+```
 Process startup
     │
     ├── Open database
@@ -346,7 +346,7 @@ class InMemoryCalculationRepository:
 
 A database write is not just one statement:
 
-```text
+```
 Execute INSERT
     │
     ▼
@@ -616,7 +616,7 @@ def create_mcp(
 
 The service is injected when the MCP server is constructed:
 
-```text
+```
 SQLite repository
        │
        ▼
@@ -808,7 +808,7 @@ app = create_application()
 
 There are now two lifecycle owners:
 
-```text
+```
 Application lifespan
 ├── SQLite connection
 └── readiness state
@@ -832,7 +832,7 @@ FastMCP enters combined lifespans in argument order and exits them in reverse, l
 
 Result:
 
-```text
+```
 Startup
 1. Start repository
 2. Start FastMCP
@@ -866,7 +866,7 @@ mcp.http_app(path="/")
 
 Conceptual route composition:
 
-```text
+```
 Parent mount path:  /mcp
 Child route path:   /
 Final route:        /mcp
@@ -881,7 +881,7 @@ application.mount("/mcp", mcp_app)
 
 could produce an unintended nested route:
 
-```text
+```
 /mcp/mcp
 ```
 
@@ -936,7 +936,7 @@ A liveness failure is generally interpreted as a reason to restart a process or 
 
 The hidden operational risk is putting every external dependency into liveness:
 
-```text
+```
 Database has temporary outage
     │
     ▼
@@ -955,7 +955,7 @@ Outage becomes worse
 
 Suppose the database directory cannot be created:
 
-```text
+```
 Application startup
     │
     ▼
@@ -967,13 +967,13 @@ PermissionError
 
 The error is not converted into:
 
-```text
+```
 Application running but every tool call fails
 ```
 
 Instead, startup itself fails.
 
-```text
+```
 Uvicorn starts process
     │
     ▼
@@ -999,7 +999,7 @@ uv run uvicorn app:app \
 
 Expected startup sequence:
 
-```text
+```
 Starting application database=...
 Application startup completed
 Uvicorn running on http://127.0.0.1:8000
@@ -1134,7 +1134,7 @@ Ask:
 
 For this application:
 
-```text
+```
 SQLite connection
 Arithmetic service
 MCP registry
@@ -1205,7 +1205,7 @@ combined_lifespan = combine_lifespans(
 
 ## Step 5: Separate process health from dependency health
 
-```text
+```
 Liveness
 └── Is the process responsive?
 
@@ -1219,7 +1219,7 @@ Readiness
 
 A lifecycle test should verify all three states:
 
-```text
+```
 Before startup
     repository closed
 
@@ -1264,7 +1264,7 @@ Professional summary:
 
 # Completion Check
 
-```text
+```
 [ ] FastAPI and httpx are direct dependencies
 [ ] Service no longer performs lazy initialization
 [ ] Repository has explicit start and close methods
@@ -1285,7 +1285,7 @@ Professional summary:
 
 The next increment focuses on **Uvicorn process behavior**:
 
-```text
+```
 Signals
 ├── SIGTERM
 └── SIGINT

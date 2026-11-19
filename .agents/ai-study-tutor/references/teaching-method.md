@@ -105,7 +105,7 @@ examples but never assign homework.
 
 ## Stage progression diagram
 
-```text
+```
 +-----------------------------+
 |  Select problem and actors  |
 +-----------------------------+

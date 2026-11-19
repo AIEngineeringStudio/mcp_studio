@@ -61,7 +61,7 @@ when that is a realistic option.
 
 ### A simple decision sequence
 
-```text
+```
 Define problem -> Compare options -> Test risks -> Decide -> Review results
 ```
 

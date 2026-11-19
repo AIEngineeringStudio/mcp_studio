@@ -107,7 +107,7 @@ or outcomes are unknown.
 
 ## Example baseline diagram for this module
 
-```text
+```
 +-----------------------------+
 |       User requirement      |
 +-----------------------------+

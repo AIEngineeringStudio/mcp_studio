@@ -63,7 +63,7 @@ Need related families of objects that must be mutually compatible.
 
 Cloud/local infrastructure family:
 
-```text
+```
 InfrastructureFactory
   ├─ Storage
   ├─ Queue

@@ -17,7 +17,7 @@
 > not allowed to fabricate non-existent API's or facts.
 >
 
-```text
+```
 I'll research the official documentation for both the MCP Python SDK's OAuth
 capabilities and Google ADK's MCPToolSet before writing a single line of code.
 

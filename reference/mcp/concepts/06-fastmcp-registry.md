@@ -16,7 +16,7 @@ questions:
 A **registry** stores component names, contracts, and handlers so the server can
 answer both questions.
 
-```text
+```
 Python function + type hints + docstring
                     |
                     | registration
@@ -71,13 +71,13 @@ import to run the tool's business operation.
 
 During discovery:
 
-```text
+```
 client -> tools/list -> registry -> get_ticket contract -> client
 ```
 
 During invocation:
 
-```text
+```
 client -> tools/call(name="get_ticket", arguments={...})
        -> validate arguments
        -> registry selects handler
@@ -165,7 +165,7 @@ dispatch, result conversion, and transport integration.
 FastMCP cannot infer which customer may read `T-100`. Your application must
 supply verified identity, authorization rules, and business validation.
 
-```text
+```
 FastMCP:      Is this a valid call to a registered component?
 Application:  Is this caller allowed to perform this business operation?
 ```

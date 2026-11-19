@@ -6,7 +6,7 @@ SVG.
 
 ## Minimal baseline
 
-```text
+```
 +-----------------------+
 |   User / application  |
 +-----------------------+
@@ -27,7 +27,7 @@ Not every design needs an agent.
 
 ## Read-only agent/tool security boundary
 
-```text
+```
 +-----------------------+
 |  Authenticated user   |
 +-----------------------+
@@ -59,7 +59,7 @@ The trust check is performed by application/service code, not by a prompt.
 
 ## Sequence diagram
 
-```text
+```
 Client              API              Tool             Source
   |                  |                 |                 |
   |---- request ---->|                 |                 |

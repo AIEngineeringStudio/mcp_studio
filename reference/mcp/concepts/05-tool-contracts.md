@@ -5,7 +5,11 @@ input schema, result, side effects, and failures.
 
 **Prerequisites:**
 [02: Host, model, client, and server](02-host-client-server.md) and
-[03: JSON-RPC requests, responses, and notifications](03-json-rpc.md).
+[03: JSON-RPC requests, responses, and notifications](03B-json-rpc.md).
+
+**MCP Tool:** A named function the server exposes that the AI client can call.
+
+- Client discovers tools via `tools/list` call.
 
 ## A tool is more than a Python function
 
@@ -20,7 +24,7 @@ another program can discover and understand.
 
 For the ticket example, the operation is:
 
-```text
+```
 get_ticket(ticket_id="T-100")
              |
              v
@@ -35,6 +39,62 @@ A useful tool contract answers six questions:
 4. What result shape does it return?
 5. Does it change anything?
 6. How can it fail?
+
+**Tool definition structure:**
+
+```
+{
+  "name": "stream_rows",                          # What is the tool called?
+  "description": "Stream db rows in batches.",    # When should a caller use it?
+  "inputSchema": {                                # Which inputs are valid?
+    "type": "object",
+    "properties": {
+      "batch_size": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 1000
+      }
+    },
+    "required": ["batch_size"],
+    "additionalProperties": false
+  },
+  "outputSchema": {                              # What result shape does it return?
+    "type": "object",
+    "properties": {
+      "rows": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "next_cursor": {
+        "type": ["string", "null"]
+      }
+    },
+    "required": ["rows", "next_cursor"],
+    "additionalProperties": false
+  },
+  "effects": {                                  # Does it change anything?
+    "readOnly": true,
+    "idempotent": true
+  },
+  "errors": [                                   # How can it fail?
+    {
+      "code": "INVALID_BATCH_SIZE",
+      "description": "The batch size is outside the supported range."
+    },
+    {
+      "code": "INVALID_CURSOR",
+      "description": "The supplied cursor is missing, malformed, or expired."
+    },
+    {
+      "code": "DATABASE_UNAVAILABLE",
+      "description": "The database could not be reached."
+    }
+  ]
+}
+```
 
 ## Start with the ordinary business function
 
@@ -109,7 +169,9 @@ A simplified input schema looks like this:
       "type": "string"
     }
   },
-  "required": ["ticket_id"]
+  "required": [
+    "ticket_id"
+  ]
 }
 ```
 
@@ -117,7 +179,7 @@ The schema can reject a missing `ticket_id` or a number where a string is
 required. It cannot prove that `T-100` exists or belongs to the current user.
 Application code must enforce existence, authorization, and business rules.
 
-```text
+```
 schema validation -> Is the request shaped correctly?
 business validation -> Is the requested action valid and allowed?
 ```
@@ -179,7 +241,7 @@ The exact FastMCP client is imported and created in the complete
 [lab client](../labs/client.py). Inspecting discovery distinguishes two
 questions:
 
-```text
+```
 Does my Python function work?
 Does the server expose the contract I intended?
 ```

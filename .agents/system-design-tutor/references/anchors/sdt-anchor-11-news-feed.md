@@ -37,7 +37,7 @@ ranking/visibility metadata.
 
 ## 7. Minimum viable architecture (ASCII)
 
-```text
+```
 Author -> Post service -> Post store -> Fan-out stream -> Home feed projections
                                                        |
 Viewer -> Feed API -------------------------> Merge/rank + privacy filter

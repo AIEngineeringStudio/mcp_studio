@@ -42,7 +42,7 @@ treating a reason response as an approval response.
 > Committed ticket records, audit events, operation outcomes, and idempotency
 > keys that must survive a request ending or a process restarting.
 
-```text
+```
 one request ends
       |
       +-- request/transport state can disappear

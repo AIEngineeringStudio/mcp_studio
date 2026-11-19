@@ -106,7 +106,7 @@ every protocol for every case.
 
 ## Example baseline diagram for this module
 
-```text
+```
 +-----------------------------+
 |       User requirement      |
 +-----------------------------+

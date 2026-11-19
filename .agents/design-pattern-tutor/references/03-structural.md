@@ -10,13 +10,13 @@ A useful component exposes an incompatible interface.
 
 Application expects:
 
-```text
+```
 PaymentGateway.charge()
 ```
 
 Vendor SDK exposes:
 
-```text
+```
 VendorClient.createTransaction()
 ```
 

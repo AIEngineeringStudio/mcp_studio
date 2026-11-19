@@ -38,7 +38,7 @@ transaction; immutable posted journal.
 
 ## 7. Minimum viable architecture (ASCII)
 
-```text
+```
 Posting API -> Journal service -> Transactional journal DB
                               |
                               +-> Outbox -> Balance projection -> Read API

@@ -11,7 +11,7 @@ fixed weekly timetable.
 
 ## What is included
 
-```text
+```
 ai-study-tutor/
 |
 +-- SKILL.md                        # Activation, routing and default behavior

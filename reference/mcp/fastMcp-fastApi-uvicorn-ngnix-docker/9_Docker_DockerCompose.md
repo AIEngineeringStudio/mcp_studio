@@ -4,7 +4,7 @@
 
 Package the application and reverse proxy into separate containers:
 
-```text
+```
 Host machine
     │
     │ 127.0.0.1:8080
@@ -45,7 +45,7 @@ Outside Docker, we ran Uvicorn with:
 
 Inside the application container, that would be wrong:
 
-```text
+```
 Nginx container
     │
     └── cannot reach 127.0.0.1 in application container
@@ -53,7 +53,7 @@ Nginx container
 
 Every container has its own network namespace:
 
-```text
+```
 Nginx 127.0.0.1
 └── means Nginx container itself
 
@@ -71,7 +71,7 @@ inside its container.
 
 Security now comes from:
 
-```text
+```
 Application port listens inside container
         │
         ├── no host port published
@@ -87,7 +87,7 @@ Professional wording:
 
 # 2. Final Project Structure
 
-```text
+```
 mcp-first-principles/
 ├── nginx/
 │   └── default.conf
@@ -141,7 +141,7 @@ The Docker build context is everything available to `COPY` and related build ins
 
 The critical exclusions are:
 
-```text
+```
 .venv
 └── Host-specific virtual environment
 
@@ -271,7 +271,7 @@ Astral’s current Docker guidance recommends pinning uv, separating dependency 
 
 ## Builder stage
 
-```text
+```
 Builder image
 ├── Python
 ├── uv
@@ -285,7 +285,7 @@ Its job is to produce the runtime artifacts.
 
 ## Runtime stage
 
-```text
+```
 Runtime image
 ├── Python
 ├── source code
@@ -295,7 +295,7 @@ Runtime image
 
 The final image does not inherit the builder’s package cache or build tooling.
 
-```text
+```
 Builder stage
     │
     └── COPY /app into runtime
@@ -322,7 +322,7 @@ RUN uv sync
 
 Docker can reuse an unchanged dependency layer when application source files change but `pyproject.toml` and `uv.lock` do not.
 
-```text
+```
 Change service.py
 ├── dependency layer remains cached
 └── application layer is rebuilt
@@ -352,7 +352,7 @@ This means application-level compromise does not automatically begin with root p
 
 The user has fixed identifiers:
 
-```text
+```
 UID: 10001
 GID: 10001
 ```
@@ -361,13 +361,13 @@ Fixed numeric identifiers make filesystem ownership predictable across builds.
 
 The application requires write access only to:
 
-```text
+```
 /data
 ```
 
 It does not need to modify:
 
-```text
+```
 /app
 /usr
 /etc
@@ -390,7 +390,7 @@ chown -R app:app /data
 
 When Docker creates a new empty volume over a container directory containing existing files, it copies that directory’s existing content into the new volume by default. This allows the new named volume to inherit initialized content and ownership from `/data`. [Docker Documentation](https://docs.docker.com/engine/storage/volumes/?utm_source=chatgpt.com)
 
-```text
+```
 Image /data
 ├── owner app:app
 └── .volume-owner
@@ -615,7 +615,7 @@ The current official stable Alpine Nginx image is available as `nginx:1.30.4-alp
 
 ## `edge`
 
-```text
+```
 Host port 8080
     │
     ▼
@@ -626,7 +626,7 @@ Only Nginx joins the edge network.
 
 ## `backend`
 
-```text
+```
 Nginx
     │
     ▼
@@ -643,13 +643,13 @@ Docker defines internal networks as externally isolated networks without the ord
 
 The application joins only:
 
-```text
+```
 backend
 ```
 
 Nginx joins:
 
-```text
+```
 edge
 backend
 ```
@@ -680,7 +680,7 @@ ports:
 
 The result is:
 
-```text
+```
 Nginx container → app:8000       allowed
 Host → localhost:8000            unavailable
 Host → localhost:8080 → Nginx    allowed
@@ -710,7 +710,7 @@ The Uvicorn command contains:
 
 That is the backend address assigned to Nginx.
 
-```text
+```
 Nginx backend IP
 172.28.0.10
         │
@@ -736,7 +736,7 @@ depends_on:
 
 The startup sequence becomes:
 
-```text
+```
 1. Build or obtain images
 2. Create networks
 3. Create volume
@@ -782,12 +782,12 @@ The exec form avoids an intermediary shell that may prevent the executable from 
 
 Shutdown timing is aligned:
 
-```text
+```
 Docker stop grace:       30 seconds
 Uvicorn graceful limit:  20 seconds
 ```
 
-```text
+```
 Docker sends SIGTERM
     │
     ▼
@@ -817,14 +817,14 @@ Writable locations are provided explicitly.
 
 ## Application
 
-```text
+```
 /data   named persistent volume
 /tmp    temporary in-memory filesystem
 ```
 
 ## Nginx
 
-```text
+```
 /var/cache/nginx   temporary
 /var/run           temporary
 /tmp               temporary
@@ -858,7 +858,7 @@ docker compose config --services
 
 Expected:
 
-```text
+```
 app
 nginx
 ```
@@ -871,7 +871,7 @@ docker compose config --networks
 
 Expected shape:
 
-```text
+```
 mcp-first-principles_edge
 mcp-first-principles_backend
 ```
@@ -888,7 +888,7 @@ docker compose build --pull
 
 Expected stages:
 
-```text
+```
 builder
 ├── load Python base
 ├── copy uv
@@ -920,7 +920,7 @@ docker image inspect \
 
 Expected:
 
-```text
+```
 app
 ```
 
@@ -940,7 +940,7 @@ docker compose ps
 
 Expected shape:
 
-```text
+```
 NAME                              SERVICE   STATUS
 mcp-first-principles-app-1       app       Up (healthy)
 mcp-first-principles-nginx-1     nginx     Up (healthy)
@@ -957,7 +957,7 @@ docker compose logs \
 
 You should see:
 
-```text
+```
 app    | Worker startup started
 app    | Application startup completed
 nginx  | nginx entered RUNNING state
@@ -1017,7 +1017,7 @@ curl -i http://127.0.0.1:8000/health/live
 
 Expected:
 
-```text
+```
 Connection refused
 ```
 
@@ -1041,7 +1041,7 @@ uv run python test_http_client.py
 
 Expected:
 
-```text
+```
 Tool discovery succeeds
 add returns and persists a record
 multiply returns and persists a record
@@ -1080,7 +1080,7 @@ Read calculation history again. The old records should remain.
 
 Named volumes exist outside a container’s writable layer and survive container removal unless the volume itself is explicitly deleted. [Docker Documentation](https://docs.docker.com/engine/storage/volumes/?utm_source=chatgpt.com)
 
-```text
+```
 Application container removed
         │
         ▼
@@ -1108,7 +1108,7 @@ That is destructive.
 
 An immutable runtime template produced by the Docker build:
 
-```text
+```
 mcp-first-principles-app:local
 ```
 
@@ -1116,7 +1116,7 @@ mcp-first-principles-app:local
 
 A running instance of an image:
 
-```text
+```
 mcp-first-principles-app-1
 ```
 
@@ -1124,13 +1124,13 @@ mcp-first-principles-app-1
 
 Persistent storage managed separately from a container:
 
-```text
+```
 mcp-first-principles_calculations_data
 ```
 
 Conceptually:
 
-```text
+```
 Dockerfile
     │ build
     ▼
@@ -1166,7 +1166,7 @@ docker network inspect \
 
 Expected container addresses:
 
-```text
+```
 Nginx:       172.28.0.10
 Application: 172.28.0.20
 ```
@@ -1180,7 +1180,7 @@ docker compose exec nginx \
 
 Expected:
 
-```text
+```
 172.28.0.20 app
 ```
 
@@ -1200,7 +1200,7 @@ Expected:
 
 This proves:
 
-```text
+```
 Service discovery works
 Private routing works
 Application endpoint works
@@ -1219,7 +1219,7 @@ docker compose exec app id
 
 Expected shape:
 
-```text
+```
 uid=10001(app) gid=10001(app)
 ```
 
@@ -1232,7 +1232,7 @@ docker compose exec app \
 
 Expected shape:
 
-```text
+```
 -rw-r--r-- app app calculations.db
 ```
 
@@ -1245,7 +1245,7 @@ docker compose exec app \
 
 Expected:
 
-```text
+```
 Read-only file system
 ```
 
@@ -1315,7 +1315,7 @@ ports:
 
 Now both work:
 
-```text
+```
 localhost:8080 → Nginx → application
 localhost:8000 → application directly
 ```
@@ -1346,7 +1346,7 @@ docker compose up \
 
 Expected:
 
-```text
+```
 Application startup fails or remains unhealthy
 Nginx is not started because service_healthy is unmet
 ```
@@ -1398,7 +1398,7 @@ docker compose up \
 
 Professional distinction:
 
-```text
+```
 Restart
 └── Run the same image again
 
@@ -1443,7 +1443,7 @@ with the current topology.
 
 Problems include:
 
-```text
+```
 Several containers
 ├── need shared SQLite storage
 ├── perform concurrent writes
@@ -1455,7 +1455,7 @@ A local Docker named volume is host-scoped, and SQLite remains a single-file dat
 
 The correct scaling progression is:
 
-```text
+```
 Current:
 Nginx → one app container → SQLite volume
 
@@ -1475,7 +1475,7 @@ Nginx/load balancer
 
 ## Step 1: Separate build-time and runtime concerns
 
-```text
+```
 Build time
 ├── Resolve dependencies
 ├── validate lockfile
@@ -1494,7 +1494,7 @@ Do not install dependencies every time the container starts.
 
 ## Step 2: Separate stateless code from state
 
-```text
+```
 Image
 └── application code and dependencies
 
@@ -1508,7 +1508,7 @@ Rebuilding code must not overwrite production data.
 
 ## Step 3: Publish only the intended entry point
 
-```text
+```
 Published:
 Nginx 8080
 
@@ -1520,7 +1520,7 @@ Uvicorn 8000
 
 ## Step 4: Build readiness into dependency ordering
 
-```text
+```
 Application started
 ≠
 Application ready
@@ -1532,7 +1532,7 @@ Nginx starts only after application readiness succeeds.
 
 ## Step 5: Align process shutdown
 
-```text
+```
 Docker grace period
     >
 Uvicorn graceful timeout
@@ -1544,7 +1544,7 @@ The outer runtime must allow enough time for the inner runtime to clean up.
 
 ## Step 6: Make writable state explicit
 
-```text
+```
 Persistent:
 Docker volume
 
@@ -1592,7 +1592,7 @@ Professional summary:
 
 # Completion Check
 
-```text
+```
 [ ] .dockerignore excludes local environments and runtime data
 [ ] uv is pinned to a concrete version
 [ ] Dependency installation has its own cached build layer
@@ -1616,7 +1616,7 @@ Professional summary:
 
 The next increment hardens the containerized service for realistic remote deployment:
 
-```text
+```
 HTTPS client
     │
     ▼

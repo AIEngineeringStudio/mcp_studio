@@ -35,7 +35,7 @@ That represents the older **handshake-era** protocol.
 
 Under MCP `2026-07-28`, the server cannot keep a tool execution suspended while calling back into the client. Instead:
 
-```text
+```
 client
   |
   | tools/call
@@ -75,7 +75,7 @@ deploy_service(environment="production")
 
 During execution it discovers:
 
-```text
+```
 Estimated change:
 - 4 instances replaced
 - 2 minutes downtime
@@ -86,7 +86,7 @@ The tool should **not blindly continue**.
 
 It needs a decision from the human:
 
-```text
+```
 Proceed with this deployment?
 ```
 
@@ -105,7 +105,7 @@ Bad when the user cannot make an informed decision until the tool has calculated
 
 ### Option B — Return an ordinary response
 
-```text
+```
 Deployment requires confirmation.
 ```
 
@@ -164,7 +164,7 @@ As of today, the official FastMCP documentation says:
 
 So for this course, I recommend deliberately using:
 
-```text
+```
 FastMCP 4.0.0b1
 MCP SDK 2.x
 MCP protocol 2026-07-28
@@ -225,7 +225,7 @@ Start with:
 
 For our first tool:
 
-```text
+```
              no answer yet
 START ----------------------------+
                                    |
@@ -277,7 +277,7 @@ That is the core idea.
 
 Create:
 
-```text
+```
 main.py
 ```
 
@@ -397,7 +397,7 @@ Then another request occurs.
 
 Conceptually:
 
-```text
+```
 tools/call
     tool: publish_report
     inputResponses:
@@ -453,7 +453,7 @@ input_requests={
 
 The key correlates:
 
-```text
+```
 request ───────────── response
 
 approval       <----> approval
@@ -489,7 +489,7 @@ It is the **data contract between server and client**.
 
 The server says:
 
-```text
+```
 I require an object
 with an "approved" property
 whose value must be boolean.
@@ -497,7 +497,7 @@ whose value must be boolean.
 
 A capable client can turn that into:
 
-```text
+```
 ┌──────────────────────────────┐
 │ Publish quarterly report?    │
 │                              │
@@ -533,7 +533,7 @@ approved = False
 
 So there are two separate concepts:
 
-```text
+```
 Protocol decision
     accept
     decline
@@ -577,14 +577,14 @@ async def deploy(ctx):
 
 Round 1:
 
-```text
+```
 delete_old_servers()
 ask user
 ```
 
 Round 2:
 
-```text
+```
 delete_old_servers()    <-- AGAIN
 continue
 ```
@@ -628,7 +628,7 @@ A professional review comment would be:
 
 Do **not** picture:
 
-```text
+```
 tool
  |
  | await ctx.elicit()
@@ -644,7 +644,7 @@ tool
 
 For modern MCP picture:
 
-```text
+```
 ROUND 1
 
 Client  -------- tools/call -------> Server
@@ -673,7 +673,7 @@ That is the architectural shift introduced by MCP `2026-07-28`. [Model Context P
 
 Before adding the client, modify the tool mentally to support:
 
-```text
+```
 "Deploy release v1.7.3 to production?"
 ```
 
@@ -688,7 +688,7 @@ The elicitation should collect:
 
 Think in this order:
 
-```text
+```
 1. What decision/input does the server need?
 2. What schema represents it?
 3. What correlation key identifies it?
@@ -710,7 +710,7 @@ Specifically, I’ll teach against **MCP `2026-07-28`**, where elicitation is im
 
 ### What that means for the course
 
-```text
+```
 Pre-2026-07-28
 
 Client ─── tool call ───> Server
@@ -725,7 +725,7 @@ Client <── final result ───┘
 
 versus:
 
-```text
+```
 Post-2026-07-28
 
 Client ─── tool call ──────────────> Server
@@ -754,7 +754,7 @@ I will **not teach the old `await ctx.elicit()` mental model as the fundamental 
 
 Our next lesson should therefore start even lower-level:
 
-```text
+```
 tools/call
       ↓
 InputRequiredResult
@@ -776,7 +776,7 @@ Then we'll implement that with **Python + uv + FastMCP**, so you understand both
 
 We’ll now implement the first real **post-2026-07-28** elicitation flow:
 
-```text
+```
 ┌──────────┐          tools/call           ┌──────────┐
 │  Client  │ ────────────────────────────> │  Server  │
 └──────────┘                               └────┬─────┘
@@ -818,7 +818,7 @@ uv run fastmcp version
 
 You want something resembling:
 
-```text
+```
 FastMCP version: 4.0.0b1
 MCP version:     2.0.0
 ```
@@ -827,7 +827,7 @@ If your previous lab is already configured, don't reinstall anything.
 
 Our project:
 
-```text
+```
 mcp-elicitation-lab/
 ├── pyproject.toml
 ├── server.py
@@ -840,13 +840,13 @@ mcp-elicitation-lab/
 
 We're building:
 
-```text
+```
 deploy_release(version="v1.7.3", environment="production")
 ```
 
 But production deployment needs:
 
-```text
+```
 approved: bool
 change_ticket: str
 ```
@@ -857,7 +857,7 @@ The important design decision is:
 
 So our state machine is:
 
-```text
+```
                     ┌────────────────────┐
                     │ deploy_release()   │
                     └─────────┬──────────┘
@@ -991,7 +991,7 @@ This is effectively asking:
 
 FastMCP documents:
 
-```text
+```
 First invocation:
 
 ctx.input_responses is None
@@ -999,7 +999,7 @@ ctx.input_responses is None
 
 Later invocation:
 
-```text
+```
 ctx.input_responses = {
     "deployment_approval": ...
 }
@@ -1032,7 +1032,7 @@ answer = responses["deployment_approval"]
 
 Conceptually:
 
-```text
+```
 inputRequests
 └── deployment_approval
         │
@@ -1106,7 +1106,7 @@ That `InputRequiredResult` structure and its `inputRequests` / `requestState` fi
 
 Notice something important:
 
-```text
+```
 elicitation/create
 ```
 
@@ -1114,13 +1114,13 @@ still exists.
 
 What disappeared is the old:
 
-```text
+```
 Server ── independent elicitation/create request ──> Client
 ```
 
 Instead, `elicitation/create` is **embedded inside**:
 
-```text
+```
 InputRequiredResult.inputRequests
 ```
 
@@ -1221,7 +1221,7 @@ uv run python client.py
 
 Try:
 
-```text
+```
 SERVER ASKS: Deploy v1.7.3 to production?
 
 Approve? [yes/no/decline/cancel]: yes
@@ -1295,13 +1295,13 @@ FastMCP's modern elicitation documentation explicitly states that nothing stays 
 
 FastMCP's client sees:
 
-```text
+```
 resultType = input_required
 ```
 
 and discovers:
 
-```text
+```
 inputRequests
 └── deployment_approval
       └── elicitation/create
@@ -1355,7 +1355,7 @@ FastMCP converts the elicitation schema into a Python dataclass type for the cli
 
 Conceptually:
 
-```text
+```
 JSON Schema
 
         ↓ FastMCP
@@ -1472,7 +1472,7 @@ ctx.input_responses
 
 contains:
 
-```text
+```
 deployment_approval
     action = accept
     content
@@ -1515,7 +1515,7 @@ The MRTR loop ends.
 
 These are **protocol interaction outcomes**, not your business decision. FastMCP documents all three actions. [FastMCP](https://gofastmcp.com/clients/elicitation)
 
-```text
+```
 ElicitResult.action
 
 accept
@@ -1554,7 +1554,7 @@ ElicitResult(
 
 Meaning:
 
-```text
+```
 Protocol:
     "I completed your form."
 
@@ -1585,7 +1585,7 @@ before:
 
 Correct:
 
-```text
+```
 GUARD
   ↓
 APPROVAL
@@ -1595,7 +1595,7 @@ SIDE EFFECT
 
 Dangerous:
 
-```text
+```
 SIDE EFFECT
   ↓
 GUARD
@@ -1640,7 +1640,7 @@ It never reaches a terminal state.
 
 Without a limit:
 
-```text
+```
 ask
 → answer
 → ask
@@ -1667,7 +1667,7 @@ result = await client.call_tool(...)
 
 But underneath there are at least three layers:
 
-```text
+```
 ┌─────────────────────────────────────────────┐
 │ Application                                │
 │ deploy_release()                           │
@@ -1724,7 +1724,7 @@ A precise answer is:
 
 Before writing an eliciting MCP tool, reason in this order:
 
-```text
+```
 1. What information becomes necessary during execution?
 
 2. Why can't it simply be an initial tool argument?
@@ -1760,7 +1760,7 @@ InputRequiredResult(...)
 
 Now modify the lab so deployment approval collects:
 
-```text
+```
 approved: bool
 change_ticket: str
 reason: str
@@ -1768,7 +1768,7 @@ reason: str
 
 Then add this policy:
 
-```text
+```
 production
     → approval required
 
@@ -1778,7 +1778,7 @@ staging
 
 Your architecture should become:
 
-```text
+```
                    environment?
                   /            \
              staging          production
@@ -1803,13 +1803,13 @@ The key challenge is **not** adding `reason`.
 
 The key challenge is deciding where the guard belongs so:
 
-```text
+```
 staging
 ```
 
 doesn't require an unnecessary MRTR round, while:
 
-```text
+```
 production
 ```
 
@@ -1823,7 +1823,7 @@ cannot cross the side-effect boundary without approval.
 
 We'll build:
 
-```text
+```
 Round 1: choose environment
 Round 2: provide change ticket
 Round 3: confirm computed deployment plan
@@ -1832,7 +1832,7 @@ Round 4: execute
 
 That introduces the most important stateless-MCP concept after `InputRequiredResult`:
 
-```text
+```
 requestState
 ```
 

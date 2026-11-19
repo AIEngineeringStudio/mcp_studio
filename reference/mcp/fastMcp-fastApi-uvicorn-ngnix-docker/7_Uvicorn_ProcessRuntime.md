@@ -4,7 +4,7 @@
 
 Understand the layer that owns the operating-system process:
 
-```text
+```
 Process manager
     │
     ├── receives signals
@@ -75,7 +75,7 @@ modes. [GitHub](https://raw.githubusercontent.com/encode/uvicorn/master/docs/set
 
 Conceptually:
 
-```text
+```
 Uvicorn process starts
     │
     ▼
@@ -205,7 +205,7 @@ async def application_lifespan(
 
 This proves that lifespan is **process-local**:
 
-```text
+```
 Worker 1001
 ├── own lifespan
 ├── own repository object
@@ -266,7 +266,7 @@ With one worker, that worker owns:
 - One SQLite connection
 - Many concurrent asynchronous request tasks
 
-```text
+```
 One worker process
 └── One event loop
     ├── request task A
@@ -289,7 +289,7 @@ allows active responses and background tasks to complete, and then runs the ASGI
 lifespan teardown. Requests must finish within the configured graceful-shutdown
 timeout. [GitHub](https://raw.githubusercontent.com/encode/uvicorn/master/docs/server-behavior.md)
 
-```text
+```
 Shutdown signal
     │
     ▼
@@ -355,13 +355,13 @@ curl "http://127.0.0.1:8000/debug/slow?seconds=10"
 
 While the request is running, press:
 
-```text
+```
 Ctrl+C
 ```
 
 Expected sequence:
 
-```text
+```
 Shutting down
 Waiting for connections to close
 Worker shutdown started
@@ -410,7 +410,7 @@ expires. [GitHub](https://raw.githubusercontent.com/encode/uvicorn/master/docs/s
 
 This demonstrates a deployment requirement:
 
-```text
+```
 Outer shutdown allowance
 must be greater than
 Uvicorn graceful-shutdown timeout
@@ -418,7 +418,7 @@ Uvicorn graceful-shutdown timeout
 
 For example:
 
-```text
+```
 Container termination grace: 30 seconds
 Uvicorn graceful timeout:      20 seconds
 Application cleanup budget:    included within those 20 seconds
@@ -426,7 +426,7 @@ Application cleanup budget:    included within those 20 seconds
 
 Bad configuration:
 
-```text
+```
 Container sends SIGTERM
     │
     ├── gives process 10 seconds
@@ -456,7 +456,7 @@ requests**. It does not limit how long a running MCP tool may execute. Uvicorn�
 default keep-alive timeout is five
 seconds. [GitHub](https://raw.githubusercontent.com/encode/uvicorn/master/docs/server-behavior.md)
 
-```text
+```
 HTTP connection
 ├── Request 1
 ├── Response 1
@@ -467,7 +467,7 @@ HTTP connection
 
 It does not mean:
 
-```text
+```
 MCP tool may run for only five seconds
 ```
 
@@ -510,7 +510,7 @@ failure. [GitHub](https://raw.githubusercontent.com/encode/uvicorn/master/docs/d
 
 You should see four independent startup sequences:
 
-```text
+```
 Worker startup completed pid=50101
 Worker startup completed pid=50102
 Worker startup completed pid=50103
@@ -519,7 +519,7 @@ Worker startup completed pid=50104
 
 Architecture:
 
-```text
+```
 Uvicorn parent process
 ├── Worker 50101
 ├── Worker 50102
@@ -529,7 +529,7 @@ Uvicorn parent process
 
 Each worker has its own memory:
 
-```text
+```
 Not shared:
 ├── Python objects
 ├── FastAPI application state
@@ -617,7 +617,7 @@ uv run python probe_workers.py
 
 Example:
 
-```text
+```
 Worker request counts:
 - pid=50101: 8 requests
 - pid=50102: 12 requests
@@ -634,7 +634,7 @@ socket scheduling determine which worker accepts each connection.
 
 With four workers, our startup behavior becomes:
 
-```text
+```
 Worker 1 → opens SQLite connection
 Worker 2 → opens SQLite connection
 Worker 3 → opens SQLite connection
@@ -658,7 +658,7 @@ await publish_deployment_event()
 
 Process-local startup should normally contain idempotent operations such as:
 
-```text
+```
 Open this worker's database connection
 Create this worker's HTTP client
 Start this worker's cache
@@ -684,7 +684,7 @@ self._write_lock = asyncio.Lock()
 
 With one worker:
 
-```text
+```
 Request A ─┐
            ├── same asyncio.Lock
 Request B ─┘
@@ -692,7 +692,7 @@ Request B ─┘
 
 With four workers:
 
-```text
+```
 Worker 1 → Lock 1
 Worker 2 → Lock 2
 Worker 3 → Lock 3
@@ -701,7 +701,7 @@ Worker 4 → Lock 4
 
 The locks do not communicate across processes.
 
-```text
+```
 Worker 1 acquires Lock 1
 Worker 2 acquires Lock 2
 
@@ -736,7 +736,7 @@ filesystem. [SQLite](https://www.sqlite.org/wal.html)
 
 Therefore:
 
-```text
+```
 More Uvicorn workers
 does not automatically mean
 more SQLite write throughput
@@ -747,7 +747,7 @@ database a likely bottleneck before CPU capacity becomes a bottleneck.
 
 Current recommendation:
 
-```text
+```
 Development:
 workers = 1
 SQLite
@@ -865,7 +865,7 @@ keep-alive connections also consume part of the limit. Uvicorn’s socket backlo
 is a separate operating-system-level
 setting. [GitHub](https://raw.githubusercontent.com/encode/uvicorn/master/docs/server-behavior.md)
 
-```text
+```
 limit-concurrency
 └── Application-level admission control
     └── Excess request gets HTTP 503
@@ -959,7 +959,7 @@ Uvicorn does not permit `--reload` and `--workers` together. Reload monitors
 source files and restarts development processes; workers provide runtime process
 replication. [GitHub](https://raw.githubusercontent.com/encode/uvicorn/master/docs/settings.md)
 
-```text
+```
 Reload
 └── Developer convenience
 
@@ -975,7 +975,7 @@ Do not use reload in production.
 
 The current system has three useful logging categories:
 
-```text
+```
 Uvicorn error log
 ├── startup
 ├── shutdown
@@ -1001,7 +1001,7 @@ files. [GitHub](https://raw.githubusercontent.com/encode/uvicorn/master/docs/set
 
 A useful operational log should include:
 
-```text
+```
 timestamp
 severity
 service
@@ -1014,7 +1014,7 @@ outcome
 
 Avoid logging:
 
-```text
+```
 access tokens
 API keys
 authorization headers
@@ -1043,7 +1043,7 @@ uv run uvicorn app:create_application \
 
 Rationale:
 
-```text
+```
 workers=1
 ├── one SQLite connection
 ├── one in-process write lock
@@ -1077,7 +1077,7 @@ uv run uvicorn app:create_application \
 
 Expected layer:
 
-```text
+```
 Worker process starts
     │
     ▼
@@ -1123,7 +1123,7 @@ Start four workers, then execute many concurrent arithmetic tool calls.
 
 Possible outcomes:
 
-```text
+```
 Low contention
 └── all writes succeed
 
@@ -1180,7 +1180,7 @@ Professional summary:
 
 # Completion Check
 
-```text
+```
 [ ] Uvicorn loads create_application with --factory
 [ ] Import-time global app construction is removed
 [ ] Worker PID is visible in lifecycle logs
@@ -1200,7 +1200,7 @@ Professional summary:
 
 The next increment puts **Nginx in front of Uvicorn**:
 
-```text
+```
 MCP client
     │
     │ public HTTP

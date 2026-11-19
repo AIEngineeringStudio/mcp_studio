@@ -95,7 +95,7 @@ protocol version and client-capability metadata, introduced in concept 04.
 
 For the message above:
 
-```text
+```
 MCP method:       tools/call
 Tool name:        get_ticket
 Business input:   ticket_id = T-100
@@ -137,7 +137,7 @@ A successful response repeats the request's `id`:
 The client may have several requests in progress. Responses can finish in a
 different order:
 
-```text
+```
 Client                         Server
   | ---- request id=17 --------> |
   | ---- request id=18 --------> |
@@ -222,7 +222,7 @@ the tool's business operation succeeded. Inspect the JSON-RPC and tool result.
 
 The same logical `tools/call` can travel through either course transport:
 
-```text
+```
                          +--> stdio: local process pipes
 JSON-RPC MCP message ----|
                          +--> Streamable HTTP: network request/response
@@ -270,7 +270,7 @@ print(decoded["params"]["arguments"]["ticket_id"])
 
 Expected output:
 
-```text
+```
 tools/call
 get_ticket
 T-100

@@ -37,7 +37,7 @@ becomes relevant.
 
 Prefer this progression:
 
-```text
+```
 Problem
   ↓
 Reason
@@ -76,7 +76,7 @@ learner's current mental model is sufficiently clear.
 When teaching a design, pattern, API, framework, or architecture concept,
 normally progress through these levels:
 
-```text
+```
 Concrete problem
     ↓
 Naive implementation

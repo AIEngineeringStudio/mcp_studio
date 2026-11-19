@@ -11,7 +11,7 @@ The words *host*, *model*, *client*, and *server* name different roles. They can
 live in the same application or in separate processes, but their
 responsibilities remain different.
 
-```text
+```
 +------------------------ Host application -------------------------+
 |                                                                   |
 |  User interface <--> orchestration <--> language model            |
@@ -62,7 +62,7 @@ queries, calculations, files, or calls to an existing business API.
 A beginner often hears *server* and imagines a remote computer. In MCP, the word
 first describes which side provides capabilities.
 
-```text
+```
 In-memory test:  [client object | server object] in one Python process
 
 Local stdio:     [host + client] <--> [server child process]
@@ -86,7 +86,7 @@ Suppose the user asks, “Is T-100 open?”
 7. The ticket service reads the record and returns data.
 8. The client receives the result; the host decides how to present it.
 
-```text
+```
 Host decision -> client communication -> server execution -> host presentation
 ```
 
@@ -148,7 +148,7 @@ The complete runnable version appears in [concept 07](07-in-memory-client.md).
 A host may create one client for a ticket server and another for a document
 server. Each connection can use different identities and permissions.
 
-```text
+```
                        client A <--> ticket server
 Host application -----+
                        client B <--> document server
@@ -173,4 +173,4 @@ server's access checks.
 - [Archived definitions](../../temp/definitions.md)
 - [Official MCP architecture guide](https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture)
 
-Next: [JSON-RPC requests, responses, and notifications](03-json-rpc.md).
+Next: [JSON-RPC requests, responses, and notifications](03B-json-rpc.md).

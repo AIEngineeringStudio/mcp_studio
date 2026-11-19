@@ -30,7 +30,7 @@ Teach:
 
 ### Lab
 
-```text
+```
 Producer → bounded queue → workers
 ```
 

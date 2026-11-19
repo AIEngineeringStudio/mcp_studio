@@ -4,7 +4,7 @@
 
 Build a test pyramid and production-style observability:
 
-```text
+```
                          ┌───────────────┐
                          │ End-to-end    │  Few, slow, realistic
                          │ Docker + TLS  │
@@ -20,7 +20,7 @@ Build a test pyramid and production-style observability:
 
 Observability becomes:
 
-```text
+```
 MCP request
     │
     ├── Structured logs ──► stdout
@@ -80,7 +80,7 @@ markers = [
 
 Create this structure:
 
-```text
+```
 tests/
 ├── conftest.py
 ├── unit/
@@ -837,7 +837,7 @@ Prometheus counters are suited to monotonically increasing event counts, gauges 
 
 Do not label metrics with:
 
-```text
+```
 request_id
 user_id
 session_id
@@ -850,7 +850,7 @@ These values can create effectively unbounded time-series counts.
 
 Our endpoint label is restricted to:
 
-```text
+```
 mcp
 health_live
 health_ready
@@ -1105,7 +1105,7 @@ async def list_recent(
 
 Do not attach these as trace attributes:
 
-```text
+```
 Bearer token
 Database path
 Raw prompt
@@ -1173,7 +1173,7 @@ FastMCP’s native mode emits its own MCP span hierarchy and propagates trace co
 
 Create:
 
-```text
+```
 prometheus/
 └── prometheus.yml
 ```
@@ -1254,7 +1254,7 @@ As of August 4, 2026, Prometheus `3.13.2` is the latest listed LTS release, publ
 
 Do **not** make application readiness depend on Jaeger or Prometheus:
 
-```text
+```
 Telemetry unavailable
     │
     ├── application continues processing MCP requests
@@ -1601,7 +1601,7 @@ Do not print the token environment variables in CI logs.
 
 Open Prometheus locally:
 
-```text
+```
 http://localhost:9090
 ```
 
@@ -1667,7 +1667,7 @@ sum(
 
 These form the **RED signals**:
 
-```text
+```
 Rate
 Errors
 Duration
@@ -1679,13 +1679,13 @@ Duration
 
 Open Jaeger:
 
-```text
+```
 http://localhost:16686
 ```
 
 Choose:
 
-```text
+```
 Service:
 mcp-first-principles
 ```
@@ -1694,7 +1694,7 @@ Search for a tool call.
 
 Expected shape:
 
-```text
+```
 HTTP POST /mcp
 └── tools/call add
     └── calculation_repository.save
@@ -1702,7 +1702,7 @@ HTTP POST /mcp
 
 A resource operation should resemble:
 
-```text
+```
 HTTP POST /mcp
 └── resources/read
     └── calculation_repository.list_recent
@@ -1739,7 +1739,7 @@ Answer:
 
 Example:
 
-```text
+```
 5xx ratio increased from 0.1% to 4%
 ```
 
@@ -1751,7 +1751,7 @@ Answer:
 
 Example:
 
-```text
+```
 Total:       450 ms
 MCP dispatch: 10 ms
 SQLite save: 420 ms
@@ -1778,7 +1778,7 @@ Useful initial **SLIs**:
 
 Do not create an SLO such as:
 
-```text
+```
 99.99% availability
 ```
 
@@ -1832,7 +1832,7 @@ return a + b
 
 Expected:
 
-```text
+```
 Unit tests fail immediately.
 No Docker build required.
 ```
@@ -1850,7 +1850,7 @@ b=row["operand_b"],
 
 Expected:
 
-```text
+```
 Repository integration test fails.
 Service unit tests remain successful.
 ```
@@ -1873,7 +1873,7 @@ async def sum_numbers(...)
 
 Expected:
 
-```text
+```
 MCP discovery and contract tests fail.
 Service tests remain successful.
 ```
@@ -1890,7 +1890,7 @@ auth=require_scopes("calc:write")
 
 Expected:
 
-```text
+```
 In-memory protocol tests may still pass.
 Secure end-to-end authorization tests fail.
 ```
@@ -1907,7 +1907,7 @@ docker compose stop jaeger
 
 Expected:
 
-```text
+```
 MCP requests continue working.
 Trace export reports delivery errors.
 ```
@@ -1924,7 +1924,7 @@ docker compose stop prometheus
 
 Expected:
 
-```text
+```
 Application metrics endpoint remains available.
 No metrics are being collected or stored.
 MCP operations continue working.
@@ -1970,7 +1970,7 @@ Professional summary:
 
 # Completion Check
 
-```text
+```
 [ ] pytest and pytest-asyncio are development dependencies
 [ ] Async tests run through asyncio_mode=auto
 [ ] Unit tests avoid SQLite and MCP
@@ -1994,7 +1994,7 @@ Professional summary:
 
 The next increment replaces SQLite with PostgreSQL and introduces schema migrations and connection pooling:
 
-```text
+```
 Nginx
     │
     ▼

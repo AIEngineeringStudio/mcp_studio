@@ -38,7 +38,7 @@ client_msg_id, body); device delivery cursor; ephemeral presence.
 
 ## 7. Minimum viable architecture (ASCII)
 
-```text
+```
 Chat clients <-> Connection gateways -> Chat write service -> Message DB
                            |                      |
                         Session routing        Event fan-out -> device streams

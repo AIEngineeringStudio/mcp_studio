@@ -38,7 +38,7 @@ and visibility; checkpoint/replay offsets.
 
 ## 7. Minimum viable architecture (ASCII)
 
-```text
+```
 Source API -> Canonical DB -> CDC/outbox -> Indexer workers -> Search index
                                                          |                |
                                                    Checkpoint log      Query API

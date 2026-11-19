@@ -63,7 +63,7 @@ Small logical response, using *fake values*:
 
 ## Stage 3 — Minimum working architecture
 
-```text
+```
 +----------------------------+
 |   Analyst in an AI host    |
 |   (MCP Apps-compatible)    |
@@ -129,7 +129,7 @@ mutate source data.
 | UI cache may be old          | User may see outdated amounts              | Include `as_of`, freshness contract, server-authorized refresh   | More state management               |
 | Teams need debugging         | Errors cross host/tool/UI boundaries       | Correlation IDs and redacted tool/DB traces                      | Instrumentation overhead            |
 
-```text
+```
 +------------------------------+
 |   Signed-in analyst          |
 +------------------------------+

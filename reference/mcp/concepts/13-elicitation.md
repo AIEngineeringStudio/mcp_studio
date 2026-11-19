@@ -51,7 +51,7 @@ The resumed operation is a new request. Do not assume a suspended Python stack
 survives between rounds. Legacy examples using a server request and a waiting
 coroutine describe a different protocol era.
 
-```text
+```
 Legacy through 2025-11-25: server sends elicitation/create during a live call
 Modern 2026-07-28:         server returns input_required; client sends a new call
 ```

@@ -37,7 +37,7 @@ contracts.
 > A custom message that changes a dashboard or panel. It is an application
 > contract unless a particular MCP extension defines it.
 
-```text
+```
 SSE response stream
     |
     +-- may carry an MCP progress notification
@@ -70,7 +70,7 @@ route those notifications.
 
 An SSE-framed progress message has this conceptual shape:
 
-```text
+```
 data: {"jsonrpc":"2.0","method":"notifications/progress","params":{"progressToken":"report-7","progress":40,"total":100}}
 
 ```

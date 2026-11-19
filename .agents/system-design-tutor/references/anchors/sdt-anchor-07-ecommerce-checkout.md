@@ -38,7 +38,7 @@ provider_ref; workflow step history and recovery queue.
 
 ## 7. Minimum viable architecture (ASCII)
 
-```text
+```
 Client -> Checkout API -> Durable workflow/orchestrator
                            |       |       |
                        Inventory Payment Order service

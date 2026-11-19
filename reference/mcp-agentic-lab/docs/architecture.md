@@ -1,6 +1,6 @@
 # Architecture
 
-```text
+```
 user prompt
     │
     ▼

@@ -36,7 +36,7 @@ unique active ownership/confirmed seat enforced in transactional store.
 
 ## 7. Minimum viable architecture (ASCII)
 
-```text
+```
 Buyers -> Booking API -> Seat/Hold transaction DB
                           |           |
                           |        Expiration worker

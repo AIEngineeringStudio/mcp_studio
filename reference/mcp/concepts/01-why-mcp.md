@@ -34,7 +34,7 @@ print(ticket["status"])
 
 Expected output:
 
-```text
+```
 open
 ```
 
@@ -46,6 +46,8 @@ argument, its return value, and how to execute it.
 Now suppose several AI applications need the same lookup. The ticket service
 may be maintained by another team or run in another process.
 
+> How does an AI application/agent communicate with external tools in real time?
+
 Without a shared protocol, every application needs custom answers to questions
 such as:
 
@@ -55,7 +57,7 @@ such as:
 - How does it recognize a result or error?
 - How does the request travel to the other program?
 
-```text
+```
 Support app   ---- custom adapter A ---- Ticket service
 IDE assistant ---- custom adapter B ---- Ticket service
 Chat app      ---- custom adapter C ---- Ticket service
@@ -71,7 +73,7 @@ MCP stands for **Model Context Protocol**. It is an agreement that lets an MCP
 client and MCP server describe and exchange tools, resources, prompts, and
 related results in a standard way.
 
-```text
+```
 Support app   -- MCP client --+
 IDE assistant -- MCP client --+-- MCP boundary -- Ticket server -- Records
 Chat app      -- MCP client --+
@@ -86,9 +88,12 @@ or data storage.
 > MCP gives compatible applications a shared way to ask, “What can you do?”
 > and then request one of those operations with structured input.
 
+
+
+
 ## Follow one ticket lookup
 
-```text
+```
 User -> Host -> Model proposes a tool call
               Host approves and uses its MCP client
                        |

@@ -4,7 +4,7 @@
 
 Complete the three primary server-side MCP primitives:
 
-```text
+```
 FastMCP server
 ├── Tools       Perform operations
 ├── Resources   Provide readable context
@@ -292,13 +292,13 @@ functions. [FastMCP](https://gofastmcp.com/servers/resources)
 
 ## Static resource
 
-```text
+```
 docs://arithmetic/operations
 ```
 
 There is one exact address:
 
-```text
+```
 URI ──► one resource handler ──► one representation
 ```
 
@@ -308,13 +308,13 @@ The client must request that exact URI.
 
 ## Resource template
 
-```text
+```
 math://integer/{value}/profile
 ```
 
 This defines a URI pattern:
 
-```text
+```
 math://integer/42/profile
 math://integer/-7/profile
 math://integer/100/profile
@@ -322,7 +322,7 @@ math://integer/100/profile
 
 All three map to the same Python function:
 
-```text
+```
 math://integer/42/profile
                   │
                   ▼
@@ -346,7 +346,7 @@ something can be accessed.
 
 This resource:
 
-```text
+```
 docs://arithmetic/operations
 ```
 
@@ -354,7 +354,7 @@ does not need to exist on the public internet.
 
 The client sends that identifier to the MCP server:
 
-```text
+```
 Client
   │
   │ resources/read:
@@ -393,7 +393,7 @@ json.dumps(...)
 
 This creates a clear representation contract:
 
-```text
+```
 Resource identity:
 docs://arithmetic/operations
 
@@ -433,7 +433,7 @@ annotations = {
 
 Reading the resource should not alter external state.
 
-```text
+```
 Read integer profile
         │
         └── No database mutation
@@ -445,7 +445,7 @@ Read integer profile
 
 Repeated reads have no additional side effects:
 
-```text
+```
 Read once    → same environmental effect
 Read 10 times → same environmental effect
 ```
@@ -592,7 +592,7 @@ object. [FastMCP](https://gofastmcp.com/v2/clients/resources)
 
 The exact formatting may differ, but the result should resemble:
 
-```text
+```
 Client PID: 12000
 
 Tools:
@@ -648,7 +648,7 @@ Requirements:
 
 Notice what did **not** happen:
 
-```text
+```
 Prompt retrieved
       │
       ▼
@@ -679,7 +679,7 @@ Your client code maps conceptually to these protocol operations:
 
 This separation matters because discovery and execution are different phases:
 
-```text
+```
 Discovery
 ├── What tools exist?
 ├── What resources exist?
@@ -703,7 +703,7 @@ Professional wording:
 
 Before writing a decorator, ask:
 
-```text
+```
 Does it change or perform something?
     └── Tool
 
@@ -722,7 +722,7 @@ Do not choose based on convenience.
 
 One known document:
 
-```text
+```
 docs://arithmetic/operations
 ```
 
@@ -730,7 +730,7 @@ Use a static resource.
 
 A family of related documents:
 
-```text
+```
 math://integer/{value}/profile
 ```
 
@@ -742,13 +742,13 @@ Use a resource template.
 
 We chose:
 
-```text
+```
 math://integer/{value}/profile
 ```
 
 instead of something vague:
 
-```text
+```
 data://get
 ```
 
@@ -761,13 +761,13 @@ A good resource URI should communicate:
 
 General pattern:
 
-```text
+```
 scheme://entity/{identifier}/view
 ```
 
 Examples:
 
-```text
+```
 customer://profile/{customer_id}
 database://schema/{table_name}
 repository://{owner}/{repo}/readme
@@ -805,7 +805,7 @@ A resource read should behave like a query, not a command.
 
 Our prompt function does this:
 
-```text
+```
 Arguments
     │
     ▼
@@ -817,7 +817,7 @@ Prompt messages
 
 It does not do this:
 
-```text
+```
 Arguments
     │
     ▼
@@ -844,7 +844,7 @@ Suppose the server accesses customer data.
 
 Usually a resource:
 
-```text
+```
 customer://profile/123
 ```
 
@@ -887,7 +887,7 @@ because it creates reusable model instructions.
 
 A useful architecture principle is **Command Query Separation**:
 
-```text
+```
 Query
 ├── Reads information
 └── Does not change state
@@ -899,7 +899,7 @@ Command
 
 Mapped loosely to MCP:
 
-```text
+```
 Query-like capability   → Resource
 Command-like capability → Tool
 Workflow template       → Prompt
@@ -940,7 +940,7 @@ await client.read_resource(
 
 Expected category:
 
-```text
+```
 Resource resolution error
 ```
 
@@ -958,7 +958,7 @@ await client.read_resource(
 
 Expected category:
 
-```text
+```
 Resource parameter validation error
 ```
 
@@ -985,7 +985,7 @@ await client.get_prompt(
 
 Expected category:
 
-```text
+```
 Prompt rendering application error
 ```
 
@@ -1008,7 +1008,7 @@ await client.get_prompt(
 
 Expected category:
 
-```text
+```
 Prompt argument validation error
 ```
 
@@ -1049,7 +1049,7 @@ A professional summary:
 
 # Completion Check
 
-```text
+```
 [ ] Current client uses PythonStdioTransport
 [ ] Three tools are discoverable
 [ ] One static resource is discoverable

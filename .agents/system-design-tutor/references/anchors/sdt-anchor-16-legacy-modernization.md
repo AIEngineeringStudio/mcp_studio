@@ -38,7 +38,7 @@ new identifiers; replay/validation log; migration checkpoints.
 
 ## 7. Minimum viable architecture (ASCII)
 
-```text
+```
 Consumers -> Stable facade/anti-corruption layer -> Legacy adapter -> Mainframe
                          |
                          +-> New service -> New data store

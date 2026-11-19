@@ -15,7 +15,7 @@ Start from first principles and build incrementally.
 We will build **one MCP service incrementally**, ending with this
 production-style topology:
 
-```text
+```
 ┌───────────────────────────────┐
 │ AI application / MCP host     │
 │                               │
@@ -102,7 +102,7 @@ messages. [Model Context Protocol](https://modelcontextprotocol.io/docs/learn/ar
 MCP is a standard contract between an AI application and external capabilities.
 It separates two layers:
 
-```text
+```
 ┌────────────────────────────────────────────┐
 │ Data layer                                 │
 │                                            │
@@ -122,7 +122,7 @@ communication. [Model Context Protocol](https://modelcontextprotocol.io/docs/lea
 
 ## The main participants
 
-```text
+```
 Host
 └── Client
     └── Server
@@ -183,7 +183,7 @@ Typical verbs:
 
 Readable context identified by a URI.
 
-```text
+```
 config://application
 customer://123/profile
 schema://orders
@@ -210,7 +210,7 @@ annotations. [FastMCP](https://gofastmcp.com/tutorials/create-mcp-server)
 
 Build and test this flow:
 
-```text
+```
 Python test client
         │
         │ in-memory MCP transport
@@ -250,7 +250,7 @@ environment and lockfile. [Astral Docs](https://docs.astral.sh/uv/)
 
 Your project should look like this:
 
-```text
+```
 mcp-first-principles/
 ├── pyproject.toml
 ├── uv.lock
@@ -441,7 +441,7 @@ uv run python test_client.py
 
 Expected output:
 
-```text
+```
 Available tools: ['add']
 Result: 42
 ```
@@ -514,7 +514,7 @@ That is a useful engineering habit well beyond MCP.
 
 Conceptually:
 
-```text
+```
 1. Client connects
 2. Client discovers server capabilities
 3. Client requests the tool catalogue
@@ -529,7 +529,7 @@ Conceptually:
 
 The important boundary is:
 
-```text
+```
 MCP request
     │
     ▼

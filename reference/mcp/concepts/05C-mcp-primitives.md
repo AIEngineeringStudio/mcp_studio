@@ -13,7 +13,7 @@ This is a supplemental comparison. For a first pass, read
 A **primitive** is a basic kind of component defined by the protocol. MCP
 servers commonly publish three primitives:
 
-```text
+```
 Need to perform an operation?       -> tool
 Need to read identified content?    -> resource
 Need a reusable message template?   -> prompt
@@ -38,7 +38,7 @@ The main protocol operations are:
 - `tools/list`: discover visible tools and their contracts;
 - `tools/call`: invoke one named tool with arguments.
 
-```text
+```
 client -- tools/list ----------------> server
 client <-- tool definitions ---------- server
 

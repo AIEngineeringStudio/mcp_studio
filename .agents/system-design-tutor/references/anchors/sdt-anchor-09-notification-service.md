@@ -39,7 +39,7 @@ snapshots.
 
 ## 7. Minimum viable architecture (ASCII)
 
-```text
+```
 Business service -> Outbox/event stream -> Notification fan-out -> Work queues
                                                        |            |
                                                 Preferences DB   Channel workers -> Providers

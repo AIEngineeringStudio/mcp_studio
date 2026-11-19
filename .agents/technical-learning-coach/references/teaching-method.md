@@ -44,7 +44,7 @@ direction, lifecycle, flow, or boundaries.
 
 Example form:
 
-```text
+```
 Caller
   |
   | creates and uses
@@ -76,7 +76,7 @@ Then evolve the implementation only when a new requirement creates pressure.
 
 For each change, explain:
 
-```text
+```
 New requirement
       ↓
 Why current design struggles

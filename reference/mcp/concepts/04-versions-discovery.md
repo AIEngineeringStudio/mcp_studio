@@ -4,7 +4,7 @@
 successful connection does not prove that every optional feature is supported.
 
 **Prerequisites:**
-[03: JSON-RPC requests, responses, and notifications](03-json-rpc.md).
+[03: JSON-RPC requests, responses, and notifications](03B-json-rpc.md).
 
 ## Three kinds of version answer different questions
 
@@ -26,7 +26,7 @@ protocol and software generations.
 > The language runtime used to execute the implementation. Updating Python does
 > not select an MCP protocol revision.
 
-```text
+```
 Protocol revision  -> which communication rules?
 FastMCP version    -> which framework code and API?
 Python version     -> which runtime executes that code?
@@ -73,7 +73,7 @@ but application code should not manually rebuild every wire message.
 `server/discover` can report supported protocol versions, server capabilities,
 and server identity. `tools/list` answers a different question.
 
-```text
+```
 server/discover -> Which protocol features can this server handle?
 tools/list       -> Which tools are visible to this caller?
 ```
@@ -96,13 +96,13 @@ MCP through `2025-11-25` used a stateful initialization handshake. Modern
 
 **Legacy shape:**
 
-```text
+```
 initialize -> initialize result -> initialized notification -> normal requests
 ```
 
 **Modern shape:**
 
-```text
+```
 self-contained request with version/capabilities -> result
 ```
 
@@ -140,7 +140,7 @@ print(request["method"])
 
 Expected output:
 
-```text
+```
 2026-07-28
 tools/list
 ```

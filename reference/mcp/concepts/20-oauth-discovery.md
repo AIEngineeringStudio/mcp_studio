@@ -26,7 +26,7 @@ The system must establish two different permissions:
 Those questions may use the same identity platform, but they are separate
 resource boundaries.
 
-```text
+```
 +-------------+    token A: audience = Calendar MCP    +--------------+
 | MCP host    | --------------------------------------> | Calendar MCP |
 | and client  |                                         | server       |
@@ -69,7 +69,7 @@ Those are authorization-server responsibilities.
 
 ## Follow the discovery and authorization sequence
 
-```text
+```
 +------------+        +--------------+        +----------------------+
 | MCP client |        | MCP server   |        | Authorization server |
 +------------+        +--------------+        +----------------------+
@@ -168,7 +168,7 @@ For user-delegated access, use Authorization Code with Proof Key for Code
 Exchange (PKCE). Include the MCP resource identifier in both the authorization
 and token requests:
 
-```text
+```
 resource=https://calendar.example.com/mcp
 scope=calendar:read
 ```
@@ -190,7 +190,7 @@ Microsoft Graph, Google Calendar, or another provider.
 Microsoft Entra can use the On-Behalf-Of (OBO) flow when the incoming access
 token is for the middle-tier MCP API and represents a signed-in user:
 
-```text
+```
 MCP token for Calendar MCP
         |
         v
@@ -224,7 +224,7 @@ proxy must still keep its inbound token separate from the calendar API token.
 Alice presents a correctly signed token, but its audience is
 `https://inventory.example.com/mcp`.
 
-```text
+```
 valid signature
     + wrong audience
     = reject with HTTP 401
@@ -251,7 +251,7 @@ uv run python verify_auth_calendar.py
 
 Expected result:
 
-```text
+```
 calendar auth: discovery, private tool visibility, direct-call denial, user isolation, and mock downstream delegation passed
 ```
 

@@ -4,14 +4,14 @@
 
 Replace this:
 
-```text
+```
 Client and server
 inside one Python process
 ```
 
 with this:
 
-```text
+```
 ┌────────────────────────────┐
 │ Client process             │
 │ PID: 100                   │
@@ -42,7 +42,7 @@ The important new concept is the **process boundary**.
 
 ## 1. Project structure
 
-```text
+```
 mcp-first-principles/
 ├── pyproject.toml
 ├── uv.lock
@@ -218,7 +218,7 @@ first. [Astral Docs](https://docs.astral.sh/uv/concepts/projects/run/)
 
 Expected shape of the output:
 
-```text
+```
 Client PID: 100
 Python interpreter: /project/.venv/bin/python
 Tools: ['add', 'multiply', 'server_process_info']
@@ -259,7 +259,7 @@ client = Client(transport)
 
 because it exposes the important deployment controls:
 
-```text
+```
 command
 args
 working directory
@@ -307,7 +307,7 @@ project environment.
 
 This avoids a common failure:
 
-```text
+```
 Client uses project virtual environment
 Server accidentally uses system Python
 Server cannot import fastmcp
@@ -334,13 +334,13 @@ launched.
 
 Bad assumption:
 
-```text
+```
 The process will always start from the project directory.
 ```
 
 Better design:
 
-```text
+```
 The launcher defines the server’s working directory.
 ```
 
@@ -406,7 +406,7 @@ process lifecycle. [FastMCP](https://gofastmcp.com/clients/transports)
 
 The lifecycle becomes:
 
-```text
+```
 async with client:
     ├── launch child process
     ├── establish MCP connection
@@ -461,7 +461,7 @@ the conceptual shape rather than guaranteeing the exact current wire payload.
 The JSON-RPC `id` lets the client correlate a response with its original
 request.
 
-```text
+```
 Request id=3 ───────────────►
                              server executes tool
 Response id=3 ◄──────────────
@@ -489,7 +489,7 @@ print("Server started")
 
 But `stdout` is the protocol channel:
 
-```text
+```
 stdout
 ├── valid JSON-RPC message
 ├── valid JSON-RPC message
@@ -516,7 +516,7 @@ Professional wording:
 
 Your invalid call demonstrates several possible error categories:
 
-```text
+```
 Invalid input
     │
     ▼
@@ -568,7 +568,7 @@ SERVER_FILE = PROJECT_ROOT / "missing_server.py"
 
 Expected category:
 
-```text
+```
 Subprocess startup failure
 ```
 
@@ -586,13 +586,13 @@ command = "python"
 
 On a machine where system Python lacks FastMCP, you may get:
 
-```text
+```
 ModuleNotFoundError: No module named 'fastmcp'
 ```
 
 Expected category:
 
-```text
+```
 Runtime environment mismatch
 ```
 
@@ -608,7 +608,7 @@ print("Starting server")
 
 Expected category:
 
-```text
+```
 Protocol framing corruption
 ```
 
@@ -626,7 +626,7 @@ env = {"APP_ENV": "development"}
 
 Expected result:
 
-```text
+```
 "environment": "not-set"
 ```
 
@@ -669,7 +669,7 @@ A good summary for this increment:
 
 You have completed this increment when all of these are true:
 
-```text
+```
 [ ] Client PID differs from server PID
 [ ] Server parent PID matches client PID
 [ ] Tool discovery returns three tools

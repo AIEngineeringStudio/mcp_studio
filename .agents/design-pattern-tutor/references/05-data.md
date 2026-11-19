@@ -67,7 +67,7 @@ Question:
 
 ### Baseline
 
-```text
+```
 read key
   ↓
 cache?

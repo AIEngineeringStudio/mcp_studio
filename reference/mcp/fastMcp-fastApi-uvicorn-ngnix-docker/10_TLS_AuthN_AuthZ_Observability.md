@@ -4,7 +4,7 @@
 
 Harden the containerized service:
 
-```text
+```
 MCP client
     │
     │ HTTPS + bearer token
@@ -41,7 +41,7 @@ This increment uses **static bearer tokens only as a local development mechanism
 
 These terms are not interchangeable.
 
-```text
+```
 Authentication
 └── Who is making the request?
 
@@ -157,7 +157,7 @@ The secrets should be mounted at runtime rather than copied into either image.
 
 Your structure now includes:
 
-```text
+```
 mcp-first-principles/
 ├── secrets/
 │   ├── localhost.crt
@@ -673,7 +673,7 @@ application.add_middleware(
 
 The endpoints remain:
 
-```text
+```
 /health/live
 /health/ready
 ```
@@ -684,7 +684,7 @@ However, this is an operational choice—not a universal security rule.
 
 For a public deployment, use one of these patterns:
 
-```text
+```
 Private health listener
 Load-balancer-only network access
 Firewall allowlist
@@ -843,7 +843,7 @@ Nginx’s `limit_req` module uses a shared-memory leaky-bucket limiter. The conf
 
 This is only **coarse abuse protection**:
 
-```text
+```
 Rate limiting
 ≠ authentication
 ≠ authorization
@@ -859,13 +859,13 @@ When Nginx sits behind another load balancer, `$remote_addr` may represent that 
 
 Nginx forwards ordinary request headers upstream by default, including:
 
-```text
+```
 Authorization: Bearer ...
 ```
 
 Our custom access log intentionally omits:
 
-```text
+```
 Authorization
 Cookie
 request body
@@ -1067,7 +1067,7 @@ CMD [
 
 The logging responsibilities are now:
 
-```text
+```
 Nginx JSON access log
 ├── Edge request
 ├── Request ID
@@ -1360,7 +1360,7 @@ uv run python test_secure_client.py
 
 Expected shape:
 
-```text
+```
 Unauthenticated request rejected: ...
 
 Reader-visible tools: []
@@ -1433,7 +1433,7 @@ Expected matching identifier:
 
 You can now trace one operation across layers:
 
-```text
+```
 Client reports:
 X-Request-ID=4aeecf...
 
@@ -1534,7 +1534,7 @@ uv run python probe_rate_limit.py
 
 Expected shape:
 
-```text
+```
 Counter({
     400: ...,
     429: ...
@@ -1555,7 +1555,7 @@ Remove the `auth` argument from the client.
 
 Expected layer:
 
-```text
+```
 TLS succeeds
 Nginx succeeds
 FastMCP authentication rejects request
@@ -1574,13 +1574,13 @@ Replace one character in the token.
 
 Expected:
 
-```text
+```
 Authentication failure
 ```
 
 Not:
 
-```text
+```
 Insufficient scope
 ```
 
@@ -1594,14 +1594,14 @@ Use the read token and call `add`.
 
 Expected:
 
-```text
+```
 Authentication succeeds
 Authorization fails
 ```
 
 The distinction is:
 
-```text
+```
 Valid identity
 Insufficient permission
 ```
@@ -1621,7 +1621,7 @@ without `--cacert`.
 
 Expected:
 
-```text
+```
 TLS certificate verification failure
 ```
 
@@ -1633,7 +1633,7 @@ The HTTP request never reaches Nginx application routing.
 
 Use:
 
-```text
+```
 https://app:8443
 ```
 
@@ -1656,7 +1656,7 @@ docker compose up \
 
 Expected:
 
-```text
+```
 Application factory fails
 FastAPI lifespan never becomes ready
 Container health fails
@@ -1689,7 +1689,7 @@ A static token remains valid until you replace it and restart or reload the appl
 
 There is no built-in:
 
-```text
+```
 Expiration
 Revocation
 Refresh flow
@@ -1705,7 +1705,7 @@ FastMCP explicitly restricts static token verification to development and testin
 
 All holders of the writer token share one identity:
 
-```text
+```
 client_id = local-writer
 ```
 
@@ -1753,7 +1753,7 @@ For broad third-party MCP client interoperability, token validation alone is ins
 
 The target architecture becomes:
 
-```text
+```
 User or service
     │
     ▼
@@ -1784,7 +1784,7 @@ Do not write a custom OAuth authorization server merely to avoid configuring an 
 
 ## Step 1: Define identities
 
-```text
+```
 local-reader
 local-writer
 ```
@@ -1793,14 +1793,14 @@ Without an identity model, authorization rules have no subject.
 
 ## Step 2: Define permissions
 
-```text
+```
 calc:read
 calc:write
 ```
 
 Prefer narrow capability-oriented scopes over vague names such as:
 
-```text
+```
 user
 normal
 power
@@ -1809,7 +1809,7 @@ admin
 
 ## Step 3: Authenticate at the protocol boundary
 
-```text
+```
 HTTP bearer token
     │
     ▼
@@ -1830,7 +1830,7 @@ This keeps the permission attached to the operation it protects.
 
 ## Step 5: Keep TLS at the edge
 
-```text
+```
 Client ↔ HTTPS ↔ Nginx
 Nginx ↔ private HTTP ↔ Uvicorn
 ```
@@ -1839,7 +1839,7 @@ Nginx ↔ private HTTP ↔ Uvicorn
 
 Log:
 
-```text
+```
 request ID
 operation name
 status
@@ -1849,7 +1849,7 @@ client identity
 
 Do not log:
 
-```text
+```
 bearer token
 private key
 authorization header
@@ -1858,7 +1858,7 @@ full request payload
 
 ## Step 7: Separate protection layers
 
-```text
+```
 TLS
 └── protects data in transit
 
@@ -1918,7 +1918,7 @@ Professional summary:
 
 # Completion Check
 
-```text
+```
 [ ] Secrets are excluded from Git and Docker build context
 [ ] Read and write tokens are generated independently
 [ ] Local TLS certificate contains localhost SAN entries
@@ -1944,7 +1944,7 @@ Professional summary:
 
 The next increment adds automated testing and production observability:
 
-```text
+```
 Test pyramid
 ├── Domain unit tests
 ├── Repository integration tests

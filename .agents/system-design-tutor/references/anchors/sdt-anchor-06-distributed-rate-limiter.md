@@ -38,7 +38,7 @@ versions; audit for configuration changes.
 
 ## 7. Minimum viable architecture (ASCII)
 
-```text
+```
 Clients -> API tier -> Rate-limit decision -> Atomic counter store
                      |                  |
                    Request path       Policy/config cache
