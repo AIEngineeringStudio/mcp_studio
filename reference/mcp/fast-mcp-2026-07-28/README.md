@@ -17,7 +17,7 @@ This study path teaches the **modern MCP protocol era** introduced by revision
 
 Keep this model visible while reading every lesson:
 
-```text
+```
 2025-11-25 and earlier              2026-07-28
 ----------------------              ----------
 initialize handshake                no handshake

@@ -47,7 +47,7 @@ Cacheable complete results from `server/discover`, list methods, and
 - `ttlMs`: how long an eligible result can be cached;
 - `cacheScope`: whether the result is safe for public or private reuse.
 
-```text
+```
 request identity + authorization + method + parameters
                          |
                          v
@@ -89,7 +89,7 @@ whether more values exist. Keep suggestions bounded and authorization-aware.
 
 ## Completion is not validation
 
-```text
+```
 completion -> helps a user choose
 validation -> decides whether supplied input is acceptable
 ```

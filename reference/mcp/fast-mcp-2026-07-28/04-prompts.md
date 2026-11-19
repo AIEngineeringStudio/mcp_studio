@@ -7,7 +7,7 @@ trace `prompts/list` and `prompts/get` in the modern protocol.
 
 ## A prompt is a definition, then a rendered result
 
-```text
+```
 Prompt definition                 Rendered prompt
 -----------------                 ---------------
 name                              description

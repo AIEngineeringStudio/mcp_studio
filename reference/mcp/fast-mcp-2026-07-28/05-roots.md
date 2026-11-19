@@ -15,7 +15,7 @@ they are deprecated in `2026-07-28`, and which explicit alternatives to use.
 
 The direct server-initiated `roots/list` flow belonged to the handshake era:
 
-```text
+```
 LEGACY MCP
 server -- roots/list --> client
 server <-- roots ------- client
@@ -31,7 +31,7 @@ A root described a client-selected filesystem boundary, usually as a `file://`
 URI. It did not provide file contents, grant operating-system permissions, or
 authorize every path below it.
 
-```text
+```
 root URI               file content              authorization
 --------               ------------              -------------
 declared scope         read by application       enforced by application
@@ -65,7 +65,7 @@ services.
 
 Use a resource URI when the target is addressable context:
 
-```text
+```
 project://P-100/file/README.md
 ```
 
@@ -110,13 +110,13 @@ The client retries the original `tools/call`, `resources/read`, or
 
 Design a modern replacement for this legacy signature:
 
-```text
+```
 search_code(query) + hidden roots/list dependency
 ```
 
 A better public contract is:
 
-```text
+```
 search_project(project_id, query)
 ```
 

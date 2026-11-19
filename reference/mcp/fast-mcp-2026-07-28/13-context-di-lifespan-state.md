@@ -11,7 +11,7 @@ Tool arguments are part of the public MCP contract. A database pool, settings
 object, authenticated principal, and logger are implementation dependencies and
 must not appear in the tool schema.
 
-```text
+```
 MCP arguments                    Injected dependencies
 -------------                    ---------------------
 ticket_id                        repository
@@ -64,7 +64,7 @@ The client sees `ticket_id`; FastMCP resolves `repository` internally.
 
 > Tickets, approvals, baskets, and jobs stored in a database or durable queue.
 
-```text
+```
 application process
   +-- lifespan resources
   +-- request A context
@@ -92,7 +92,7 @@ the authenticated principal, tenant, operation, and expiry.
 Lifespan state is shared only inside one process. With multiple workers, each
 worker has its own memory and its own lifespan resources.
 
-```text
+```
 load balancer
   +-- worker A memory
   +-- worker B memory

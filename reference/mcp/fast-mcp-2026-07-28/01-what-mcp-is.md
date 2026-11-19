@@ -14,7 +14,7 @@ examples managed with `uv`.
 Without a shared protocol, every AI application needs a custom integration for
 every external system. MCP standardizes the boundary:
 
-```text
+```
 User
   |
 Host application
@@ -45,7 +45,7 @@ database is organized, or how business authorization is decided.
 
 ## Data layer and transport layer
 
-```text
+```
 MCP data layer
   JSON-RPC methods, schemas, results, errors, capabilities
 
@@ -62,7 +62,7 @@ MCP `2026-07-28` removed `initialize`, `notifications/initialized`, and the
 `Mcp-Session-Id` header. Each request supplies what a server needs to interpret
 that request.
 
-```text
+```
 CLIENT                                      SERVER
   |                                           |
   |---- server/discover (optional) ---------->|
@@ -161,7 +161,7 @@ authorization, and state.
 
 ## Compatibility boundary
 
-```text
+```
 LEGACY:  initialize -> result -> notifications/initialized -> operations
 MODERN:  optional server/discover -> self-contained operations
 ```

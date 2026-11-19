@@ -7,7 +7,7 @@ execution, and classify protocol errors separately from tool execution errors.
 
 ## A tool has two planes
 
-```text
+```
 Discovery                         Execution
 ---------                         ---------
 tools/list                        tools/call

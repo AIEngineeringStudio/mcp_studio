@@ -14,7 +14,7 @@ deprecated, and how a modern server should obtain model inference.
 
 Legacy sampling was a server-initiated request:
 
-```text
+```
 LEGACY MCP
 tool handler -- sampling/createMessage --> client-owned model
 tool handler <-- generated message -------- client
@@ -25,7 +25,7 @@ server-to-client request direction.
 
 ## Preferred modern design
 
-```text
+```
 MCP client -- tools/call --> MCP server -- provider SDK --> model provider
 ```
 

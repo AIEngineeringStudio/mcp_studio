@@ -10,7 +10,7 @@ After this lesson, you can trace an elicitation request, distinguish
 A tool sometimes discovers missing information only after it starts. The
 server must not invent the user's answer.
 
-```text
+```
 call operation
      |
      +-- enough input --> complete
@@ -91,7 +91,7 @@ The terminal response uses `resultType: "complete"`.
 
 ## Guard-pattern implementation model
 
-```text
+```
 start operation
   |
   +-- no response ------> return InputRequiredResult

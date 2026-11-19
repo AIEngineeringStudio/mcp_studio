@@ -7,7 +7,7 @@ resource URIs, and explain how modern clients receive resource changes.
 
 ## Resources are addressable context
 
-```text
+```
 Tool                               Resource
 ----                               --------
 operation                          addressable data
@@ -63,7 +63,7 @@ must include `ttlMs` and `cacheScope` hints.
 
 ## Resource templates
 
-```text
+```
 Template: ticket://{ticket_id}
 Concrete URI: ticket://T-100
 ```
@@ -98,7 +98,7 @@ The modern revision removed the standalone HTTP GET stream,
 `resources/subscribe`, `resources/unsubscribe`, and connection-scoped
 subscription state.
 
-```text
+```
 CLIENT                                      SERVER
   |                                            |
   |-- subscriptions/listen ------------------->|

@@ -7,7 +7,7 @@ CORS, authentication, and proxy trust.
 
 ## The controls answer different questions
 
-```text
+```
 Host validation    -> which server name was addressed?
 Origin validation  -> which browser origin initiated the request?
 CORS                -> may browser JavaScript read/send this cross-origin call?
@@ -55,7 +55,7 @@ origins and minimize allowed methods and headers.
 
 ## Reverse proxy trust
 
-```text
+```
 browser/client -> reverse proxy -> FastMCP application
 ```
 

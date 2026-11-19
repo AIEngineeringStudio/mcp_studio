@@ -9,7 +9,7 @@ and tool search from MCP protocol primitives.
 
 Clients still see ordinary tools, resources, and prompts:
 
-```text
+```
 local provider ----+
 mounted server ----+--> transforms --> MCP catalog --> client
 remote proxy ------+
@@ -39,7 +39,7 @@ metadata, or a custom catalog.
 > proxy adds network latency, authentication boundaries, and upstream failure
 > modes.
 
-```text
+```
 mount:  one process/application boundary
 proxy:  an additional MCP and network boundary
 ```
@@ -62,7 +62,7 @@ constraint that the upstream implementation does not enforce.
 For a large catalog, Tool Search can replace a huge advertised list with a
 small set of search and call tools.
 
-```text
+```
 model -> search_tools("email") -> matching tool descriptions
 model -> call_tool(found_name)  -> normal dispatch pipeline
 ```

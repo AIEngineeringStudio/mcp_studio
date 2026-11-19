@@ -24,7 +24,7 @@ Do not make deprecated protocol logging the primary observability design.
 
 ## Four audiences
 
-```text
+```
 Tool result      -> model and user
 Progress         -> user watching active work
 Application log  -> operator diagnosing behavior
@@ -52,7 +52,7 @@ result should not be your only audit record.
 > A tree of timed spans showing how one operation moved through MCP dispatch,
 > business services, databases, and downstream APIs.
 
-```text
+```
 tools/call span
   +-- authorization span
   +-- ticket-service span

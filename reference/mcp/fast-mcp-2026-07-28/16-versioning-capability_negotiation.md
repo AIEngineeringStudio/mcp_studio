@@ -7,7 +7,7 @@ capability support, framework version, and component version.
 
 ## Five independent questions
 
-```text
+```
 Protocol revision  -> which exact wire contract?
 Protocol era       -> handshake or modern lifecycle?
 Capabilities       -> which optional features are usable?
@@ -19,7 +19,7 @@ Never infer one answer from another.
 
 ## The two protocol eras
 
-```text
+```
 Handshake era through 2025-11-25       Modern era 2026-07-28
 --------------------------------       ---------------------
 initialize / initialized               no handshake
@@ -55,7 +55,7 @@ A server can run a new FastMCP release without enabling every optional feature.
 A client can be new but lack UI support for an extension. Check negotiated
 capabilities before use and degrade deliberately.
 
-```text
+```
 feature required?
   +-- supported -> use it
   +-- optional and absent -> fallback

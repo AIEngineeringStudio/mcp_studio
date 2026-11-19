@@ -10,7 +10,7 @@ ordering, and keep middleware separate from MCP protocol semantics.
 The client still sends standard MCP methods such as `tools/call` or
 `resources/read`. Middleware is FastMCP's internal interception pipeline.
 
-```text
+```
 MCP request
   -> outer middleware before
     -> inner middleware before
@@ -53,7 +53,7 @@ structured fields and preserve cancellation.
 
 ## Ordering changes behavior
 
-```text
+```
 error mapping
   -> tracing/timing
     -> authentication

@@ -9,7 +9,7 @@ rules that differ from the handshake era.
 
 `tools/call` has the same meaning over both standard transports:
 
-```text
+```
 stdio                       Streamable HTTP
 -----                       ---------------
 client starts subprocess    independently deployed server
@@ -71,7 +71,7 @@ Closing this SSE response is the modern HTTP cancellation signal.
 Clients obtain a long-lived notification stream by POSTing
 `subscriptions/listen`. This is separate from one operation's response stream.
 
-```text
+```
 request response stream       subscriptions/listen stream
 -----------------------       ---------------------------
 progress for one call         tools/resources/prompts list changes

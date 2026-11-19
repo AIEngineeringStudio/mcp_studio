@@ -7,7 +7,7 @@ identity, scopes, component visibility, and business authorization separate.
 
 ## Identity is not permission
 
-```text
+```
 authentication  -> who is the caller?
 authorization   -> may this caller perform this operation on this object?
 ```
@@ -29,7 +29,7 @@ access tokens for the MCP resource.
 
 ## Discovery flow
 
-```text
+```
 MCP client                 MCP server              Authorization server
     |                          |                            |
     |-- unauthenticated ------>|                            |
@@ -77,7 +77,7 @@ whether another tenant's object exists.
 
 ## Authorization layers
 
-```text
+```
 request
   |
   +-- token validation
@@ -96,7 +96,7 @@ send `tools/call` directly; authorize both discovery and execution.
 Do not forward an MCP access token unchanged to a downstream API. That creates
 audience confusion and a confused-deputy risk.
 
-```text
+```
 MCP token -> validate at MCP server
 downstream credential -> obtain separately for downstream audience
 ```

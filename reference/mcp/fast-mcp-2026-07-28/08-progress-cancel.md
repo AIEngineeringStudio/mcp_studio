@@ -26,7 +26,7 @@ then send `notifications/progress` for that operation.
 In MCP `2026-07-28`, progress is **server-to-client only**. Client-to-server
 progress notifications are removed.
 
-```text
+```
 JSON-RPC request ID  -> correlates request and final response
 progressToken        -> correlates progress events with the operation
 trace ID             -> correlates observability across services
@@ -55,7 +55,7 @@ request.
 The client cancels by closing the request's SSE response stream. The modern HTTP
 binding does not send `notifications/cancelled`.
 
-```text
+```
 stdio: client notification -> server cancels work
 HTTP:  response stream closes -> server cancels work
 ```
@@ -69,7 +69,7 @@ If a tool has already committed a side effect, cancelling the request does not
 undo it. Design mutating operations with idempotency keys, transaction
 boundaries, and status lookup.
 
-```text
+```
 request cancelled
       |
       +-- no commit yet -> stop safely
