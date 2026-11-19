@@ -1,0 +1,53 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mcp-agentic-lab"
+version = "0.1.0"
+description = "A reusable Python laboratory for MCP, agent loops, and protocol observability"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+  "mcp[cli]>=2.3,<3",
+  "opentelemetry-api>=1.38,<2",
+  "opentelemetry-sdk>=1.38,<2",
+  "pydantic-settings>=2.11,<3",
+  "structlog>=25.4,<26",
+  "uvicorn>=0.38,<1",
+]
+
+[project.optional-dependencies]
+otlp = ["opentelemetry-exporter-otlp-proto-grpc>=1.38,<2"]
+dev = ["mypy>=1.18,<2", "pytest>=8.4,<9", "pytest-cov>=7,<8", "pytest-asyncio>=1.2,<2", "ruff>=0.14,<1"]
+
+[project.scripts]
+mcp-lab-server = "mcp_lab.server.__main__:main"
+mcp-lab-client = "mcp_lab.client.__main__:main"
+mcp-lab-agent = "mcp_lab.agent.demo:main"
+mcp-lab-wiretap = "mcp_lab.wire.stdio_proxy:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mcp_lab"]
+
+[tool.pytest.ini_options]
+addopts = "-q --strict-markers"
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+packages = ["mcp_lab"]
+
+[dependency-groups]
+dev = ["mypy>=1.18,<2", "pytest>=8.4,<9", "pytest-cov>=7,<8", "pytest-asyncio>=1.2,<2", "ruff>=0.14,<1"]
+
