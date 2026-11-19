@@ -1,13 +1,32 @@
 # Learn MCP progressively
 
-This course contains **32 individual concept guides**. Begin with a ticket
-lookup, expose it through MCP, then add process, network, security, and
-operational boundaries as requirements grow.
+This course contains **32 numbered concept guides**, plus a beginner orientation
+and a few clearly labeled supplemental comparisons. Begin with one ordinary
+Python ticket lookup, expose it through MCP, then add process, network,
+security, and operational boundaries only as requirements grow.
 
 The initial guides need no installation. Basic Python is useful for the
 hands-on labs, which need no Docker, database, model account, or API key.
 Each guide states its outcome and prerequisites, explains the mechanism,
 traces examples and failures, and links to original sources.
+
+## Start here if MCP is new to you
+
+Read [the beginner mental model](concepts/00-intro.md) before concept 01. It
+defines host, model, client, server, tool, resource, prompt, JSON-RPC, and
+transport using one small example. No installation is required.
+
+Each foundational guide follows the same learning pattern:
+
+1. start with the user need or ordinary Python behavior;
+2. define each new term before using it;
+3. show one small visual flow;
+4. follow with a concrete code or message example;
+5. separate what the example proves from what production still requires.
+
+Do not try to memorize the entire protocol. On a first pass, complete concepts
+00 through 07 and run the in-memory lab. Return to process, HTTP, security, and
+operations when you need those boundaries.
 
 ## How to use the course
 
@@ -39,6 +58,15 @@ These numbers identify course concepts, not AI curriculum cases.
 
 5. [Tools and their contracts](concepts/05-tool-contracts.md)
    Design a narrow tool with a clear input, result, side effect, and failure contract.
+
+   Optional references after concept 05:
+
+   - [Compare tools, resources, and prompts](concepts/05C-mcp-primitives.md)
+   - [Legacy stateful lifecycle through 2025-11-25](concepts/05A-stateful-lifecycle.md)
+   - [Modern stateless-first lifecycle in 2026-07-28](concepts/05B-stateless-lifecycle.md)
+
+   The lifecycle references are detailed compatibility material. They are not
+   prerequisites for writing the first tool.
 
 6. [FastMCP registration and dispatch](concepts/06-fastmcp-registry.md)
    Trace how a Python function becomes a discoverable MCP tool.
@@ -146,9 +174,10 @@ sources, and examples, then revise only the affected guides.
 - [Machine-readable curriculum](curriculum.json)
 - [Teaching skill](../../.agents/mcp-progressive-tutor/SKILL.md)
 
-The original collection is preserved as source material. Use the
-[review and source map](catalog/REVIEW.md) to understand which sources are
-useful and which need correction. 
+The original collection is preserved as source material in the adjacent
+`fast-mcp`, `fastMcp-fastApi-uvicorn-ngnix-docker`, `streamable`, `auth`, and
+`elicitation` folders. The [validation record](VALIDATION.md) states what was
+actually executed and what remains conceptual.
 
 The workspace teaching skill is
 [mcp-progressive-tutor](../../.agents/mcp-progressive-tutor/SKILL.md).
@@ -162,21 +191,14 @@ Maintain each concept in its individual guide. Link to that guide when another
 lesson depends on it. Preserve transcripts for provenance; adding another
 transcript does not automatically change the course.
 
-When adding references, run this command from the workspace root:
-
-```bash
-python3 reference/mcp/catalog/build_catalog.py
-```
-
-Then review the new material, update the source map, and revise only the
-affected guides. The generator updates the inventory, not the curated lessons.
-Check the [version baseline](VERSIONS.md) before changing examples.
-Protocol revisions and framework versions are different version numbers.
+When adding references, review the new material, update the affected source
+links, and revise only the relevant guides. Check the
+[version baseline](VERSIONS.md) before changing examples. Protocol revisions
+and framework versions are different version numbers.
 
 **Review boundary:**
 
-> The catalog covers every original file. Text was scanned in full for inventory
-> and overlap analysis, then reviewed structurally and thematically with selected
-> close reading. It is not a line-by-line correctness certification of every
-> archived example. Archived programs and visual assets remain unverified unless
-> a review note explicitly says otherwise.
+> The curated course and synthetic labs are maintained separately from the
+> archived source material. An archived explanation is not a correctness
+> certification. Use the current concept guides, version baseline, and
+> validation record when deciding what to implement.

@@ -4,7 +4,8 @@
 phases without confusing connection state, an optional HTTP session, and
 durable application state.
 
-**Prerequisites:** [03: JSON-RPC requests, responses, and notifications](03-json-rpc.md)
+**Prerequisites:**
+[03: JSON-RPC requests, responses, and notifications](03-json-rpc.md)
 and [04: Protocol versions and capability discovery](04-versions-discovery.md).
 
 ## Version boundary
@@ -47,7 +48,7 @@ Client                                      Server
   |                                           |
   |---- initialize -------------------------->|
   |<--- initialize result --------------------|
-  |---- notifications/initialized ---------->|
+  |---- notifications/initialized ----------->|
   |                                           |
   |       READY FOR NORMAL OPERATION          |
   |                                           |
@@ -267,12 +268,12 @@ optional legacy Streamable HTTP session.
 
 ## Keep the state layers separate
 
-| State layer | Example | Typical owner |
-|---|---|---|
-| Connection state | Selected version and capabilities | MCP client and server |
-| Optional HTTP session state | `MCP-Session-Id` routing context | Legacy HTTP server |
-| Continuation state | Context for a multi-step operation | Application workflow |
-| Durable business state | Transactions, approvals, audit records | Database or business service |
+| State layer                 | Example                                | Typical owner                |
+|-----------------------------|----------------------------------------|------------------------------|
+| Connection state            | Selected version and capabilities      | MCP client and server        |
+| Optional HTTP session state | `MCP-Session-Id` routing context       | Legacy HTTP server           |
+| Continuation state          | Context for a multi-step operation     | Application workflow         |
+| Durable business state      | Transactions, approvals, audit records | Database or business service |
 
 The initialization handshake creates connection state. It does not replace a
 database, transaction boundary, authorization check, or idempotency design.
@@ -285,10 +286,12 @@ database, transaction boundary, authorization check, or idempotency design.
 
 ## Sources and next step
 
+- [Legacy Streamable HTTP definitions](../elicitation/chunk-1.md)
+- [Legacy complete HTTP message trace](../elicitation/chunk-3.md)
+- [Legacy pinned progress exercise](../elicitation/chunk-4.md)
+- [Legacy progress and elicitation exercise](../elicitation/chunk-5.md)
 - [Official 2025-11-25 lifecycle](https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle)
-  — checked 2026-11-17.
 - [Official 2025-11-25 transports](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports)
-  — checked 2026-11-17.
 - [Version baseline](../VERSIONS.md).
 
 Next: [05B: Stateless-first lifecycle](05B-stateless-lifecycle.md).

@@ -67,6 +67,24 @@ Increasing workers may help only while the database and connection budget have
 headroom. If all requests wait on a slow external API, adding workers without
 timeouts and limits may amplify load without improving completion time.
 
+## Make process-local state visible
+
+```python
+import os
+
+PROCESS_CACHE: dict[str, str] = {}
+
+
+def remember(key: str, value: str) -> None:
+    PROCESS_CACHE[key] = value
+    print(f"pid={os.getpid()} keys={list(PROCESS_CACHE)}")
+```
+
+Two worker processes have different process IDs and different
+`PROCESS_CACHE` dictionaries. Seeing a key in worker A does not make it visible
+in worker B. Durable shared state belongs in an external system designed for
+that ownership boundary.
+
 **Professional articulation:**
 
 > “Workers scale process capacity, but they also multiply process-local
@@ -74,8 +92,8 @@ timeouts and limits may amplify load without improving completion time.
 
 ## Sources and next step
 
-- [Archive: conversations/chatgpt/7_Uvicorn_ProcessRuntime.md](../../conversations/chatgpt/7_Uvicorn_ProcessRuntime.md)
-- [Archive: conversations/chatgpt/5_StreamableHttp_Uvicorn.md](../../conversations/chatgpt/5_StreamableHttp_Uvicorn.md)
+- [Archived Uvicorn runtime example](../fastMcp-fastApi-uvicorn-ngnix-docker/7_Uvicorn_ProcessRuntime.md)
+- [Archived Streamable HTTP and Uvicorn example](../fastMcp-fastApi-uvicorn-ngnix-docker/5_StreamableHttp_Uvicorn.md)
 - [Official runtime settings](https://github.com/Kludex/uvicorn/blob/main/docs/settings.md) — checked 2026-11-15.
 
 Next: [Host validation, Origin, and CORS](19-origin-cors.md).

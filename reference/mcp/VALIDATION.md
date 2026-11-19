@@ -1,7 +1,34 @@
 # Validation record
 
-Examples executed: 2026-11-15 and 2026-11-18. Final library check: 2026-11-16.
-Scope: newly authored course and synthetic examples.
+Examples executed: 2026-11-15 and 2026-11-18. Beginner-documentation check:
+2026-11-18. Scope: curated course and synthetic examples.
+
+## Beginner-documentation revision
+
+The entry path and concepts 01 through 06 were revised to introduce ordinary
+Python behavior before MCP terminology. The revision defines each foundational
+term before use, separates protocol and transport layers, and follows concepts
+with small code or message examples. Focused examples were also added to later
+abstract chapters.
+
+A follow-up review incorporated the clearer definitions, distinctions, response
+outcomes, state boundaries, and failure explanations from elicitation chunks
+1–5 into concepts 11–14. Initialization, protocol sessions, GET streams,
+resumability, `elicitation/create`, and SDK v1 code remain explicitly confined
+to the legacy `2025-11-25` path.
+
+Validation on 2026-11-18 established:
+
+- all concept files have a level-one document title;
+- local Markdown links in the course index and concept guides resolve in the
+  reorganized source tree;
+- `git diff --check` reports no whitespace errors;
+- three domain tests and two protocol-contract tests pass;
+- in-memory and stdio client checks pass;
+- the continuation-state simulation passes.
+
+The documentation examples in production chapters remain labeled conceptual
+unless an executed lab or validation entry says otherwise.
 
 ## Executed examples
 
@@ -41,15 +68,10 @@ The 32 guides have explicit outcomes, prerequisite navigation, source links,
 worked examples/failure analysis, and professional wording. Their production
 chapters describe designs; no production deployment was implemented.
 
-Library validation passed: all **112 source hashes match the snapshot**, **32 guide
-entries**, **40 Markdown documents with valid local navigation**, valid JSON
-examples, an ordered prerequisite graph, Python syntax checks, and the new
-skill's metadata/routing. The generated inventory records **121 similarity
-candidates**, which are review hints rather than deletion decisions.
-
-The final catalog refresh follows four `[DONE]` source renames and edits to
-the first chunk and `mcp-learning-docs`. The course links and source mappings
-use those current paths. This organization pass did not modify source content.
+The course contains 32 numbered concepts plus the beginner orientation and
+supplemental lifecycle/primitive comparisons. Source links now use the current
+`reference/mcp` folder organization. The archived sources themselves remain
+historical material and were not rewritten by the beginner-documentation pass.
 
 ## Limits
 
@@ -61,12 +83,6 @@ The tested Python patch is an older concept snapshot; see
 
 ## Repeatable checks
 
-From the workspace root, run the collection validator:
-
-```bash
-python3 reference/mcp/catalog/validate_library.py
-```
-
-It verifies source hashes, local navigation, guide prerequisites, required skill
-metadata, and code syntax. The [lab instructions](labs/README.md) provide the
-commands for the executable checks.
+The [lab instructions](labs/README.md) provide the commands for executable
+checks. Run `git diff --check` from the workspace root for whitespace errors,
+and verify local links whenever source folders are reorganized.

@@ -23,6 +23,36 @@ NEEDS_REASON --> NEEDS_APPROVAL --> APPLIED
 A phase is an explicit state-machine position. It prevents accidentally
 treating a reason response as an approval response.
 
+## Keep three kinds of state separate
+
+**Request and transport state:**
+
+> Information needed for one modern request and response, such as its JSON-RPC
+> ID, protocol metadata, and request-scoped response stream. Modern MCP does not
+> create a connection-wide protocol session for this state.
+
+**Continuation state:**
+
+> Information needed to resume the logical workflow in a later request, such as
+> the caller, target ticket, current phase, expected ticket version, and pending
+> question.
+
+**Durable business state:**
+
+> Committed ticket records, audit events, operation outcomes, and idempotency
+> keys that must survive a request ending or a process restarting.
+
+```text
+one request ends
+      |
+      +-- request/transport state can disappear
+      +-- continuation state must support the next round
+      `-- committed business state must remain durable
+```
+
+Continuation state is not authority. Durable state is not automatically
+continuation state. Give each kind an explicit owner and lifetime.
+
 ## What requestState means
 
 Modern MRTR can return an opaque `requestState` string that the client echoes
@@ -56,6 +86,20 @@ Recheck authorization on the later round. A user may lose access between
 selection and approval. Also verify that the approved object and arguments
 still match the action being applied.
 
+For an operation that changes data, use this order:
+
+1. Gather all required user input.
+2. Authenticate the current caller.
+3. Authorize the intended action.
+4. Validate the input against current business state.
+5. Apply the write transaction.
+6. Record the operation identity and outcome for safe replay.
+7. Return the final result.
+
+Do not apply an irreversible write and then ask the user to approve that same
+write. Do not trust authorization from the earlier round without checking it
+again.
+
 ## Expiration and changed data
 
 If the ticket changes while the user considers the form, the server may need
@@ -66,6 +110,58 @@ not continue with stale assumptions.
 Keep continuation small. A whole report dataset is usually better stored
 behind an authorized handle than encoded into every round.
 
+## Plan for interruption
+
+**Connection breaks after the answer:**
+
+> The client may not know whether the write completed. Query the application
+> operation outcome or retry with the same idempotency key; do not infer failure
+> from the lost response.
+
+**Server restarts between rounds:**
+
+> Process-local variables disappear. Recover only continuation and business
+> state that was deliberately stored or can be safely recomputed.
+
+**Continuation expires:**
+
+> Fail clearly and start a new interaction. Do not continue using stale input
+> against changed business data.
+
+**Another worker receives the next request:**
+
+> The workflow cannot depend on a dictionary or lock that exists only in the
+> earlier worker. Use shared durable storage when the deployment requires it.
+
+## See the minimum application state
+
+This simplified structure shows what a server may need to remember between two
+requests. It is a domain model, not an MCP message:
+
+```python
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class PendingIntent:
+    operation_id: str
+    user_id: str
+    ticket_id: str
+    expected_version: int
+
+
+pending = PendingIntent(
+    operation_id="op-1",
+    user_id="alice",
+    ticket_id="T-100",
+    expected_version=3,
+)
+```
+
+On reentry, the application looks up `op-1`, verifies that the current user is
+still Alice, checks ticket version `3`, and confirms the operation has not
+already completed. The opaque client token is a lookup handle, not permission.
+
 **Professional articulation:**
 
 > “Continuation state carries workflow context, not authority. Reentry
@@ -73,8 +169,9 @@ behind an authorized handle than encoded into every round.
 
 ## Sources and next step
 
-- [Archive: conversations/chatgpt/83_Multi_round_elicitation.md](../../conversations/chatgpt/83_Multi_round_elicitation.md)
-- [Archive: _learning_resources/enhancements.md](../../_learning_resources/enhancements.md)
+- [Archived multi-round elicitation example](../fastMcp-fastApi-uvicorn-ngnix-docker/83_Multi_round_elicitation.md)
+- [Archived elicitation continuation notes](../elicitation/chunk-8.md)
+- [Legacy state-boundary and safe-ordering explanation](../elicitation/chunk-5.md)
 - [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/mrtr) — checked 2026-11-15.
 
 Next: [Async I/O and concurrent requests](15-async-concurrency.md).

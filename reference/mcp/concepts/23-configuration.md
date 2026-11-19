@@ -74,6 +74,36 @@ business logic. Record which platform was actually tested.
 > identifying the missing URL. The service never accepts a ticket request
 > against an unintended fallback database.
 
+## See typed startup configuration
+
+This is the production-extension pattern used after configuration has become a
+real requirement:
+
+```python
+from pydantic import PositiveFloat
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    database_url: str
+    request_timeout_seconds: PositiveFloat
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        extra="ignore",
+    )
+
+
+settings = Settings()
+```
+
+The two fields have no defaults, so they are required. `PositiveFloat` rejects
+zero, negative numbers, and nonnumeric text. Create `Settings()` once during
+startup; do not scatter unvalidated `os.getenv` calls through tool handlers.
+
+Keep real `.env` files out of version control. Commit a `.env.example` with
+placeholder names when developers need to know which values to supply.
+
 **Professional articulation:**
 
 > “We validate configuration once at startup and preserve exact dependency
@@ -81,9 +111,9 @@ business logic. Record which platform was actually tested.
 
 ## Sources and next step
 
-- [Archive: _learning_resources/walkthrough_doc.md](../../_learning_resources/walkthrough_doc.md)
-- [Archive: _learning_resources/enhancements.md](../../_learning_resources/enhancements.md)
-- [Archive: _learning_resources/troubleshoot.md](../../_learning_resources/troubleshoot.md)
+- [Archived MCP walkthrough](../walk-through-docs/walkthrough_doc.md)
+- [Archived MCP notes](../../temp/mcp_notes.md)
+- [Archived troubleshooting notes](../../temp/troubleshoot.md)
 - [Official reference](https://docs.pydantic.dev/latest/concepts/pydantic_settings/) — checked 2026-11-15.
 
 Next: [Docker packaging and networking](24-containers.md).

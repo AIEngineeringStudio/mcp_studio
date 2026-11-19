@@ -64,6 +64,28 @@ Alice's cached ticket list contains A's records. Bob calls the same search.
 A cache keyed only by `status=open` is unsafe. Include trusted identity/tenant
 scope in the cache design, or avoid shared caching until isolation is proven.
 
+## See a bounded page
+
+This small function uses an integer cursor only to teach the mechanism. MCP
+clients must treat protocol cursors as opaque strings:
+
+```python
+def page(items: list[str], cursor: int = 0, size: int = 2) -> dict:
+    selected = items[cursor:cursor + size]
+    next_position = cursor + len(selected)
+    return {
+        "items": selected,
+        "next_cursor": next_position if next_position < len(items) else None,
+    }
+
+
+print(page(["T-100", "T-101", "T-102"], cursor=0, size=2))
+```
+
+Expected result: two items and a cursor for the remaining item. Real pagination
+also needs a stable order, caller-aware access rules, and a decision about what
+happens when records change between page requests.
+
 **Professional articulation:**
 
 > “Pagination bounds each response; caching reduces repeated work;
@@ -72,9 +94,9 @@ scope in the cache design, or avoid shared caching until isolation is proven.
 
 ## Sources and next step
 
-- [Archive: _learning_resources/walkthrough_doc.md](../../_learning_resources/walkthrough_doc.md)
-- [Archive: _learning_resources/diagrams/diagrams_index.md](../../_learning_resources/diagrams/diagrams_index.md)
-- [Archive: conversations/streamable/streamable-6.md](../../conversations/streamable/streamable-6.md)
+- [Archived MCP walkthrough](../walk-through-docs/walkthrough_doc.md)
+- [Archived pagination notes](../fast-mcp/10-pagination-completion.md)
+- [Archived reconnect and state notes](../streamable/streamable-6.md)
 - [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/subscriptions) — checked 2026-11-15.
 
 Next: [Testing and debugging MCP by layer](27-testing.md).

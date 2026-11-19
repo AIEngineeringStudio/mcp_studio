@@ -66,6 +66,24 @@ For a large report, first ask whether a bounded synchronous result is enough.
 Use a task when operation lifetime and reliability require it, not merely
 because an extension exists.
 
+## Represent compatibility as an explicit decision
+
+```python
+required = {"tools", "apps"}
+supported_by_host = {"tools", "resources", "prompts"}
+
+missing = required - supported_by_host
+if missing:
+    print(f"Cannot provide this experience; missing support: {sorted(missing)}")
+else:
+    print("Required features are available")
+```
+
+This code is a mental model, not an MCP discovery API. Real code reads the
+capability and extension data defined by the selected protocol and host. The
+important behavior is to check required support instead of assuming that tool
+support implies Apps, Tasks, or Skills support.
+
 **Professional articulation:**
 
 > “We negotiate optional capabilities explicitly and design a usable fallback
@@ -73,9 +91,9 @@ because an extension exists.
 
 ## Sources and next step
 
-- [Archive: _learning_resources/interactive/mcp-learning-app.tsx](../../_learning_resources/interactive/mcp-learning-app.tsx)
-- [Archive: _learning_resources/requirements/01-requirements.md](../../_learning_resources/requirements/01-requirements.md)
-- [Archive: conversations/chunks/08-mcp-chunk8.md](../../conversations/chunks/08-mcp-chunk8.md)
+- [Archived roots notes](../fast-mcp/05-roots.md)
+- [Archived sampling notes](../fast-mcp/06-sampling.md)
+- [Archived MCP walkthrough](../walk-through-docs/walkthrough_doc.md)
 - [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning) — checked 2026-11-15.
 
 Next: [Reading and migrating legacy MCP examples](31-legacy-migration.md).

@@ -1,25 +1,47 @@
 # Protocol versions and capability discovery
 
-**Outcome:** Explain modern request metadata and recognize a legacy
-initialization trace.
+**Outcome:** Explain why MCP messages identify a protocol revision and why a
+successful connection does not prove that every optional feature is supported.
 
-**Prerequisites:
-** [03: JSON-RPC requests, responses, and notifications](03-json-rpc.md).
+**Prerequisites:**
+[03: JSON-RPC requests, responses, and notifications](03-json-rpc.md).
 
-## Why the archive appears contradictory
+## Three kinds of version answer different questions
 
-A protocol revision is a dated agreement about message behavior. A package
-version identifies an implementation release. A newer package can support
-several protocol revisions. Updating Python does not select an MCP revision.
+Examples on the internet can look contradictory because they target different
+protocol and software generations.
 
-Read [the version baseline](../VERSIONS.md) before comparing examples.
-This course uses modern 2026-07-28 mechanics and labels older behavior.
+**Protocol revision:**
 
-## A self-contained modern request
+> A dated agreement about MCP message fields and interaction behavior, such as
+> `2026-07-28`.
 
-A request identifies its protocol version and relevant client capabilities
-under `params._meta`. This example includes the required metadata for a
-minimal tools-list request:
+**Package version:**
+
+> A release of an implementation, such as FastMCP `4.2.0`. One package may
+> support more than one protocol revision.
+
+**Python version:**
+
+> The language runtime used to execute the implementation. Updating Python does
+> not select an MCP protocol revision.
+
+```text
+Protocol revision  -> which communication rules?
+FastMCP version    -> which framework code and API?
+Python version     -> which runtime executes that code?
+```
+
+Read [the version baseline](../VERSIONS.md) before combining examples. This
+course targets modern MCP `2026-07-28` and labels older behavior explicitly.
+
+## Why the protocol revision is visible
+
+Two programs need a shared interpretation of the message. A field that changed
+between revisions can otherwise appear valid while meaning something different.
+
+In modern MCP, each request declares the protocol version and relevant client
+capabilities under `params._meta`:
 
 ```json
 {
@@ -35,58 +57,124 @@ minimal tools-list request:
 }
 ```
 
-An empty client capability object means the request does not promise optional
-client features. It does not mean the server has no tools. The SDK normally
-supplies these details; a beginner should understand their purpose before
-hand-writing them.
+**Metadata:**
 
-`server/discover` lets a client inspect supported versions, capabilities,
-and server identity. Discovery and tool listing answer different questions:
-“Which protocol features can you handle?” versus “Which tools are available
-to this caller?”
+> Data that describes other data. Here, `_meta` describes the protocol context
+> needed to interpret the request; it is not the ticket lookup's business input.
 
-## Compare the eras
+An empty client-capability object means this request promises no optional
+client features. It does not mean the server has no tools.
 
-| Concern              | Legacy through 2025-11-25    | Modern 2026-07-28          |
-|----------------------|------------------------------|----------------------------|
-| Starting interaction | Initialize handshake         | Self-contained requests    |
-| Client capabilities  | Negotiated in initialization | Declared per request       |
-| HTTP session ID      | Optional protocol session    | Removed                    |
-| Additional input     | Server requests              | Input-required round trips |
+The SDK normally creates these fields. You should understand why they exist,
+but application code should not manually rebuild every wire message.
 
-The complete migration details are in the
-[official changelog](https://modelcontextprotocol.io/specification/2026-07-28/changelog).
-A framework context manager may still “connect” or “initialize” its internal
-objects. That API name alone does not prove an `initialize` RPC occurred.
+## Discovery asks what the server supports
 
-## Capabilities are promises
+`server/discover` can report supported protocol versions, server capabilities,
+and server identity. `tools/list` answers a different question.
 
-A server must not assume a client can render an elicitation form merely because
-the client can call tools. Design a fallback or report the unsupported
-capability. Similarly, an extension such as MCP Apps requires specific client
-support.
+```text
+server/discover -> Which protocol features can this server handle?
+tools/list       -> Which tools are visible to this caller?
+```
 
-Capability discovery is not authentication. A caller can advertise support for
-a feature without having permission to read a private ticket.
+**Capability:**
 
-## Diagnose compatibility deliberately
+> A declared promise that one endpoint supports an optional protocol feature.
 
-Record the client package, server package, protocol era, transport, and feature
-being exercised. Compare a basic lookup before investigating advanced
-interactions. A client that successfully lists tools may still lack the
-elicitation behavior required by one tool.
+For example, a server must not assume that a client can display an additional
+input form merely because that client can list and call tools. The required
+input feature needs its own compatible support or a clear fallback.
 
-**Professional articulation:**
+Capability support is not permission. A caller can support a feature and still
+lack authorization to read a private ticket.
 
-> “We verify compatibility at the protocol and feature level. Package versions
-> alone do not establish which interaction pattern both endpoints support.”
+## Modern and legacy lifecycles differ
+
+MCP through `2025-11-25` used a stateful initialization handshake. Modern
+`2026-07-28` requests are self-contained at the protocol level.
+
+**Legacy shape:**
+
+```text
+initialize -> initialize result -> initialized notification -> normal requests
+```
+
+**Modern shape:**
+
+```text
+self-contained request with version/capabilities -> result
+```
+
+The detailed comparison belongs in the supplemental
+[stateful lifecycle](05A-stateful-lifecycle.md) and
+[stateless-first lifecycle](05B-stateless-lifecycle.md) guides. A beginner
+should first remember one rule: do not combine fields and sequences from the
+two eras into a single example.
+
+A framework may call a Python method named `connect()` or `initialize()` for
+its own object setup. The method name alone does not prove that a legacy
+`initialize` MCP request was sent on the wire.
+
+## Inspect metadata with plain Python
+
+This experiment reads a message; it does not contact a server:
+
+```python
+request = {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "tools/list",
+    "params": {
+        "_meta": {
+            "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+            "io.modelcontextprotocol/clientCapabilities": {},
+        }
+    },
+}
+
+metadata = request["params"]["_meta"]
+print(metadata["io.modelcontextprotocol/protocolVersion"])
+print(request["method"])
+```
+
+Expected output:
+
+```text
+2026-07-28
+tools/list
+```
+
+In the runnable lab, the actual client checks its negotiated protocol version
+after connecting. That proves the exercised client/server path, not universal
+support for every optional feature.
+
+## Diagnose compatibility in a useful order
+
+Record these facts before debugging an advanced interaction:
+
+1. client package and version;
+2. server package and version;
+3. intended MCP protocol revision;
+4. transport (`stdio` or Streamable HTTP);
+5. exact feature being exercised;
+6. host support for that feature.
+
+First prove a basic discovery and tool call. Then test the optional feature.
+A client that lists tools successfully may still lack the feature required by
+one particular tool.
+
+**Say it professionally:**
+
+> “We verify compatibility at the protocol-revision and feature level. Package
+> versions alone do not establish which interaction patterns both endpoints and
+> the host support.”
 
 ## Sources and next step
 
-- [Archive: conversations/chatgpt/81_MCP_Elicitation.md](../../conversations/chatgpt/81_MCP_Elicitation.md)
-- [Archive: docs/mcp-learning-guide.md](../../docs/%5BDONE%5Dmcp-learning-guide.md)
-- [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/basic/index) —
-  checked 2026-11-15.
+- [Archived elicitation lesson](../fastMcp-fastApi-uvicorn-ngnix-docker/81_MCP_Elicitation.md)
+- [Archived versioning and capability notes](../fast-mcp/16-versioning-capability_negotiation.md)
+- [Official MCP protocol reference](https://modelcontextprotocol.io/specification/2026-07-28/basic/index)
+- [Course version baseline](../VERSIONS.md)
 
 Next: [Tools and their contracts](05-tool-contracts.md).
-

@@ -280,7 +280,7 @@ real authorization server.
 - [Google OAuth for web-server applications](https://developers.google.com/identity/protocols/oauth2/web-server)
 - [Google Calendar MCP server configuration](https://developers.google.com/workspace/calendar/api/guides/configure-mcp-server)
 - [Google service accounts and domain-wide delegation](https://developers.google.com/identity/protocols/oauth2/service-account)
-- [Archive: OAuth protected-resource discovery transcript](auth/03-OAuth_Protected_Resource_Discovery.md)
-- [Archive: protected tools and resources transcript](auth/02-MCP-Server-OAuth-Protected-Tools-Resources.md)
+- [Archive: OAuth protected-resource discovery transcript](../auth/03-OAuth_Protected_Resource_Discovery.md)
+- [Archive: protected tools and resources transcript](../auth/02-MCP-Server-OAuth-Protected-Tools-Resources.md)
 
 Next: [Authorization, tool visibility, and calendar isolation](21-authorization.md).

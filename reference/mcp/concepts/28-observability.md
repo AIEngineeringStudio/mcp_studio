@@ -75,6 +75,29 @@ connection and only 20 milliseconds executing the query. Optimizing JSON
 serialization would target the wrong bottleneck. Investigate pool sizing,
 long-held connections, and database capacity.
 
+## Record a useful event without the ticket body
+
+```python
+import json
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("ticket_service")
+
+event = {
+    "event": "tool_completed",
+    "tool": "get_ticket",
+    "request_id": "rpc-17",
+    "outcome": "success",
+    "duration_ms": 24,
+}
+logger.info(json.dumps(event))
+```
+
+The event records a bounded tool name, outcome, correlation ID, and duration.
+It omits the bearer token and ticket contents. In a `stdio` server, configure
+application logging to use stderr so it cannot corrupt protocol stdout.
+
 **Professional articulation:**
 
 > “Metrics reveal the pattern, traces locate the delay, and logs explain
@@ -82,8 +105,8 @@ long-held connections, and database capacity.
 
 ## Sources and next step
 
-- [Archive: conversations/chatgpt/11_AutomatedTests_Metrics_DistributedTracing.md](../../conversations/chatgpt/11_AutomatedTests_Metrics_DistributedTracing.md)
-- [Archive: _learning_resources/enhancements.md](../../_learning_resources/enhancements.md)
+- [Archived testing and tracing example](../fastMcp-fastApi-uvicorn-ngnix-docker/11_AutomatedTests_Metrics_DistributedTracing.md)
+- [Archived observability notes](../fast-mcp/09-observability.md)
 - [Official reference](https://opentelemetry.io/docs/concepts/signals/) — checked 2026-11-15.
 
 Next: [Scaling and MCP gateways](29-scaling-gateways.md).

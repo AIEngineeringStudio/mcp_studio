@@ -81,8 +81,8 @@ change. Restore the name after the experiment.
 
 ## Sources and next step
 
-- [Archive: conversations/chatgpt/11_AutomatedTests_Metrics_DistributedTracing.md](../../conversations/chatgpt/11_AutomatedTests_Metrics_DistributedTracing.md)
-- [Archive: conversations/chunks/07-mcp-chunk7.md](../../conversations/chunks/07-mcp-chunk7.md)
+- [Archived testing and tracing example](../fastMcp-fastApi-uvicorn-ngnix-docker/11_AutomatedTests_Metrics_DistributedTracing.md)
+- [Archived observability notes](../fast-mcp/09-observability.md)
 - [Official reference](https://gofastmcp.com/docs/clients/client) — checked 2026-11-15.
 
 Next: [Logs, metrics, and traces](28-observability.md).

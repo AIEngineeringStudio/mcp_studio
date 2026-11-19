@@ -1,88 +1,205 @@
 # FastMCP registration and dispatch
 
-**Outcome:** Trace how a Python function becomes a discoverable MCP tool.
+**Outcome:** Trace how FastMCP turns a Python function into a discoverable tool
+and later dispatches a call to that function.
 
 **Prerequisites:** [05: Tools and their contracts](05-tool-contracts.md).
 
-## Why a registry exists
+## Begin with the problem the framework solves
 
-When a request names `get_ticket`, the server needs to locate its handler.
-A component registry stores that association together with the metadata needed
-for discovery and validation.
+The MCP server receives a request naming `get_ticket`. It needs to answer two
+questions:
+
+1. What contract should discovery return for `get_ticket`?
+2. Which Python function should run when that tool is called?
+
+A **registry** stores component names, contracts, and handlers so the server can
+answer both questions.
+
+```text
+Python function + type hints + docstring
+                    |
+                    | registration
+                    v
+                registry
+               /        \
+      tools/list          tools/call
+      returns contract    validate -> select handler -> run -> return result
+```
 
 **Registration:**
 
-> Adding a component and its contract to the server's known components.
+> Adding a component and its contract to the server's registry.
+
+**Discovery:**
+
+> Reading registered contracts so a caller can learn what is available.
 
 **Dispatch:**
 
-> Selecting and invoking the component that matches an incoming request.
+> Matching an incoming component name to its registered handler and invoking
+> that handler after validation.
 
+Registration and execution happen at different times.
+
+## Watch registration happen
+
+```python
+from fastmcp import FastMCP
+
+mcp = FastMCP("Ticket learning service")
+
+
+@mcp.tool
+def get_ticket(ticket_id: str) -> dict:
+    """Read one ticket by ID. Does not change it."""
+    return {"id": ticket_id, "status": "open"}
 ```
-Python function + annotations + description
-                    |
-                 decorator
-                    |
-                 registry
-               /          \
-        tools/list        tools/call
-        description       validate --> handler --> result
+
+Read this from top to bottom:
+
+1. `FastMCP(...)` creates one server object and its component registries.
+2. Python defines the `get_ticket` function.
+3. `@mcp.tool` registers that function on this particular `mcp` object.
+4. Registration records information used for discovery and later dispatch.
+5. The function body has not performed a ticket lookup yet.
+
+The decorator changes how the function is exposed; it does not cause every
+import to run the tool's business operation.
+
+## Trace discovery and invocation separately
+
+During discovery:
+
+```text
+client -> tools/list -> registry -> get_ticket contract -> client
 ```
 
-Registration and execution happen at different times. Importing a module can
-register its functions without executing their business operations.
+During invocation:
 
-## Read the lab declaration
+```text
+client -> tools/call(name="get_ticket", arguments={...})
+       -> validate arguments
+       -> registry selects handler
+       -> Python function runs
+       -> result returns to client
+```
 
-The [server](../labs/server.py) creates `FastMCP("Ticket learning service")`
-and applies `@mcp.tool` to `get_ticket`. The function's name, annotations,
-and docstring contribute to the exposed tool contract. The body delegates to
-ordinary application code.
+If discovery does not include the tool, debugging the function body is too
+early. The dispatcher cannot call a component it does not know.
 
-The framework handles protocol parsing, component lookup, conversion between
-data representations, and transport integration. It does not know which
-customer is allowed to access a particular ticket unless the application
-supplies and enforces that policy.
+## Inspect the real registry through a client
 
-## Discovery and invocation share a definition
+The supported public behavior to inspect is discovery:
 
-If registration never runs, the tool may be absent from discovery even though
-its source file exists. Importing a different server instance can produce the
-same symptom. The registry belongs to the object the application actually
-serves.
+```python
+from fastmcp import Client
 
-A practical debugging order is to check the loaded module, the served server
-instance, then the catalog returned by `list_tools()`. Only after that should
-you investigate the handler's business logic.
 
-## Keep implementation families distinct
+async def show_tools() -> None:
+    async with Client(mcp) as client:
+        tools = await client.list_tools()
+        for tool in tools:
+            print(tool.name)
+```
 
-This course's lab uses standalone `from fastmcp import FastMCP`. The archive
-also contains the SDK v1 import `from mcp.server.fastmcp import FastMCP`.
-The official SDK v2 uses `MCPServer`. These related implementations are not
-interchangeable imports for a shared set of examples.
+The complete runnable client in [concept 07](07-in-memory-client.md) also calls
+the tool and verifies the returned status.
 
-The [SDK migration guide](https://github.com/modelcontextprotocol/python-sdk/blob/main/docs/migration.md)
-documents API changes. When adapting an old lesson, migrate a complete minimal
-example and test it before combining snippets from different generations.
+Avoid depending on undocumented internal registry attributes. Public client
+behavior is a more stable test of what the server actually exposes.
 
-## The main guard
+## The server instance matters
 
-The server's `if __name__ == "__main__"` block starts its transport only when
-the file is run directly. Importing it from the in-memory client registers
-components without opening a listening socket or launching a second process.
-This separation makes the same application reusable in several tests.
+This bug creates two different server objects:
 
-**Professional articulation:**
+```python
+from fastmcp import FastMCP
 
-> “FastMCP turns component definitions into discoverable contracts and
-> dispatches incoming operations to their handlers.”
+registered_server = FastMCP("Registered here")
+served_server = FastMCP("Served here")
+
+
+@registered_server.tool
+def get_ticket(ticket_id: str) -> dict:
+    return {"id": ticket_id}
+```
+
+If the runtime serves `served_server`, `get_ticket` is absent. Its source code
+exists, but it was registered on another object.
+
+When a tool is missing, check in this order:
+
+1. Was the module containing the decorator imported?
+2. Did registration finish without an exception?
+3. Was the tool registered on the server object actually being served?
+4. Does `list_tools()` return it?
+5. Only then inspect call arguments and handler behavior.
+
+## Separate import from starting a transport
+
+The lab ends with:
+
+```python
+if __name__ == "__main__":
+    mcp.run(transport="stdio")
+```
+
+When Python runs `server.py` directly, `__name__` is `"__main__"`, so the
+transport starts. When a test imports `server`, registration still happens,
+but this guarded block does not start a child process or network listener.
+
+That separation lets the same server object support:
+
+- a fast in-memory test;
+- a local `stdio` child process;
+- a Streamable HTTP service.
+
+The contracts remain the same while the execution boundary changes.
+
+## Framework and application responsibilities
+
+FastMCP handles protocol parsing, component discovery, input conversion,
+dispatch, result conversion, and transport integration.
+
+FastMCP cannot infer which customer may read `T-100`. Your application must
+supply verified identity, authorization rules, and business validation.
+
+```text
+FastMCP:      Is this a valid call to a registered component?
+Application:  Is this caller allowed to perform this business operation?
+```
+
+## Do not mix implementation families
+
+This course uses standalone FastMCP:
+
+```python
+from fastmcp import FastMCP
+```
+
+Older examples may use SDK v1:
+
+```python
+from mcp.server.fastmcp import FastMCP
+```
+
+The official Python SDK v2 uses another high-level API surface. These examples
+are related but not interchangeable line by line. Choose one pinned
+implementation, follow its documentation, and test a complete minimal example
+before copying features from another generation.
+
+**Say it professionally:**
+
+> “FastMCP registers component contracts for discovery and dispatches incoming
+> operations to their handlers. Our application remains responsible for
+> business rules and authorization.”
 
 ## Sources and next step
 
-- [Archive: definitions.md](../../definitions.md)
-- [Archive: conversations/chatgpt/1_FirstMCPTool_InProcess.md](../../conversations/chatgpt/1_FirstMCPTool_InProcess.md)
-- [Official reference](https://gofastmcp.com/docs/getting-started/welcome) — checked 2026-11-15.
+- [Archived definitions](../../temp/definitions.md)
+- [Archived in-process FastMCP example](../fastMcp-fastApi-uvicorn-ngnix-docker/1_FirstMCPTool_InProcess.md)
+- [Official FastMCP getting-started guide](https://gofastmcp.com/docs/getting-started/welcome)
+- [Official Python SDK migration guide](https://github.com/modelcontextprotocol/python-sdk/blob/main/docs/migration.md)
 
 Next: [The first client and in-memory testing](07-in-memory-client.md).
-

@@ -67,6 +67,24 @@ If events arrive only at completion, compare direct application access with
 proxy access in a controlled local test. If only the proxy path batches them,
 inspect buffering before rewriting the tool.
 
+## Read a minimal proxy route
+
+This Nginx fragment is illustrative; production TLS, limits, trusted headers,
+and timeouts require a complete reviewed configuration:
+
+```nginx
+location /mcp {
+    proxy_pass http://mcp_app:8765/mcp;
+    proxy_http_version 1.1;
+    proxy_buffering off;
+}
+```
+
+`location /mcp` matches the public path. `proxy_pass` selects the internal
+application address. `mcp_app` is a network name, not an MCP server name from
+the protocol. Turning response buffering off can be necessary for timely
+stream events, but it does not create progress events or make retries safe.
+
 **Professional articulation:**
 
 > “The proxy owns the external HTTP boundary. We verify path mapping,
@@ -74,9 +92,9 @@ inspect buffering before rewriting the tool.
 
 ## Sources and next step
 
-- [Archive: conversations/chatgpt/9_Docker_DockerCompose.md](../../conversations/chatgpt/9_Docker_DockerCompose.md)
-- [Archive: conversations/chatgpt/10_TLS_AuthN_AuthZ_Observability.md](../../conversations/chatgpt/10_TLS_AuthN_AuthZ_Observability.md)
-- [Archive: conversations/streamable/streamable-7.md](../../conversations/streamable/streamable-7.md)
+- [Archived Docker and proxy example](../fastMcp-fastApi-uvicorn-ngnix-docker/9_Docker_DockerCompose.md)
+- [Archived TLS, authentication, and observability example](../fastMcp-fastApi-uvicorn-ngnix-docker/10_TLS_AuthN_AuthZ_Observability.md)
+- [Archived proxy-streaming notes](../streamable/streamable-7.md)
 - [Official reference](https://nginx.org/en/docs/http/ngx_http_proxy_module.html) — checked 2026-11-15.
 
 Next: [Configuration and reproducible environments](23-configuration.md).

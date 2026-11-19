@@ -71,6 +71,31 @@ If it does, data was probably stored only in the container's writable layer.
 Conversely, deleting a volume intentionally removes persistent data; avoid
 using destructive volume removal as routine cleanup in a learning exercise.
 
+## Read a small Dockerfile by responsibility
+
+This example is a shape, not a validated deployment for the course lab:
+
+```dockerfile
+FROM python:3.14.3-slim
+
+WORKDIR /app
+COPY pyproject.toml uv.lock ./
+RUN pip install --no-cache-dir uv==0.12.1 \
+    && uv sync --locked --no-dev
+
+COPY . .
+CMD ["uv", "run", "python", "server.py", "--http"]
+```
+
+The image fixes a Python base, copies dependency metadata before source, and
+installs from the lockfile. A production image should also use a non-root user,
+copy only required files, and be rebuilt with versions verified at that time.
+
+Both Intel and Apple Silicon Macs can build a multi-architecture base image
+natively when every dependency provides the corresponding platform artifact.
+Record which platform you actually execute; a successful Intel build is not an
+Apple Silicon test.
+
 **Professional articulation:**
 
 > “The image captures the runtime environment; volumes preserve state, and
@@ -78,8 +103,8 @@ using destructive volume removal as routine cleanup in a learning exercise.
 
 ## Sources and next step
 
-- [Archive: conversations/chatgpt/9_Docker_DockerCompose.md](../../conversations/chatgpt/9_Docker_DockerCompose.md)
-- [Archive: _learning_resources/troubleshoot.md](../../_learning_resources/troubleshoot.md)
+- [Archived Docker and Compose example](../fastMcp-fastApi-uvicorn-ngnix-docker/9_Docker_DockerCompose.md)
+- [Archived troubleshooting notes](../../temp/troubleshoot.md)
 - [Official reference](https://docs.docker.com/build/building/multi-platform/) — checked 2026-11-15.
 
 Next: [Timeouts, cancellation, retries, and idempotency](25-reliability.md).

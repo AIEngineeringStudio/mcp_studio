@@ -78,6 +78,29 @@ rather than only checking a route response.
 > and client are understood. The initial in-memory lab intentionally has no
 > database dependency to manage.
 
+## See acquisition and cleanup paired together
+
+This framework-neutral pattern shows the ownership idea:
+
+```python
+from contextlib import asynccontextmanager
+
+
+@asynccontextmanager
+async def application_lifespan():
+    settings = load_and_validate_settings()
+    pool = await open_database_pool(settings.database_url)
+    try:
+        yield {"pool": pool}
+    finally:
+        await pool.close()
+```
+
+The names `load_and_validate_settings` and `open_database_pool` represent
+application-specific functions. The important sequence is complete: validate,
+acquire once, serve work, and release in `finally`. Use the lifecycle API of
+the pinned framework when turning this model into runnable application code.
+
 **Professional articulation:**
 
 > “The composition root owns shared dependencies and pairs acquisition with
@@ -85,8 +108,8 @@ rather than only checking a route response.
 
 ## Sources and next step
 
-- [Archive: conversations/chatgpt/6_FastAPI_LifecycleManagement.md](../../conversations/chatgpt/6_FastAPI_LifecycleManagement.md)
-- [Archive: _learning_resources/walkthrough_doc.md](../../_learning_resources/walkthrough_doc.md)
+- [Archived FastAPI lifecycle example](../fastMcp-fastApi-uvicorn-ngnix-docker/6_FastAPI_LifecycleManagement.md)
+- [Archived MCP walkthrough](../walk-through-docs/walkthrough_doc.md)
 - [Official reference](https://fastapi.tiangolo.com/advanced/events/) — checked 2026-11-15.
 
 Next: [Uvicorn, workers, and process state](18-process-runtime.md).

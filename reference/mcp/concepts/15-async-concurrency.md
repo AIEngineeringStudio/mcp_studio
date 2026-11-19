@@ -66,6 +66,33 @@ boundary rather than blocking the serving event loop.
 Introduce each change because the workload requires it. A beginner's first
 tool does not require a pool, task queue, or background worker.
 
+## Observe concurrent waiting
+
+This complete example uses only Python's standard library:
+
+```python
+import asyncio
+
+
+async def lookup(ticket_id: str) -> str:
+    print(f"start {ticket_id}")
+    await asyncio.sleep(0.1)
+    print(f"finish {ticket_id}")
+    return ticket_id
+
+
+async def main() -> None:
+    results = await asyncio.gather(lookup("T-100"), lookup("T-101"))
+    print(results)
+
+
+asyncio.run(main())
+```
+
+Both calls begin before either finishes because each yields control at
+`await asyncio.sleep(...)`. Replace that wait with CPU-heavy work and the event
+loop does not gain the same concurrency benefit.
+
 **Professional articulation:**
 
 > “Async I/O improves concurrency during waiting. Correct shared-state
@@ -73,8 +100,8 @@ tool does not require a pool, task queue, or background worker.
 
 ## Sources and next step
 
-- [Archive: conversations/chatgpt/4_ServiceLayer_Persistence_AsyncIO.md](../../conversations/chatgpt/4_ServiceLayer_Persistence_AsyncIO.md)
-- [Archive: conversations/auth/04B-MCP_server-AuthN.md](../../conversations/auth/04B-MCP_server-AuthN.md)
+- [Archived service and async example](../fastMcp-fastApi-uvicorn-ngnix-docker/4_ServiceLayer_Persistence_AsyncIO.md)
+- [Archived request-context authentication notes](../auth/04B-MCP_server-AuthN.md)
 - [Official reference](https://docs.python.org/3/library/asyncio-task.html) — checked 2026-11-15.
 
 Next: [Service layers and persistence](16-service-persistence.md).

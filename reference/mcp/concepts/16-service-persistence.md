@@ -68,6 +68,32 @@ A useful failure experiment is “the database write fails after validation.”
 The user should receive a controlled failure, and a subsequent read should
 show that no partial database change escaped.
 
+## See the layers in small Python classes
+
+```python
+class TicketRepository:
+    def __init__(self, records: dict[str, dict]) -> None:
+        self._records = records
+
+    def get(self, ticket_id: str) -> dict:
+        return dict(self._records[ticket_id])
+
+
+class TicketService:
+    def __init__(self, repository: TicketRepository) -> None:
+        self._repository = repository
+
+    def get_for_user(self, user_id: str, ticket_id: str) -> dict:
+        if user_id != "alice":
+            raise PermissionError("Ticket access denied")
+        return self._repository.get(ticket_id)
+```
+
+An MCP handler can translate its input and call
+`service.get_for_user(...)`. The service owns the access rule; the repository
+owns record retrieval. A production repository can replace the dictionary with
+PostgreSQL without moving JSON-RPC parsing into the data layer.
+
 **Professional articulation:**
 
 > “The MCP handler is an adapter. The service owns the use case, and the
@@ -75,8 +101,8 @@ show that no partial database change escaped.
 
 ## Sources and next step
 
-- [Archive: conversations/chatgpt/4_ServiceLayer_Persistence_AsyncIO.md](../../conversations/chatgpt/4_ServiceLayer_Persistence_AsyncIO.md)
-- [Archive: _learning_resources/walkthrough_doc.md](../../_learning_resources/walkthrough_doc.md)
+- [Archived service and persistence example](../fastMcp-fastApi-uvicorn-ngnix-docker/4_ServiceLayer_Persistence_AsyncIO.md)
+- [Archived MCP walkthrough](../walk-through-docs/walkthrough_doc.md)
 - [Official reference](https://www.postgresql.org/docs/current/tutorial-transactions.html) — checked 2026-11-15.
 
 Next: [Application lifespan and dependency ownership](17-application-lifespan.md).

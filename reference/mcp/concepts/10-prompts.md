@@ -28,6 +28,29 @@ returns instructions referring to that ID. The client obtains the prompt and
 checks its text. The example is deliberately simple: it does not silently read
 data while generating instructions.
 
+```python
+@mcp.prompt
+def summarize_ticket(ticket_id: str) -> str:
+    """Prepare instructions; retrieving them does not run a model."""
+    return (
+        f"Summarize ticket {ticket_id}. State its status and distinguish "
+        "known facts from missing information."
+    )
+```
+
+A connected client retrieves the rendered messages:
+
+```python
+prompt = await client.get_prompt(
+    "summarize_ticket",
+    {"ticket_id": "T-100"},
+)
+print(prompt.messages[0].content.text)
+```
+
+The returned text is input that a host may use later. No model call appears in
+this code.
+
 A host could first read `ticket://T-100`, then retrieve the summary prompt,
 then provide both to its model. That is a host workflow built from two
 components. It is not a behavior the protocol automatically infers.
@@ -77,8 +100,8 @@ Check host support: a host may support tools but expose no prompt-picker UI.
 
 ## Sources and next step
 
-- [Archive: conversations/chatgpt/3_Resources_Prompts.md](../../conversations/chatgpt/3_Resources_Prompts.md)
-- [Archive: definitions.md](../../definitions.md)
+- [Archived resources and prompts example](../fastMcp-fastApi-uvicorn-ngnix-docker/3_Resources_Prompts.md)
+- [Archived prompt notes](../fast-mcp/04-prompts.md)
 - [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/server/prompts) — checked 2026-11-15.
 
 Next: [Streamable HTTP](11-streamable-http.md).

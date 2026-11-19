@@ -71,6 +71,29 @@ When the close-ticket response is lost, the client queries the operation
 outcome or retries with the same operation key. The service returns the
 recorded result instead of closing and notifying twice.
 
+## Model idempotency before adding retries
+
+This in-memory example shows the rule, but production needs an atomic durable
+store shared by all workers:
+
+```python
+completed: dict[str, dict] = {}
+
+
+def close_ticket(operation_key: str, ticket_id: str) -> dict:
+    if operation_key in completed:
+        return completed[operation_key]
+
+    result = {"ticket_id": ticket_id, "status": "closed"}
+    completed[operation_key] = result
+    return result
+```
+
+The client uses the same `operation_key` for the same intended business action,
+even if a new JSON-RPC request ID is created. A complete implementation also
+binds the key to caller identity and arguments, and atomically prevents two
+workers from applying the write together.
+
 **Professional articulation:**
 
 > “We distinguish retryable transport failures from uncertain business
@@ -78,9 +101,8 @@ recorded result instead of closing and notifying twice.
 
 ## Sources and next step
 
-- [Archive: conversations/chunks/04-mcp-chunk4.md](../../conversations/chunks/04-mcp-chunk4.md)
-- [Archive: conversations/streamable/streamable-6.md](../../conversations/streamable/streamable-6.md)
-- [Archive: _learning_resources/enhancements.md](../../_learning_resources/enhancements.md)
+- [Archived reconnection and retry notes](../streamable/streamable-6.md)
+- [Archived MCP walkthrough](../walk-through-docs/walkthrough_doc.md)
 - [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/cancellation) — checked 2026-11-15.
 
 Next: [Pagination, caching, and subscriptions](26-pagination-cache.md).

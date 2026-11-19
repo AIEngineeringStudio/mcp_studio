@@ -1,8 +1,68 @@
 # Streamable HTTP
 
-**Outcome:** Move a working MCP contract across a network and recognize modern HTTP behavior.
+**Outcome:** Explain why Streamable HTTP exists, move a working MCP contract
+across a network, and recognize modern HTTP behavior.
 
-**Prerequisites:** [04: Protocol versions and capability discovery](04-versions-discovery.md), [08: stdio and subprocess boundaries](08-stdio-processes.md).
+**Prerequisites:**
+[04: Protocol versions and capability discovery](04-versions-discovery.md) and
+[08: stdio and subprocess boundaries](08-stdio-processes.md).
+
+You need only a beginner understanding of HTTP requests, JSON, and client/server
+roles. REST design, HTTP chunked transfer encoding, asynchronous Python,
+FastAPI, Docker, and Uvicorn are not prerequisites for this chapter.
+
+## Why Streamable HTTP exists
+
+An independently running MCP server needs a network transport. Some operations
+also need to report related activity before their final result, such as progress
+for a long-running report.
+
+An ordinary JSON HTTP response can be processed asynchronously, so it does not
+inherently freeze a user interface. Its limitation here is simpler: one JSON
+response carries one response object. It does not provide a standard stream for
+request-related MCP notifications before that final response.
+
+Modern Streamable HTTP solves that transport problem:
+
+```text
+MCP client                  /mcp                     MCP server
+    |--- POST: one self-contained JSON-RPC request ----->|
+    |<-- application/json: one final response -----------|
+
+or
+
+    |--- POST: one self-contained JSON-RPC request ----->|
+    |<== text/event-stream: related notifications =======|
+    |<== then the final JSON-RPC response ===============|
+```
+
+**Endpoint:**
+
+> The network address that accepts MCP HTTP requests, such as
+> `http://127.0.0.1:8765/mcp`.
+
+**HTTP POST:**
+
+> The HTTP request method a modern MCP client uses to send one self-contained
+> JSON-RPC message to the endpoint.
+
+**Server-Sent Events (SSE):**
+
+> A text framing format that lets the server send multiple events in an HTTP
+> response stream. Each meaningful MCP event carries a complete JSON-RPC
+> message, not an arbitrary text fragment or model token.
+
+**Request-scoped stream:**
+
+> An SSE response associated with one originating request. It can carry
+> notifications related to that request and then its final response. It is not
+> a connection-wide protocol session.
+
+**Important limitation:**
+
+> SSE transports MCP messages. It does not automatically turn a tool result
+> into row-by-row output, model-token streaming, or a sequence of partial tool
+> results.
 
 ## An independently running server
 
@@ -14,10 +74,9 @@ Client process -- HTTP POST /mcp --> Server process --> ticket service
                <-- JSON or SSE ---
 ```
 
-Modern MCP sends requests to one MCP endpoint. A request can receive a JSON
-response or an SSE response stream. SSE means Server-Sent Events: a framing
-format for server-to-client events inside an HTTP response. It is not a
-separate business operation.
+Modern MCP sends requests to one endpoint. A request can receive one JSON
+response or one request-scoped SSE response. The transport changes how messages
+travel; it does not change the ticket tool's contract or business behavior.
 
 ## Run the same contracts
 
@@ -41,6 +100,10 @@ http: tool, resource, and prompt checks passed
 
 Stop the server with Ctrl-C. The client now uses a URL instead of a Python
 object or subprocess configuration. The tool and fixture remain the same.
+
+The passing check proves that discovery and the component contracts work over
+HTTP with the pinned client and server. It does not prove authentication, TLS,
+proxy routing, progress delivery, or every optional host feature.
 
 ## Understand the address
 
@@ -74,6 +137,14 @@ reached application execution.
 A browser GET to `/mcp` is not a complete tool test. Use a compatible client
 to exercise the actual method, metadata, and response handling.
 
+**Important distinctions:**
+
+- Streamable HTTP is MCP JSON-RPC over HTTP; it is not a REST resource design.
+- SSE is server-to-client on one HTTP response; it is not a full-duplex socket.
+- A request-scoped stream is not chat memory or durable business state.
+- A network connection succeeding does not prove that a tool operation
+  succeeded.
+
 **Professional articulation:**
 
 > “HTTP changes where the server runs and how messages travel. It preserves
@@ -81,8 +152,10 @@ to exercise the actual method, metadata, and response handling.
 
 ## Sources and next step
 
-- [Archive: conversations/chatgpt/5_StreamableHttp_Uvicorn.md](../../conversations/chatgpt/5_StreamableHttp_Uvicorn.md)
-- [Archive: conversations/streamable/streamable-3.md](../../conversations/streamable/streamable-3.md)
+- [Archived Streamable HTTP and Uvicorn example](../fastMcp-fastApi-uvicorn-ngnix-docker/5_StreamableHttp_Uvicorn.md)
+- [Archived streamable transport notes](../streamable/streamable-3.md)
+- [Legacy definitions and prerequisites](../elicitation/chunk-1.md)
+- [Legacy problem-first transport explanation](../elicitation/chunk-2.md)
 - [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http) — checked 2026-11-15.
 
 Next: [Progress, streaming, and final results](12-progress-streaming.md).

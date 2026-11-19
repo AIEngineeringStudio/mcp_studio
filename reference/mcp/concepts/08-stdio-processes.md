@@ -83,8 +83,8 @@ alone does not decide the transport.
 
 ## Sources and next step
 
-- [Archive: conversations/chatgpt/2_Real_stdio_Subprocess.md](../../conversations/chatgpt/2_Real_stdio_Subprocess.md)
-- [Archive: _learning_resources/troubleshoot.md](../../_learning_resources/troubleshoot.md)
+- [Archived stdio and subprocess example](../fastMcp-fastApi-uvicorn-ngnix-docker/2_Real_stdio_Subprocess.md)
+- [Archived troubleshooting notes](../../temp/troubleshoot.md)
 - [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio) — checked 2026-11-15.
 
 Next: [Resources, URIs, and templates](09-resources.md).

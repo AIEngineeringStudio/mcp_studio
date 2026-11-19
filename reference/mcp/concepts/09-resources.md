@@ -38,6 +38,31 @@ The [server](../labs/server.py) registers
 the lookup tool and serializes it as JSON text. The client's
 `read_resource("ticket://T-100")` check confirms that expected content arrives.
 
+The essential server code is:
+
+```python
+import json
+
+
+@mcp.resource("ticket://{ticket_id}")
+def ticket_resource(ticket_id: str) -> str:
+    """Read one synthetic ticket as JSON text."""
+    return json.dumps(lookup_ticket(ticket_id))
+```
+
+The template `ticket://{ticket_id}` describes a family of addresses. Reading
+`ticket://T-100` supplies `"T-100"` as the function argument.
+
+The client-side operation is:
+
+```python
+resources = await client.read_resource("ticket://T-100")
+print(resources[0].text)
+```
+
+This snippet assumes the connected client created in concept 07. See the
+[complete client](../labs/client.py) for imports, setup, and cleanup.
+
 The resource handler does not change ticket status. Keeping reads free of
 business mutations makes caching and repeated retrieval easier to reason about.
 
@@ -72,8 +97,8 @@ policy, not just a dictionary.
 
 ## Sources and next step
 
-- [Archive: conversations/chatgpt/3_Resources_Prompts.md](../../conversations/chatgpt/3_Resources_Prompts.md)
-- [Archive: docs/mcp-learning-guide2.md](../../docs/%5BDONE%5Dmcp-learning-guide2.md)
+- [Archived resources and prompts example](../fastMcp-fastApi-uvicorn-ngnix-docker/3_Resources_Prompts.md)
+- [Archived resource notes](../fast-mcp/03-resources.md)
 - [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/server/resources) — checked 2026-11-15.
 
 Next: [Reusable MCP prompts](10-prompts.md).

@@ -1,124 +1,176 @@
-# Host, client, model, and server
+# Host, model, client, and server
 
-**Outcome:** Locate each participant and assign responsibility for one tool invocation.
+**Outcome:** Identify the four participants in one MCP tool call and explain
+which participant owns each responsibility.
 
 **Prerequisites:** [01: Why MCP exists](01-why-mcp.md).
 
-## Separate decisions from execution
+## First separate the four roles
 
-### The main participants
+The words *host*, *model*, *client*, and *server* name different roles. They can
+live in the same application or in separate processes, but their
+responsibilities remain different.
 
-```
-Host
-└── Client
-    └── Server
-        ├── Tools
-        ├── Resources
-        └── Prompts
-```
-
-#### Host
-
-A MCP host is the **application containing the AI experience**.
-It orchestrates MCP clients.
-
-**Examples:** AI desktop application, IDE, agent runtime, or chat application.
-
-#### Client
-
-An MCP client is the **protocol participant inside the host** that communicates
-with one MCP server.
-
-Professional wording:
-
-> “The host owns the user interaction, while its MCP client manages protocol
-> communication with the server.”
-
-#### Server
-
-An MCP server is a program that **exposes capabilities and context**.
-
-It does **not necessarily contain an LLM**. It may simply expose database
-queries, API calls, calculations, files, or business operations.
-
-A technically accurate sentence would be:
-> “The host creates an MCP client which negotiates capabilities with the
-> server over the stdio transport.”
-
-
-```
-+---------------------- Host ----------------------+
-| User interface --> orchestration <--> model      |
-|                         |                        |
-|                     MCP client                   |
-+-------------------------|------------------------+
-                          |
-                      transport
-                          |
-                     MCP server
-                          |
-                   ticket service
-                          |
-                     ticket store
+```text
++------------------------ Host application -------------------------+
+|                                                                   |
+|  User interface <--> orchestration <--> language model            |
+|                              |                                    |
+|                         MCP client                                |
++------------------------------|------------------------------------+
+                               | MCP messages
+                               v
+                          MCP server
+                               |
+                               v
+                         ticket service
 ```
 
-A client is a role, not necessarily a separate operating-system process.
-A server can run in another process or machine; an in-memory test can place
-client and server objects in the same process.
+**Host:**
 
-## Trace the responsibilities
+> The application the user interacts with. It owns the AI experience,
+> coordinates the model, creates MCP clients, and applies user-facing policy.
 
-Suppose the user asks “Is T-100 open?” The host chooses which capabilities to
-show the model and how to apply its approval policy. The model proposes
-`get_ticket` with `ticket_id="T-100"`. The client encodes and sends that
-invocation. The server validates the request and dispatches to the handler.
-The business service reads the record. The client receives the result, and the
-host decides how to present or use it.
+Examples include a chat application, an IDE, or an agent runtime.
 
-Discovery does not automatically place a tool into a model prompt. The host
-must translate or expose the discovered contract in the form its model API
-expects. This is why a successful scripted client proves protocol connectivity
-without proving a particular AI host will use the tool correctly.
+**Model:**
 
-## Ownership determines failures
+> The language model used by the host. It can propose a tool name and arguments
+> after seeing a tool description. A proposal is data; it does not directly
+> execute the server's function.
 
-If a model chooses the wrong ticket ID, inspect host context and tool
-descriptions. If the subprocess cannot start, inspect client launch settings.
-If the tool is unknown, inspect registration and the discovered catalog.
-If the wrong user's ticket is returned, inspect server authorization and
-data access.
+**MCP client:**
 
-These are different layers. Changing the system prompt cannot repair a
-missing server executable. Changing transport cannot repair an authorization
-rule that trusts a caller-supplied tenant ID.
+> The protocol component inside the host that communicates with one MCP server.
+> It encodes requests, sends them, and decodes results.
 
-## Several servers
+**MCP server:**
 
-A host may manage several client/server relationships. A ticket server and a
-document server can be separate integrations with different identities and
-permissions. A single server can also expose many tools. Neither “one tool
-equals one server” nor “one host equals one server” is a protocol rule.
+> The protocol component that publishes tools, resources, and prompts. It
+> validates and dispatches calls to application code.
 
-Treat each boundary as a place where data and authority cross. A result from a
-document service is information, not an instruction to disable ticket-service
-access checks.
+**Dispatch:**
 
-**Worked observation:**
+> Selecting the registered handler that matches an incoming operation, then
+> calling it.
 
-> In the supplied lab, `client.py` is a scripted caller. It has no model and
-> no chat interface. This deliberately isolates discovery and execution from
-> model selection and reasoning.
+An MCP server does not need to contain a language model. It may expose database
+queries, calculations, files, or calls to an existing business API.
 
-**Professional articulation:**
+## “Client” and “server” are roles, not always machines
 
-> “The host owns orchestration, the client owns protocol communication, and
-> the server exposes a controlled boundary around application capabilities.”
+A beginner often hears *server* and imagines a remote computer. In MCP, the word
+first describes which side provides capabilities.
+
+```text
+In-memory test:  [client object | server object] in one Python process
+
+Local stdio:     [host + client] <--> [server child process]
+
+Remote HTTP:     [host + client] <---- network ----> [server process]
+```
+
+The same tool contract can be tested in all three arrangements. The later
+transport guides add one boundary at a time.
+
+## Trace one successful lookup
+
+Suppose the user asks, “Is T-100 open?”
+
+1. The **host** receives the user's message.
+2. The host gives the **model** a description of `get_ticket`.
+3. The model proposes `get_ticket` with `ticket_id="T-100"`.
+4. The host decides whether the proposal is allowed.
+5. The **MCP client** sends a structured request.
+6. The **MCP server** validates it and dispatches to the handler.
+7. The ticket service reads the record and returns data.
+8. The client receives the result; the host decides how to present it.
+
+```text
+Host decision -> client communication -> server execution -> host presentation
+```
+
+This separation matters because a failure at one role needs a fix at that role.
+
+## See the roles in Python
+
+The course lab uses a scripted client so protocol behavior can be learned
+without a model:
+
+```python
+from fastmcp import Client, FastMCP
+
+server = FastMCP("Ticket service")
+
+
+@server.tool
+def get_ticket(ticket_id: str) -> dict:
+    return {"id": ticket_id, "status": "open"}
+
+
+async def inspect_server() -> None:
+    async with Client(server) as client:
+        tools = await client.list_tools()
+        print([tool.name for tool in tools])
+```
+
+Here, `server` and `client` are in the same process. There is no model and no
+chat interface. This is intentional: it proves discovery and communication
+before adding model behavior.
+
+The complete runnable version appears in [concept 07](07-in-memory-client.md).
+
+## Ownership helps diagnose failures
+
+**Wrong tool or arguments proposed:**
+
+> Inspect the host's context, tool descriptions, and model interaction.
+
+**Server process does not start:**
+
+> Inspect the client launch command, interpreter, path, and server startup.
+
+**Tool is missing from discovery:**
+
+> Inspect server registration and the actual server instance being served.
+
+**Wrong user's ticket is returned:**
+
+> Inspect server-side identity, authorization, and data access. A system prompt
+> is not an authorization control.
+
+**Result is correct but displayed poorly:**
+
+> Inspect host-side result handling and presentation.
+
+## One host can use several servers
+
+A host may create one client for a ticket server and another for a document
+server. Each connection can use different identities and permissions.
+
+```text
+                       client A <--> ticket server
+Host application -----+
+                       client B <--> document server
+```
+
+A single server can expose several tools. MCP does not require one server per
+tool or one server per host.
+
+Treat every boundary as a place where data and authority cross. Text returned
+by a document server is information; it is not permission to bypass the ticket
+server's access checks.
+
+**Say it professionally:**
+
+> “The host owns orchestration and user policy, the model proposes actions, the
+> MCP client owns protocol communication, and the server exposes and enforces a
+> controlled capability boundary.”
 
 ## Sources and next step
 
-- [Archive: conversations/chatgpt/1_FirstMCPTool_InProcess.md](../../conversations/chatgpt/1_FirstMCPTool_InProcess.md)
-- [Archive: definitions.md](../../definitions.md)
-- [Official reference](https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture) — checked 2026-11-15.
+- [Archived in-process tool example](../fastMcp-fastApi-uvicorn-ngnix-docker/1_FirstMCPTool_InProcess.md)
+- [Archived definitions](../../temp/definitions.md)
+- [Official MCP architecture guide](https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture)
 
 Next: [JSON-RPC requests, responses, and notifications](03-json-rpc.md).
-

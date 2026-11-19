@@ -81,8 +81,8 @@ calls are needed. This keeps the failure signal about MCP contracts.
 
 ## Sources and next step
 
-- [Archive: conversations/chatgpt/1_FirstMCPTool_InProcess.md](../../conversations/chatgpt/1_FirstMCPTool_InProcess.md)
-- [Archive: _learning_resources/mcp_notes2.md](../../_learning_resources/mcp_notes2.md)
+- [Archived in-process tool example](../fastMcp-fastApi-uvicorn-ngnix-docker/1_FirstMCPTool_InProcess.md)
+- [Archived MCP notes](../../temp/mcp_notes.md)
 - [Official reference](https://gofastmcp.com/docs/clients/client) — checked 2026-11-15.
 
 Next: [stdio and subprocess boundaries](08-stdio-processes.md).

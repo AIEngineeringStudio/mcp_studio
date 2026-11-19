@@ -74,6 +74,27 @@ transport guards and identity checks are independent.
 For the small lab, keep the listener on loopback. For a remote service, add
 HTTPS, proper authentication, request limits, and per-operation policy.
 
+## Keep the checks independent in code
+
+This simplified function shows the order of questions. It is not a complete
+HTTP security implementation:
+
+```python
+def authorize_request(host: str, origin: str | None, bearer: str | None) -> str:
+    if host not in {"127.0.0.1:8765", "mcp.example.com"}:
+        raise ValueError("Unexpected Host")
+    if origin is not None and origin != "https://app.example.com":
+        raise ValueError("Origin not allowed")
+    if bearer is None:
+        raise PermissionError("Authentication required")
+    return verify_bearer_token(bearer)
+```
+
+The first two guards inspect transport context. `verify_bearer_token` answers
+an identity question. The later tool policy must still decide what that
+identity may do. Use the pinned framework's validated middleware and proxy
+configuration in production.
+
 **Professional articulation:**
 
 > “Host and Origin checks protect the transport boundary. CORS controls
@@ -81,8 +102,8 @@ HTTPS, proper authentication, request limits, and per-operation policy.
 
 ## Sources and next step
 
-- [Archive: _learning_resources/fastmcp_transport_security.md](../../_learning_resources/fastmcp_transport_security.md)
-- [Archive: conversations/chatgpt/5_StreamableHttp_Uvicorn.md](../../conversations/chatgpt/5_StreamableHttp_Uvicorn.md)
+- [Archived FastMCP transport-security notes](../fast-mcp/17-fastmcp_transport_security.md)
+- [Archived Streamable HTTP and Uvicorn example](../fastMcp-fastApi-uvicorn-ngnix-docker/5_StreamableHttp_Uvicorn.md)
 - [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http) — checked 2026-11-15.
 
 Next: [OAuth discovery and delegated access](20-oauth-discovery.md).

@@ -4,7 +4,8 @@
 statelessness changes discovery, HTTP routing, additional-input flows, and
 application state ownership.
 
-**Prerequisites:** [03: JSON-RPC requests, responses, and notifications](03-json-rpc.md),
+**Prerequisites:**
+[03: JSON-RPC requests, responses, and notifications](03-json-rpc.md),
 [04: Protocol versions and capability discovery](04-versions-discovery.md), and
 [05A: Stateful connection lifecycle](05A-stateful-lifecycle.md).
 
@@ -67,11 +68,11 @@ Each result has a required `resultType`. Ordinary final results use
 For Streamable HTTP, selected body fields are also mirrored into headers so a
 gateway can route and inspect requests without parsing JSON:
 
-| HTTP header | Mirrors | When required |
-|---|---|---|
-| `MCP-Protocol-Version` | Protocol version in `params._meta` | Every request POST |
-| `Mcp-Method` | JSON-RPC `method` | Every request POST |
-| `Mcp-Name` | `params.name` or `params.uri` | Named tool, prompt, and resource requests |
+| HTTP header            | Mirrors                            | When required                             |
+|------------------------|------------------------------------|-------------------------------------------|
+| `MCP-Protocol-Version` | Protocol version in `params._meta` | Every request POST                        |
+| `Mcp-Method`           | JSON-RPC `method`                  | Every request POST                        |
+| `Mcp-Name`             | `params.name` or `params.uri`      | Named tool, prompt, and resource requests |
 
 The mirrored header values must agree with the JSON-RPC body. The SDK should
 construct them; hand-written examples make them visible for learning.
@@ -282,14 +283,14 @@ still require shared infrastructure or deliberate routing.
 
 ## Compare the lifecycle eras
 
-| Concern | Through 2025-11-25 | 2026-07-28 |
-|---|---|---|
-| Start | `initialize`, result, `initialized` | Self-contained request; optional `server/discover` |
-| Version and client capabilities | Established during initialization | Repeated in every request's `_meta` |
-| HTTP protocol session | Optional `MCP-Session-Id` | Removed |
-| Server-to-client input | In-flight server request | `input_required`, then a new client request |
-| HTTP server events | POST/GET streams; optional resumption | Request-scoped POST stream; `subscriptions/listen` for changes |
-| Shutdown | Close transport; optional session `DELETE` | Finish or cancel individual requests; no protocol session to delete |
+| Concern                         | Through 2025-11-25                         | 2026-07-28                                                          |
+|---------------------------------|--------------------------------------------|---------------------------------------------------------------------|
+| Start                           | `initialize`, result, `initialized`        | Self-contained request; optional `server/discover`                  |
+| Version and client capabilities | Established during initialization          | Repeated in every request's `_meta`                                 |
+| HTTP protocol session           | Optional `MCP-Session-Id`                  | Removed                                                             |
+| Server-to-client input          | In-flight server request                   | `input_required`, then a new client request                         |
+| HTTP server events              | POST/GET streams; optional resumption      | Request-scoped POST stream; `subscriptions/listen` for changes      |
+| Shutdown                        | Close transport; optional session `DELETE` | Finish or cancel individual requests; no protocol session to delete |
 
 **Professional articulation:**
 
@@ -300,11 +301,11 @@ still require shared infrastructure or deliberate routing.
 
 ## Sources and next step
 
-- [Official 2026-07-28 protocol overview](https://modelcontextprotocol.io/specification/2026-07-28/basic/index) — checked 2026-11-17.
-- [Official versioning and compatibility](https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning) — checked 2026-11-17.
-- [Official 2026-07-28 Streamable HTTP transport](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http) — checked 2026-11-17.
-- [Official Multi Round-Trip Requests](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/mrtr) — checked 2026-11-17.
-- [Official 2026-07-28 changelog](https://modelcontextprotocol.io/specification/2026-07-28/changelog) — checked 2026-11-17.
+- [Official 2026-07-28 protocol overview](https://modelcontextprotocol.io/specification/2026-07-28/basic/index)
+- [Official versioning and compatibility](https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning)
+- [Official 2026-07-28 Streamable HTTP transport](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http)
+- [Official Multi Round-Trip Requests](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/mrtr)
+- [Official 2026-07-28 changelog](https://modelcontextprotocol.io/specification/2026-07-28/changelog)
 - [Version baseline](../VERSIONS.md).
 
 Next: [Tools and their contracts](05-tool-contracts.md). For deeper network

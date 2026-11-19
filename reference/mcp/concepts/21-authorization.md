@@ -356,7 +356,7 @@ provider timeout before and after a possible write
 - [Google OAuth for web-server applications](https://developers.google.com/identity/protocols/oauth2/web-server)
 - [Google Calendar MCP server configuration](https://developers.google.com/workspace/calendar/api/guides/configure-mcp-server)
 - [Google service accounts and domain-wide delegation](https://developers.google.com/identity/protocols/oauth2/service-account)
-- [Archive: secure gateway transcript](auth/01-Secure-MCP-gateway.md)
-- [Archive: request-context authentication transcript](auth/04B-MCP_server-AuthN.md)
+- [Archive: secure gateway transcript](../auth/01-Secure-MCP-gateway.md)
+- [Archive: request-context authentication transcript](../auth/04B-MCP_server-AuthN.md)
 
 Next: [Reverse proxies and TLS](22-proxy-tls.md).

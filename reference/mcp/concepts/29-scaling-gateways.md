@@ -70,6 +70,28 @@ benchmarks for this service. Establish a workload and measure your own system.
 > If one tool is slow because its SQL lacks an index, a gateway adds another
 > hop without fixing the query.
 
+## Make routing explicit
+
+This toy mapping shows why names need a stable routing rule:
+
+```python
+ROUTES = {
+    "tickets.get_ticket": "ticket-server",
+    "documents.search": "document-server",
+}
+
+
+def select_backend(public_tool_name: str) -> str:
+    try:
+        return ROUTES[public_tool_name]
+    except KeyError as error:
+        raise ValueError("Unknown gateway tool") from error
+```
+
+The mapping only selects a backend. It does not authorize the caller, forward a
+verified identity, bound concurrency, or translate results. Those are separate
+gateway responsibilities that need their own tests.
+
 **Professional articulation:**
 
 > “We scale the measured bottleneck and preserve explicit ownership of
@@ -77,9 +99,8 @@ benchmarks for this service. Establish a workload and measure your own system.
 
 ## Sources and next step
 
-- [Archive: conversations/auth/01-Secure-MCP-gateway.md](../../conversations/auth/01-Secure-MCP-gateway.md)
-- [Archive: conversations/chunks/04-mcp-chunk4.md](../../conversations/chunks/04-mcp-chunk4.md)
-- [Archive: conversations/streamable/streamable-6.md](../../conversations/streamable/streamable-6.md)
+- [Archived secure gateway example](../auth/01-Secure-MCP-gateway.md)
+- [Archived reconnect and state notes](../streamable/streamable-6.md)
 - [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning) — checked 2026-11-15.
 
 Next: [Optional extensions and deprecated features](30-extensions.md).

@@ -82,6 +82,21 @@ The same domain rules can be tested without MCP, exposed through MCP, and
 operated behind HTTP. Each stage adds one reason for complexity and a way to
 observe whether it works.
 
+## Keep the first implementation small
+
+The capstone begins with the same thin adapter used throughout the course:
+
+```python
+@mcp.tool
+def get_ticket(ticket_id: str) -> dict:
+    """Read one ticket by ID. Does not change it."""
+    return ticket_service.get(ticket_id)
+```
+
+Later stages evolve `ticket_service`; they do not require JSON-RPC parsing in
+the business layer. Add authorization, persistence, and idempotency where the
+responsibility belongs, then keep the MCP handler focused on translation.
+
 **Professional articulation:**
 
 > “We grow the service by adding a requirement, identifying the baseline's
@@ -89,9 +104,8 @@ observe whether it works.
 
 ## Sources and next step
 
-- [Archive: conversations/chunks/capstone.md](../../conversations/chunks/capstone.md)
-- [Archive: _learning_resources/requirements/00-requirements.md](../../_learning_resources/requirements/00-requirements.md)
-- [Archive: _learning_resources/requirements/01-requirements.md](../../_learning_resources/requirements/01-requirements.md)
+- [Complete synthetic lab](../labs/README.md)
+- [Archived MCP walkthrough](../walk-through-docs/walkthrough_doc.md)
 - [Official reference](https://modelcontextprotocol.io/specification/2026-07-28) — checked 2026-11-15.
 
 Return to the [course path](../README.md) or choose a concept to explore in depth.

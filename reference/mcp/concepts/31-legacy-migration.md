@@ -70,6 +70,23 @@ required host features, authentication, failure behavior, and any business
 side-effect protections. Record what was tested and which deployment remains
 a proposal.
 
+## Recognize implementation families in code
+
+These imports are evidence of different implementation surfaces:
+
+```python
+# Standalone FastMCP used by this course
+from fastmcp import FastMCP
+
+# Older official Python SDK v1 examples may use this instead
+from mcp.server.fastmcp import FastMCP as SDKv1FastMCP
+```
+
+Do not keep both in one migrated application. The side-by-side form is shown
+only for recognition. Select one pinned stack, rebuild one minimal server and
+client, and verify its actual protocol behavior before migrating advanced
+features.
+
 **Professional articulation:**
 
 > “We migrate the interaction model and state assumptions as well as the SDK
@@ -77,9 +94,8 @@ a proposal.
 
 ## Sources and next step
 
-- [Archive: docs/code-flow.md](../../docs/code-flow.md)
-- [Archive: conversations/chunks/03-mcp-chunk3(Duplicate).md](../../conversations/chunks/03-mcp-chunk3(Duplicate).md)
-- [Archive: conversations/chatgpt/81_MCP_Elicitation.md](../../conversations/chatgpt/81_MCP_Elicitation.md)
+- [Archived MCP walkthrough](../walk-through-docs/walk-through.md)
+- [Archived legacy elicitation example](../fastMcp-fastApi-uvicorn-ngnix-docker/81_MCP_Elicitation.md)
 - [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/changelog) — checked 2026-11-15.
 
 Next: [A ticket service grown one requirement at a time](32-capstone.md).
