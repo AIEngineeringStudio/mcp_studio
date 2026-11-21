@@ -119,14 +119,32 @@ live connection session.
 
 ## Hands-on checkpoint
 
-The repository separates domain logic from protocol registration. Run both
-layers independently:
+**Execution boundary:**
+
+> In-memory MCP. The server lifespan still starts and stops normally; only the
+> process and network boundaries are removed.
+
+Run the focused lifespan exercise from the repository root. It creates one
+application-lifetime repository, serves two requests through it, and then
+verifies one shutdown:
 
 ```bash
 cd reference/mcp/labs
-uv run python -m unittest -q test_domain
-uv run python -m unittest -q test_protocol
+UV_CACHE_DIR=.uv-cache uv sync --locked
+uv run python verify_context_lifespan.py
 ```
+
+Expected output:
+
+```
+lifespan: one startup served two requests, then one shutdown ran
+tool schema: ticket_id is public; repository remains internal
+```
+
+The complete runnable exercise is
+[`verify_context_lifespan.py`](../labs/verify_context_lifespan.py). The existing
+domain and protocol test suites remain useful for layer isolation, but this
+exercise directly proves the state lifetimes taught here.
 
 Read
 [`../concepts/17-application-lifespan.md`](../concepts/17-application-lifespan.md)

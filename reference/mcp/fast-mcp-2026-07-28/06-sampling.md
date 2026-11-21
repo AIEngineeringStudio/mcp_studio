@@ -106,6 +106,56 @@ server-initiated sampling API is not the design target for a modern-only
 application. Use a provider SDK for new production code. Keep legacy exercises
 in `../fast-mcp-2025-11-25/` clearly labeled.
 
+## Server-owned provider code
+
+This concept exercise injects a deterministic provider. A production extension
+would replace it with the chosen provider SDK, credentials, timeout, retry, and
+cost policy.
+
+```python
+from typing import Protocol
+
+
+class SummaryProvider(Protocol):
+    async def summarize(self, text: str) -> str: ...
+
+
+async def summarize_ticket(
+    ticket_id: str,
+    provider: SummaryProvider,
+) -> str:
+    return await provider.summarize(f"Ticket {ticket_id} is open.")
+```
+
+The MCP handler owns or receives the provider dependency. It does not send a
+`sampling/createMessage` request to the connected client.
+
+## Hands-on checkpoint
+
+**Execution boundary:**
+
+> In-memory MCP with a deterministic fake downstream provider. There is no
+> client sampling request, model account, external API, or secret.
+
+Run the deterministic provider-boundary exercise from the repository root. It
+uses no model account, network API, or secret:
+
+```bash
+cd reference/mcp/labs
+UV_CACHE_DIR=.uv-cache uv sync --locked
+uv run python verify_sampling_boundary.py
+```
+
+Expected output:
+
+```
+sampling replacement: the MCP server called its own provider
+no sampling/createMessage request was sent to the client
+```
+
+The complete runnable exercise is
+[`verify_sampling_boundary.py`](../labs/verify_sampling_boundary.py).
+
 **Say it professionally:**
 
 > Sampling borrowed inference from the connected MCP client. Because that

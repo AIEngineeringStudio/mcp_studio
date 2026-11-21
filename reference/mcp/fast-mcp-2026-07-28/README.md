@@ -77,6 +77,10 @@ UV_CACHE_DIR=.uv-cache uv sync --locked
 uv run python -m unittest -q
 ```
 
+Every numbered lesson now links to a focused runnable checkpoint. The complete
+command list is in the [lab README](../labs/README.md); use the command in the
+current lesson when studying one concept rather than running unrelated tests.
+
 The workspace-local cache keeps this exercise inside the project directory.
 The commands are the same on Intel and Apple Silicon Macs. The current
 validation record identifies which platform was actually executed; a lockfile

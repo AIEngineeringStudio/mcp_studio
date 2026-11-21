@@ -97,9 +97,31 @@ both paths explicitly.
 
 ## Hands-on checkpoint
 
-Add a timing middleware to a copy of the lab server, then confirm that the tool
-contract and client call remain unchanged. Keep any experiment inside the
-workspace and do not print diagnostics to stdout when running stdio.
+**Execution boundary:**
+
+> In-memory MCP. This isolates FastMCP's middleware ordering around real tool
+> dispatch.
+
+Run the focused middleware exercise from the repository root. It records the
+before/handler/after order and compares the tool schema before and after the
+call:
+
+```bash
+cd reference/mcp/labs
+UV_CACHE_DIR=.uv-cache uv sync --locked
+uv run python verify_middleware.py
+```
+
+Expected output:
+
+```
+middleware order: before -> tool handler -> after
+tool schema and client call stayed unchanged
+```
+
+The complete runnable exercise is
+[`verify_middleware.py`](../labs/verify_middleware.py). It keeps diagnostics in
+an in-memory list, so it cannot corrupt stdio framing.
 
 **Say it professionally:**
 

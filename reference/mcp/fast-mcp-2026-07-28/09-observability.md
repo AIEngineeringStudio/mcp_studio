@@ -107,13 +107,33 @@ being reported as server incidents.
 
 ## Hands-on checkpoint
 
-Run the lab over stdio and confirm that its protocol output remains separate
-from diagnostics:
+**Execution boundary:**
+
+> stdio. The client launches a real child server and keeps protocol stdout
+> separate from diagnostic stderr.
+
+Run the focused stdio exercise from the repository root. It captures the child
+server's stderr in a separate file while the MCP client continues to exchange
+protocol messages over stdin and stdout:
 
 ```bash
 cd reference/mcp/labs
-uv run python client.py stdio
+UV_CACHE_DIR=.uv-cache uv sync --locked
+uv run python verify_observability.py
 ```
+
+Expected output:
+
+```
+tool result: {'ticket_id': 'T-100', 'status': 'open'}
+stderr diagnostic: ticket_lookup_complete ... outcome=success
+verified: diagnostics did not corrupt the stdio protocol
+```
+
+The complete runnable files are
+[`logging_server.py`](../labs/logging_server.py) and
+[`verify_observability.py`](../labs/verify_observability.py). The log deliberately
+omits the ticket ID to demonstrate source-level redaction.
 
 Read
 [`../concepts/28-observability.md`](../concepts/28-observability.md) for the

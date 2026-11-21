@@ -125,10 +125,30 @@ notifications stay on the originating request's response stream.
 
 ## Hands-on checkpoint
 
+**Execution boundary:**
+
+> In-memory MCP. The client still sends resource discovery and read requests;
+> only the process and network boundaries are removed.
+
+Run the resource-specific exercise from the repository root. It discovers the
+`ticket://{ticket_id}` template and reads one concrete URI:
+
 ```bash
 cd reference/mcp/labs
-uv run python -m unittest -q test_protocol
+UV_CACHE_DIR=.uv-cache uv sync --locked
+uv run python verify_primitives.py resources
 ```
+
+Expected output:
+
+```
+resources: discovered ticket://{ticket_id} and read ticket://T-100
+```
+
+The complete runnable exercise is
+[`verify_primitives.py`](../labs/verify_primitives.py). Unlike the earlier
+generic test command, this check actually exercises resource-template discovery
+and `resources/read` through the client API.
 
 Read [`../concepts/09-resources.md`](../concepts/09-resources.md) for the deeper
 resource-design lesson.

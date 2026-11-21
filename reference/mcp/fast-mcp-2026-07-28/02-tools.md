@@ -162,10 +162,36 @@ or authorization.
 
 ## Hands-on checkpoint
 
+**Execution boundary:**
+
+> In-memory MCP. This isolates tool discovery, schema validation, dispatch, and
+> error behavior from process and network concerns.
+
+Run the tool-specific exercise from the repository root. It inspects the
+generated input schema and calls the discovered tool:
+
 ```bash
 cd reference/mcp/labs
+UV_CACHE_DIR=.uv-cache uv sync --locked
+uv run python verify_primitives.py tools
+```
+
+Expected output:
+
+```
+tools: discovered get_ticket and called it successfully
+```
+
+Then run the negative contract checks. They prove that a missing required
+argument and an unknown business record fail through different validation
+paths:
+
+```bash
 uv run python -m unittest -q test_protocol
 ```
+
+The complete runnable exercise is
+[`verify_primitives.py`](../labs/verify_primitives.py).
 
 Read [`../concepts/05-tool-contracts.md`](../concepts/05-tool-contracts.md) for
 the deeper contract-design lesson.

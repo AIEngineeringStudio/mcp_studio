@@ -87,14 +87,62 @@ Progress belongs to one active request. Durable background work belongs to the
 optional `io.modelcontextprotocol/tasks` extension. Do not confuse a progress
 token with a durable task handle.
 
+## FastMCP implementation
+
+The client opts into progress by supplying a progress handler. FastMCP then
+adds the progress token and delivers matching notifications to that handler.
+
+```python
+import asyncio
+
+from fastmcp import Context, FastMCP
+
+mcp = FastMCP("Progress exercise")
+
+
+@mcp.tool
+async def process_records(count: int, ctx: Context) -> int:
+    try:
+        for index in range(1, count + 1):
+            await asyncio.sleep(0.01)
+            await ctx.report_progress(index, count, f"processed {index}")
+        return count
+    finally:
+        # Release request-owned resources here.
+        pass
+```
+
+`finally` runs for success, failure, and cooperative cancellation. It releases
+resources; it does not undo already committed business effects.
+
 ## Hands-on checkpoint
 
-Run the transport-independent test suite, then read the focused guides:
+**Execution boundary:**
+
+> In-memory MCP. It exercises real progress notifications and cancellation
+> propagation without adding stdio or HTTP variables.
+
+Run the focused progress and cancellation exercise from the repository root:
 
 ```bash
 cd reference/mcp/labs
-uv run python -m unittest -q
+UV_CACHE_DIR=.uv-cache uv sync --locked
+uv run python verify_progress.py
 ```
+
+Expected output:
+
+```
+progress: received monotonic updates [1, 2, 3]
+cancellation: server cleanup ran and no normal result was returned
+```
+
+The complete runnable exercise is
+[`verify_progress.py`](../labs/verify_progress.py). It first completes a call
+and records progress. It then cancels a second call after its first update and
+verifies the handler's cleanup path.
+
+For the transport-specific wire behavior, read:
 
 - [`../concepts/12-progress-streaming.md`](../concepts/12-progress-streaming.md)
 - [`../concepts/25-reliability.md`](../concepts/25-reliability.md)

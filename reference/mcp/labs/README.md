@@ -28,41 +28,71 @@ resolution for this concept snapshot.
 
 ## Source files
 
-- [server.py](server.py): fixtures, ordinary lookup, tool, resource template,
-  and reusable prompt.
-- [client.py](client.py): checks through memory, stdio, or HTTP.
-- [test_domain.py](test_domain.py): successful read, missing record, and
-  accidental mutation protection.
-- [test_protocol.py](test_protocol.py): missing argument and unknown-record
-  failures through the MCP client.
-- [continuation_model.py](continuation_model.py): dependency-free model of
-  approval, caller isolation, and sequential replay.
-- [verify_http.py](verify_http.py): starts a temporary server, verifies HTTP,
-  and stops only its own process.
-- [auth_calendar_server.py](auth_calendar_server.py): publishes OAuth Protected
-  Resource Metadata, validates fake bearer tokens, filters tools by scope, and
-  models a separate downstream calendar credential.
-- [verify_auth_calendar.py](verify_auth_calendar.py): starts the calendar server
-  and verifies discovery, authorization, direct-call denial, user isolation,
-  and mock OBO.
+- **Core service:** [server.py](server.py), [client.py](client.py),
+  [test_domain.py](test_domain.py), and [test_protocol.py](test_protocol.py).
+- **Modern request model:**
+  [client.py](transport_inspection/client.py),
+  [verify_primitives.py](verify_primitives.py), and
+  [compare_protocol_eras.py](compare_protocol_eras.py).
+- **Deprecated-feature replacements:**
+  [verify_modern_roots_replacement.py](verify_modern_roots_replacement.py) and
+  [verify_sampling_boundary.py](verify_sampling_boundary.py).
+- **Request behavior:** [continuation_model.py](continuation_model.py),
+  [verify_progress.py](verify_progress.py),
+  [verify_pagination_completion.py](verify_pagination_completion.py), and
+  [verify_context_lifespan.py](verify_context_lifespan.py).
+- **FastMCP architecture:** [verify_middleware.py](verify_middleware.py) and
+  [verify_composition.py](verify_composition.py).
+- **Transport and operations:** [logging_server.py](logging_server.py),
+  [verify_observability.py](verify_observability.py),
+  [verify_http.py](verify_http.py),
+  [transport_security_server.py](transport_security_server.py), and
+  [verify_transport_security.py](verify_transport_security.py).
+- **Authorization:** [auth_calendar_server.py](auth_calendar_server.py) and
+  [verify_auth_calendar.py](verify_auth_calendar.py).
 
 ## Run each boundary
 
+The lesson checkpoints use three execution boundaries:
+
+- **In-memory MCP:** protocol and FastMCP behavior without a child process or
+  network port.
+- **stdio:** a client-managed child process using stdin/stdout for protocol
+  traffic and stderr for diagnostics.
+- **Streamable HTTP:** temporary loopback servers for transport,
+  authorization, and Host/Origin checks.
+
+`continuation_model.py` has no MCP transport, and the cursor portion of
+`verify_pagination_completion.py` is a plain-Python application model. Their
+lessons label those limits explicitly.
+
 ```bash
 uv run python -m unittest -v test_domain.py test_protocol.py
+uv run python client.py --transport stdio
+uv run python verify_primitives.py tools
+uv run python verify_primitives.py resources
+uv run python verify_primitives.py prompts
+uv run python verify_modern_roots_replacement.py
+uv run python verify_sampling_boundary.py
+uv run python continuation_model.py
+uv run python verify_progress.py
+uv run python verify_observability.py
+uv run python verify_pagination_completion.py
+uv run python verify_context_lifespan.py
+uv run python verify_middleware.py
+uv run python verify_composition.py
+uv run python compare_protocol_eras.py
 uv run python client.py memory
 uv run python client.py stdio
-uv run python continuation_model.py
 uv run python verify_http.py
 uv run python verify_auth_calendar.py
+uv run python verify_transport_security.py
 ```
 
-Expected results: three domain tests and two protocol tests pass; each client
-mode reports `tool, resource, and prompt checks passed`; the domain model
-reports its decline/identity/replay checks passed; and the calendar check
-reports that discovery, private visibility, denial, user isolation, and mock
-delegation passed.
-Server diagnostics may also appear on stderr, separately from protocol stdout.
+Each command prints the specific behavior it verified. Three domain tests and
+two negative protocol-contract tests pass. HTTP checks use only loopback ports
+and stop only the child process they started. Server diagnostics may appear on
+stderr, separately from protocol stdout.
 
 For the manual HTTP flow, use two terminals in this directory:
 
@@ -89,6 +119,11 @@ The client also asserts that the negotiated protocol is `2026-07-28`.
 The continuation simulation is not MCP wire code or a real approval UI. It is
 sequential and in-memory. Durable storage, atomic consumption, signed state,
 OAuth, and actual MRTR callbacks are separate implementation exercises.
+
+The pagination helper is an application-level cursor model; its completion
+check uses the real MCP API. The sampling replacement uses a deterministic fake
+provider, not a live model. Middleware, composition, progress, lifespan, and
+protocol-era checks use real FastMCP client/server calls in memory.
 
 The calendar lab uses real MCP HTTP authorization middleware but fake token
 records and a mock downstream credential broker. It is not a real authorization

@@ -48,6 +48,29 @@ Do not assume that proxying makes an upstream tool safe. Re-apply authorization,
 visibility policy, argument validation, timeout, and result-size controls at
 the gateway boundary.
 
+## FastMCP mount code
+
+Mounting keeps the child server behind the parent's standard MCP catalog. The
+namespace prevents a collision with parent-owned component names.
+
+```python
+from fastmcp import FastMCP
+
+child = FastMCP("Ticket child")
+
+
+@child.tool
+def status(ticket_id: str) -> str:
+    return f"{ticket_id}:open"
+
+
+parent = FastMCP("Gateway parent")
+parent.mount(child, namespace="tickets")
+```
+
+The client discovers `tickets_status`; it does not send a special mount or
+provider protocol method.
+
 ## Transforms adapt exposed contracts
 
 A transform may rename, namespace, filter, or reshape components. It needs a
@@ -86,10 +109,31 @@ Prefer a small focused server until aggregation solves a measured problem.
 
 ## Hands-on checkpoint
 
-Start with two small in-memory FastMCP servers, mount or proxy one under a
-namespace, and verify that the client still uses only `tools/list` and
-`tools/call`. Do not add Tool Search until the catalog size creates a real
-context or usability problem.
+**Execution boundary:**
+
+> In-memory MCP. Parent and child servers share one process, which demonstrates
+> mounting rather than remote proxying.
+
+Run the in-memory composition exercise from the repository root:
+
+```bash
+cd reference/mcp/labs
+UV_CACHE_DIR=.uv-cache uv sync --locked
+uv run python verify_composition.py
+```
+
+Expected output:
+
+```
+composed catalog: ['health', 'tickets_status']
+client used ordinary tools/list and tools/call
+```
+
+The complete runnable exercise is
+[`verify_composition.py`](../labs/verify_composition.py). It mounts one child
+under a namespace, lists the composed catalog, and calls the namespaced tool.
+Do not add Tool Search until catalog size creates a measured context or
+usability problem.
 
 **Say it professionally:**
 

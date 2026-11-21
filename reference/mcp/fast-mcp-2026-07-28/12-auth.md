@@ -91,6 +91,26 @@ request
 Filtering `tools/list` is useful, but it is not enforcement. A caller can still
 send `tools/call` directly; authorize both discovery and execution.
 
+## One policy for visibility and execution
+
+The lab uses one policy function in both paths. A hidden tool is also denied
+when a client calls its name directly.
+
+```python
+TOOL_SCOPES = {
+    "list_calendar_events": "calendar:read",
+    "create_calendar_event": "calendar:write",
+}
+
+
+def permits(tool_name: str, granted_scopes: set[str]) -> bool:
+    required_scope = TOOL_SCOPES.get(tool_name)
+    return required_scope is None or required_scope in granted_scopes
+```
+
+Production code receives `granted_scopes` only after validating issuer,
+audience, expiry, signature or introspection, and token status.
+
 ## Token passthrough is forbidden
 
 Do not forward an MCP access token unchanged to a downstream API. That creates
@@ -112,12 +132,28 @@ and replay policy, and re-authorize every retry.
 
 ## Hands-on checkpoint
 
+**Execution boundary:**
+
+> Streamable HTTP on loopback. Tokens and the downstream calendar are
+> synthetic; no authorization server or external account is contacted.
+
 The calendar authorization lab uses synthetic tokens and no external account:
 
 ```bash
 cd reference/mcp/labs
+UV_CACHE_DIR=.uv-cache uv sync --locked
 uv run python verify_auth_calendar.py
 ```
+
+Expected output ends with:
+
+```
+calendar auth: discovery, private tool visibility, direct-call denial, user isolation, and mock downstream delegation passed
+```
+
+The complete runnable files are
+[`auth_calendar_server.py`](../labs/auth_calendar_server.py) and
+[`verify_auth_calendar.py`](../labs/verify_auth_calendar.py).
 
 Read the detailed sequence in
 [`../concepts/20-oauth-discovery.md`](../concepts/20-oauth-discovery.md) and

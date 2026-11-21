@@ -116,10 +116,30 @@ code.
 
 ## Hands-on checkpoint
 
+**Execution boundary:**
+
+> In-memory MCP. The client performs prompt discovery and retrieval without
+> launching a model or opening a network port.
+
+Run the prompt-specific exercise from the repository root. It discovers the
+prompt, renders it with an argument, and confirms that retrieval did not invoke
+a model:
+
 ```bash
 cd reference/mcp/labs
-uv run python -m unittest -q test_protocol
+UV_CACHE_DIR=.uv-cache uv sync --locked
+uv run python verify_primitives.py prompts
 ```
+
+Expected output:
+
+```
+prompts: discovered summarize_ticket and rendered its message
+prompts: no model was invoked
+```
+
+The complete runnable exercise is
+[`verify_primitives.py`](../labs/verify_primitives.py).
 
 Read [`../concepts/10-prompts.md`](../concepts/10-prompts.md) for a deeper trace.
 

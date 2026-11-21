@@ -130,13 +130,30 @@ Other methods must not return this result type.
 
 ## Hands-on checkpoint
 
+**Execution boundary:**
+
+> No MCP transport. This is a protocol-independent application state machine
+> for decline, caller isolation, and replay behavior.
+
 The repository includes a protocol-independent state-machine exercise that
 proves decline handling, identity isolation, and replay safety:
 
 ```bash
 cd reference/mcp/labs
+UV_CACHE_DIR=.uv-cache uv sync --locked
 uv run python continuation_model.py
 ```
+
+Expected output:
+
+```
+Decline, identity isolation, and sequential replay checks passed
+```
+
+Read the complete runnable state machine in
+[`continuation_model.py`](../labs/continuation_model.py). It deliberately tests
+the application behavior below MRTR; it does not pretend to be a user interface
+or a raw MCP wire implementation.
 
 Then read
 [`../concepts/13-elicitation.md`](../concepts/13-elicitation.md) and

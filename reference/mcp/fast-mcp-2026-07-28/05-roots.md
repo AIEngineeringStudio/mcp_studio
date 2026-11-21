@@ -108,13 +108,19 @@ The client retries the original `tools/call`, `resources/read`, or
 
 ## Hands-on checkpoint
 
-Design a modern replacement for this legacy signature:
+**Execution boundary:**
+
+> In-memory MCP. The exercise verifies the replacement tool's public schema
+> and dispatch behavior without accessing the local filesystem.
+
+The runnable replacement uses a server-known `project_id` instead of this
+legacy design:
 
 ```
 search_code(query) + hidden roots/list dependency
 ```
 
-A better public contract is:
+The modern public contract is:
 
 ```
 search_project(project_id, query)
@@ -122,6 +128,25 @@ search_project(project_id, query)
 
 The `project_id` is explicit, auditable, and resolvable through server-owned
 authorization policy.
+
+Run it from the repository root:
+
+```bash
+cd reference/mcp/labs
+UV_CACHE_DIR=.uv-cache uv sync --locked
+uv run python verify_modern_roots_replacement.py
+```
+
+Expected output:
+
+```
+roots replacement: project_id and query are explicit tool inputs
+result: ['src/server.py']
+```
+
+Read the complete runnable code in
+[`verify_modern_roots_replacement.py`](../labs/verify_modern_roots_replacement.py).
+It verifies that only `project_id` and `query` appear in the tool schema.
 
 **Say it professionally:**
 

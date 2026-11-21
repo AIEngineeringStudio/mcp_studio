@@ -44,6 +44,23 @@ protection enabled rejects normal requests because every request has a Host.
 rejects requests that carry an Origin but can still allow non-browser requests
 without one.
 
+Use explicit values that match the deployment:
+
+```python
+mcp.run(
+    transport="http",
+    host="127.0.0.1",
+    port=8781,
+    host_origin_protection=True,
+    allowed_hosts=["127.0.0.1:8781"],
+    allowed_origins=["https://trusted.example"],
+)
+```
+
+This is transport filtering, not authentication. A non-browser client can omit
+`Origin`, so remote endpoints still need authenticated identity and
+authorization.
+
 ## CORS is separate
 
 Origin allowlisting in transport security rejects untrusted origins. CORS
@@ -91,12 +108,33 @@ network policy, and gateway enforcement. It is not established by Origin alone.
 
 ## Hands-on checkpoint
 
-Run the loopback-only HTTP verification:
+**Execution boundary:**
+
+> Streamable HTTP on loopback. The verifier sends trusted and untrusted Host
+> and Origin combinations to `127.0.0.1:8781`.
+
+Run the loopback-only Host and Origin verification from the repository root:
 
 ```bash
 cd reference/mcp/labs
-uv run python verify_http.py
+UV_CACHE_DIR=.uv-cache uv sync --locked
+uv run python verify_transport_security.py
 ```
+
+Expected output:
+
+```
+allowed Host + trusted Origin -> 200
+untrusted Host -> 421
+untrusted Origin -> 403
+allowed Host + absent Origin -> 200 (not authentication)
+```
+
+The complete runnable files are
+[`transport_security_server.py`](../labs/transport_security_server.py) and
+[`verify_transport_security.py`](../labs/verify_transport_security.py). The
+verifier refuses to run if port `8781` is occupied and terminates only the
+process it starts.
 
 Read
 [`../concepts/19-origin-cors.md`](../concepts/19-origin-cors.md) and

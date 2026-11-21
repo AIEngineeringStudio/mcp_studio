@@ -94,7 +94,23 @@ new request with a new ID. Use idempotency and outcome lookup for side effects.
 
 ## FastMCP run modes
 
-The repository's server supports both transports:
+The same FastMCP application can serve stdio or HTTP. A client chooses a
+transport without changing component names or arguments:
+
+```python
+from fastmcp import Client
+
+
+async def read_ticket(mcp_target) -> dict:
+    async with Client(mcp_target) as client:
+        result = await client.call_tool(
+            "get_ticket",
+            {"ticket_id": "T-100"},
+        )
+        return result.data
+```
+
+The repository's server exposes both run modes:
 
 ```bash
 cd reference/mcp/labs
@@ -111,6 +127,33 @@ uv run python client.py http
 
 The example binds to `127.0.0.1`. The commands are the same on Intel and Apple
 Silicon Macs.
+
+## Hands-on checkpoint
+
+**Execution boundary:**
+
+> Streamable HTTP on loopback. The verifier starts a child server on
+> `127.0.0.1:8765`, makes MCP calls, and stops that server.
+
+Run the self-contained HTTP verifier from the repository root. It starts only
+its own loopback server, calls the tool, resource, and prompt over HTTP, and
+then terminates that process:
+
+```bash
+cd reference/mcp/labs
+UV_CACHE_DIR=.uv-cache uv sync --locked
+uv run python verify_http.py
+```
+
+Expected client output:
+
+```
+http: tool, resource, and prompt checks passed
+```
+
+The complete runnable code is
+[`verify_http.py`](../labs/verify_http.py). It refuses to run if port `8765` is
+already occupied, so it never stops an unrelated service.
 
 ## Operational rules
 

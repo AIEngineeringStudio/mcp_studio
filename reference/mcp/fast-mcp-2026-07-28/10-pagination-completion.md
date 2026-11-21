@@ -101,10 +101,63 @@ Completion can use previously supplied argument values as context. Treat that
 context as untrusted and do not reveal suggestions the caller is not allowed to
 discover.
 
+## FastMCP completion handler
+
+FastMCP declares the completions capability when a handler is registered. The
+handler still filters suggestions according to application authorization.
+
+```python
+from fastmcp import FastMCP
+from mcp_types import PromptReference
+
+mcp = FastMCP("Ticket completion")
+
+
+@mcp.prompt
+def triage_ticket(ticket_id: str) -> str:
+    return f"Triage {ticket_id}."
+
+
+@mcp.completion
+def complete_ticket_id(ref, argument, _context):
+    allowed = ["T-100", "T-101", "T-200"]
+    if isinstance(ref, PromptReference) and ref.name == "triage_ticket":
+        if argument.name == "ticket_id":
+            return [item for item in allowed if item.startswith(argument.value)]
+    return None
+```
+
 ## Hands-on checkpoint
 
-Read the focused course guide and sketch a loop that stops only when
-`nextCursor` is absent:
+**Execution boundary:**
+
+> Mixed. Cursor pagination is a plain-Python application model; completion is
+> a real in-memory MCP `completion/complete` request.
+
+Run the focused exercise from the repository root. It follows an
+integrity-protected opaque cursor until `next_cursor` is absent, then sends a
+real `completion/complete` request through FastMCP:
+
+```bash
+cd reference/mcp/labs
+UV_CACHE_DIR=.uv-cache uv sync --locked
+uv run python verify_pagination_completion.py
+```
+
+Expected output:
+
+```
+pagination: followed opaque cursors and collected all five tickets
+completion: T-2 -> ['T-200', 'T-201']
+validation remains required for the final supplied argument
+```
+
+The complete runnable exercise is
+[`verify_pagination_completion.py`](../labs/verify_pagination_completion.py).
+The paginator is a small application model; the completion call uses the real
+MCP client and server APIs.
+
+For deeper cache and invalidation rules, read:
 
 - [`../concepts/26-pagination-cache.md`](../concepts/26-pagination-cache.md)
 
