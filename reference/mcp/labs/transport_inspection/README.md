@@ -161,6 +161,21 @@ discovery = client.session.discover_result
 
 This reads the result of discovery that already happened.
 
+**Explicit discovery call**
+
+```python
+async with Client(mcp) as client:
+    discovery = await client.session.discover()
+
+    print(discovery.supported_versions)
+    print(discovery.capabilities)
+```
+
+**Important:**
+By the time execution enters `async with`, FastMCP has already performed 
+discovery automatically. Calling `client.session.discover()` again 
+returns the stored result rather than sending another request.
+
 Later, code executes:
 
 ```python
