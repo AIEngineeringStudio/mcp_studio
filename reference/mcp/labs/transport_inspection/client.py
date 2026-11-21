@@ -1,4 +1,9 @@
-"""Run the same MCP 2026-07-28 inspection through three transports."""
+"""Demonstrate MCP 2026-07-28 discovery and request metadata separately.
+
+Choose --example discovery to see server capabilities without tools/call.
+Choose --example metadata to see client capabilities on a tools/call request.
+Use --example both (default) to run both demonstrations.
+"""
 
 import argparse
 import asyncio
@@ -17,17 +22,17 @@ from server import mcp
 
 
 async def decline_elicitation(
-        _message: str,
-        _response_type: type[Any] | None,
-        _params: Any,
-        _context: Any,
+    _message: str,
+    _response_type: type[Any] | None,
+    _params: Any,
+    _context: Any,
 ) -> ElicitResult:
-    """Register elicitation support without asking for real user input."""
+    """Advertise elicitation support, but decline any actual requests."""
     return ElicitResult(action="decline")
 
 
 def client_source(mode: str) -> Any:
-    """Choose transport while keeping the inspection logic unchanged."""
+    """Use the same examples with in-memory, stdio, or HTTP transport."""
     if mode == "in-memory":
         return mcp
     if mode == "stdio":
@@ -44,66 +49,80 @@ def client_source(mode: str) -> Any:
     raise ValueError(f"Unsupported mode: {mode}")
 
 
-async def inspect(transport_name: str) -> None:
+async def show_server_discovery(client: Client) -> None:
+    """Example A: read server/discover and list tools; do not call any tool."""
+    # FastMCP already sent server/discover when entering `async with Client(...)`.
+    # Reading discover_result does not make another MCP request.
+    discovery = client.session.discover_result
+    assert discovery is not None, "Expected server/discover negotiation"
+
+    server_capabilities = discovery.capabilities.model_dump(
+        by_alias=True,
+        exclude_none=True,
+    )
+
+    print("\nEXAMPLE A: Server discovery (no tools/call)")
+    print("server/discover response (already obtained during connection)")
+    print(f"  supported versions: {discovery.supported_versions}")
+    print(f"  server capabilities: {sorted(server_capabilities)}")
+
+    # tools/list enumerates individual tools. It is not a tools/call invocation.
+    tools = await client.list_tools()
+    print("\ntools/list response")
+    for tool in tools:
+        print(f"  Name: {tool.name}")
+        print(f"  Description: {tool.description}")
+        print(f"  Input schema: {tool.input_schema}")
+
+
+async def show_client_request_metadata(client: Client) -> None:
+    """Example B: call a custom tool to inspect this request's client metadata."""
+    # This tools/call does NOT perform discovery. The server tool simply reads
+    # the protocol version and client capabilities attached to this request.
+    observed = (await client.call_tool("inspect_request_metadata")).data
+
+    assert observed["protocol_version"] == "2026-07-28"
+    assert "elicitation" in observed["client_capabilities"]
+
+    print("\nEXAMPLE B: Client metadata on an ordinary tools/call request")
+    print("tools/call -> inspect_request_metadata")
+    print(
+        "  io.modelcontextprotocol/protocolVersion: "
+        f"{observed['protocol_version']}"
+    )
+    print("  io.modelcontextprotocol/clientCapabilities:")
+    print(json.dumps(observed["client_capabilities"], indent=4))
+    print("\nVerified: the client advertised optional elicitation support.")
+
+
+async def inspect(transport_name: str, example: str) -> None:
     async with Client(
-            transport=client_source(transport_name),
-            name="lesson-1-client",
-            elicitation_handler=decline_elicitation,
+        transport=client_source(transport_name),
+        name="lesson-1-client",
+        elicitation_handler=decline_elicitation,
     ) as client:
+        # Automatic protocol negotiation occurs here, before either example.
         assert client.protocol_version == "2026-07-28"
-
-        discovery = client.session.discover_result
-        assert discovery is not None, "Expected server/discover negotiation"
-
-        server_capabilities = discovery.capabilities.model_dump(
-            by_alias=True,
-            exclude_none=True,
-        )
-
-        observed = (
-            await client.call_tool("inspect_request_metadata")
-        ).data
-
-        assert observed["protocol_version"] == "2026-07-28"
-        assert "elicitation" in observed["client_capabilities"]
-
         print(f"Transport: {transport_name}")
-        print("server/discover response")
-        print(f"  supported versions: {discovery.supported_versions}")
-        print(f"  server capabilities: {sorted(server_capabilities)}")
 
-        # Discover available tools
-        tools = await client.list_tools()
-
-        print("\ntools/list response")
-        for tool in tools:
-            print(f"  Name: {tool.name}")
-            print(f"  Description: {tool.description}")
-            print(f"  Input schema: {tool.input_schema}")
-
-        print("\ntools/call metadata observed by the server")
-        print(
-            "  io.modelcontextprotocol/protocolVersion: "
-            f"{observed['protocol_version']}"
-        )
-        print("  io.modelcontextprotocol/clientCapabilities:")
-        print(json.dumps(observed["client_capabilities"], indent=4))
-
-        print(
-            "\nVerified: the client advertised optional elicitation support.")
+        if example in ("discovery", "both"):
+            await show_server_discovery(client)
+        if example in ("metadata", "both"):
+            await show_client_request_metadata(client)
 
 
 if __name__ == "__main__":
-    choices = ["in-memory", "stdio", "http"]
-
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--transport",
-        choices=choices,
-        # choices restricts the value to the three supported transports.
+        choices=["in-memory", "stdio", "http"],
         required=True,
-        # required=True ensures the user provides --transport.
+    )
+    parser.add_argument(
+        "--example",
+        choices=["discovery", "metadata", "both"],
+        default="both",
+        help="Run server discovery, client metadata inspection, or both (default).",
     )
     args = parser.parse_args()
-
-    asyncio.run(inspect(args.transport))
+    asyncio.run(inspect(args.transport, args.example))

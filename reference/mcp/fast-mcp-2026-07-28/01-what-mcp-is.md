@@ -188,6 +188,20 @@ The core server features are tools, resources, and prompts. Elicitation is the
 main client feature in the modern core. Optional Apps, Tasks, and Skills live in
 the extensions framework and require explicit support from both peers.
 
+**Do not confuse server discovery with tool execution:**
+
+| MCP method | Purpose | Does it execute a tool? |
+| --- | --- | --- |
+| `server/discover` | Read supported protocol versions and server capabilities | No |
+| `tools/list` | List individual tools | No |
+| `tools/call` | Execute a specific tool | Yes |
+
+In the FastMCP example, the client automatically performs `server/discover`
+when entering `async with Client(...)`. Reading
+`client.session.discover_result` uses that saved response. The separate
+`inspect_request_metadata` tool is **not** a discovery mechanism: it only
+shows the client metadata attached to its own `tools/call` request.
+
 ## Where FastMCP fits
 
 FastMCP is a Python framework that simplifies implementing both MCP clients and
@@ -317,8 +331,19 @@ The server defines one tool, resource, and prompt so `server/discover` has
 features to advertise. Supplying `elicitation_handler` opts the client into the
 optional elicitation capability.
 
-The inspection tool then reports the protocol version and client capabilities
-that arrived with its own `tools/call` request.
+The client provides **two independent demonstrations**:
+
+- **Example A — Server discovery:** FastMCP automatically performs
+  `server/discover` when connecting. The client reads `discover_result` and
+  optionally uses `tools/list` to list registered tools. No `tools/call` is made.
+- **Example B — Per-request client metadata:** The client uses `tools/call` to
+  invoke the custom `inspect_request_metadata` tool. The tool reports the
+  protocol version and client capabilities carried on that request. It does
+  not perform server discovery.
+
+Select the demonstration using `--example discovery`, `--example metadata`, or
+`--example both` (default). FastMCP still negotiates the protocol when the
+client connects, even if only the metadata example is selected.
 
 For in-depth
 details: [README](../../../reference/mcp/labs/transport_inspection/README.md)
@@ -330,7 +355,9 @@ details: [README](../../../reference/mcp/labs/transport_inspection/README.md)
 ```bash
 cd ../../../reference/mcp/labs
 UV_CACHE_DIR=.uv-cache uv sync --locked
-uv run python transport_inspection/client.py --transport in-memory
+uv run python transport_inspection/client.py --transport in-memory --example discovery
+# Run only the per-request metadata example:
+uv run python transport_inspection/client.py --transport in-memory --example metadata
 ```
 
 ### STDIO
@@ -338,7 +365,7 @@ uv run python transport_inspection/client.py --transport in-memory
 ```bash
 cd ../../../reference/mcp/labs
 UV_CACHE_DIR=.uv-cache uv sync --locked
-uv run python transport_inspection/client.py --transport stdio
+uv run python transport_inspection/client.py --transport stdio --example discovery
 ```
 
 ### HTTP
@@ -356,7 +383,7 @@ uv run python transport_inspection/server.py --transport http
 ```bash
 cd ../../../reference/mcp/labs
 UV_CACHE_DIR=.uv-cache uv sync --locked
-uv run python transport_inspection/client.py --transport http
+uv run python transport_inspection/client.py --transport http --example discovery
 ```
 
 ### Troubleshooting
@@ -378,14 +405,31 @@ uv run python transport_inspection/client.py --transport http
       pids=$(lsof -tiTCP:8000 -sTCP:LISTEN); [ -z "$pids" ] || kill $pids
     ```
 
-## Expected shape of the output:
+## Expected shape of the output
 
-```
-server/discover response
+**Example A (`--example discovery`):**
+
+```text
+Transport: in-memory
+
+EXAMPLE A: Server discovery (no tools/call)
+server/discover response (already obtained during connection)
   supported versions: ['2026-07-28']
   server capabilities: ['extensions', 'logging', 'prompts', 'resources', 'tools']
 
-tools/call metadata observed by the server
+tools/list response
+  Name: inspect_request_metadata
+  Description: Return protocol metadata that the server received on this request.
+  Input schema: ...
+```
+
+**Example B (`--example metadata`):**
+
+```text
+Transport: in-memory
+
+EXAMPLE B: Client metadata on an ordinary tools/call request
+tools/call -> inspect_request_metadata
   io.modelcontextprotocol/protocolVersion: 2026-07-28
   io.modelcontextprotocol/clientCapabilities:
 {
@@ -397,6 +441,9 @@ tools/call metadata observed by the server
 
 Verified: the client advertised optional elicitation support.
 ```
+
+The capability list and schemas can vary by server configuration and FastMCP
+version. The key difference is that Example A never calls a tool.
 
 The same commands work on Intel and Apple Silicon Macs.
 

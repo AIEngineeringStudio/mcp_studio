@@ -38,12 +38,12 @@ STREAMABLE HTTP
 +--------------------+                       +--------------------+
 ```
 
-## **2. Server —` server.py`**
+---
 
 This server supports both transports — `stdio/HTTP`.
 The tool, resource, and prompt are unchanged.
 
-## **3. Client — `client.py`**
+## **2. Client — `client.py`**
 
 **`In-memory`:** The client imports the **mcp** instance from `server.py`.
 
@@ -66,7 +66,7 @@ All three run the same inspection workflow:
 
 The resource, prompt, and elicitation handler remain shared.
 
-### The important part of `client.py`
+### 1. Transport Selection - `client.py`
 
 ```python
 
@@ -77,30 +77,27 @@ from server import mcp
 from fastmcp.client.transports import StdioTransport, StreamableHttpTransport
 
 
-def client_source(mode: str):
+def client_source(mode: str) -> Any:
+    """Use the same examples with in-memory, stdio, or HTTP transport."""
     if mode == "in-memory":
         return mcp
-
     if mode == "stdio":
         return StdioTransport(
             command=sys.executable,
             args=[
                 str(Path(__file__).resolve().with_name("server.py")),
+                "--transport",
                 "stdio",
             ],
         )
-
     if mode == "http":
-        return StreamableHttpTransport(
-            url="http://127.0.0.1:8000/mcp",
-        )
+        return StreamableHttpTransport(url="http://127.0.0.1:8000/mcp")
     raise ValueError(f"Unsupported mode: {mode}")
-
 ```
 
 The shared inspection function then uses `Client(client_source(mode), ...)`.
 
-### **What happens internally?**
+### 2. What happens internally?
 
 ```
                     +-------------------+
@@ -139,6 +136,100 @@ The shared inspection function then uses `Client(client_source(mode), ...)`.
                               v
                         Print results
 ```
+
+### 3. What actually happens in your `client.py`
+
+Your code contains:
+
+```python
+async with Client(
+        transport=client_source(transport_name),
+        name="lesson-1-client",
+        elicitation_handler=decline_elicitation,
+) as client:
+```
+
+**At this point, FastMCP automatically performs discovery.**
+
+**Next:** if `--example discovery` or `--example both` is selected
+
+code executes:
+
+```python
+discovery = client.session.discover_result
+```
+
+This reads the result of discovery that already happened.
+
+Later, code executes:
+
+```python
+await client.list_tools()
+```
+
+This answers the question - `What specific tools are available?`.
+
+**Next:** if `--example metadata` or `--example both` is selected
+
+Invoke `inspect_request_metadata` with `call_tool()` to demonstrate how client
+capabilities arrive on an ordinary request.
+
+```python
+observed = (await client.call_tool("inspect_request_metadata")).data
+```
+
+### 4. The actual request sequence
+
+The exact execution order in your code is server/discover, then tools/call, then
+tools/list.
+
+```
+CLIENT                                SERVER
+  |                                     |
+  |-- server/discover ----------------->|
+  |<-- supported versions, capabilities-|
+  |                                     |
+  |   FastMCP stores discover_result    |
+  |                                     |
+  |-- tools/call ---------------------->|
+  |   inspect_request_metadata          |
+  |                                     |
+  |                  Reads metadata     |
+  |                  from this request  |
+  |                                     |
+  |<-- protocol version + client caps --|
+  |                                     |
+  |-- tools/list ---------------------->|
+  |<-- registered tool definitions -----|
+```
+
+---
+
+## **2. Server —` server.py`**
+
+### 1. Why your `server.py` has an inspection tool
+
+Your server defines:
+
+```python
+@mcp.tool
+def inspect_request_metadata(ctx: Context) -> dict[str, Any]:
+    capabilities = ctx.session.client_capabilities
+```
+
+This tool exists to demonstrate per-request client capabilities, not server
+discovery.
+
+It answers a different question:
+
+- `server/discover`: What features does the server support?
+- `inspect_request_metadata`: What capabilities did the client advertise on this
+  request?
+- `tools/list`: What specific tools are available?
+  The inspection tool reports the client capabilities received with its own
+  tools/call request.
+
+---
 
 ## **4. Run commands**
 
