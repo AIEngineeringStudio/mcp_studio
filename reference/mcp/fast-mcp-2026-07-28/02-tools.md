@@ -20,15 +20,6 @@ A tool is model-controlled: a model can select it based on its description and
 schema. The host should still provide visibility and user control for sensitive
 or consequential calls.
 
-## The contract
-
-A useful tool definition states a narrow name and description, an `inputSchema`,
-an optional `outputSchema`, and useful annotations. Annotations are hints, not
-security policy.
-
-MCP `2026-07-28` supports full JSON Schema 2020-12 for tool input and output
-schemas. The input schema root remains an object, but it may use `$ref`,
-`$defs`, `oneOf`, `anyOf`, `allOf`, and conditionals.
 
 ```json
 {
@@ -54,8 +45,290 @@ schemas. The input schema root remains an object, but it may use `$ref`,
 }
 ```
 
-Schema validation answers “is this structurally valid?” Business validation
-answers “is this operation allowed and meaningful?” Keep both.
+Schema validation answers “is this structurally valid?”
+Business validation answers “is this operation allowed and meaningful?”
+Keep both.
+
+## The contract
+
+A useful tool definition states a narrow name and description, an `inputSchema`,
+an optional `outputSchema`, and useful annotations. Annotations are hints, not
+security policy.
+
+MCP `2026-07-28` supports JSON Schema Draft 2020-12 for `inputSchema` and
+`outputSchema`. The input schema root remains an object, but it can use
+references(`$ref`, `$defs`), composition(`oneOf`, `anyOf`, `allOf`), and
+conditional validation(`if` / `then` / `else`).
+
+We'll extend your `lookup_ticket` tool while keeping `ticket_id` required.
+
+### **1. What each keyword does**
+
+| Keyword                | Meaning                        | Example use                             |
+|------------------------|--------------------------------|-----------------------------------------|
+| `$defs`                | Define reusable schemas        | Define a ticket ID format               |
+| `$ref`                 | Reference a schema             | Reuse the ticket ID definition          |
+| `oneOf`                | Exactly one schema must match  | Ticket found **or** not found           |
+| `anyOf`                | At least one schema must match | Include comments, history, or both      |
+| `allOf`                | Every schema must match        | Combine base rules with detail rules    |
+| `if` / `then` / `else` | Apply conditional rules        | Require extra options for a full lookup |
+
+The key distinction is that `oneOf` rejects an instance matching two branches,
+while `anyOf` accepts it.&#x20;
+
+### **2. Complete MCP tool definition**
+
+This example keeps the original ticket lookup behavior but adds a full-detail
+mode.
+
+```json
+
+{
+  "name": "lookup_ticket",
+  "description": "Return one support ticket by its stable ticket ID.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "$defs": {
+      "ticketId": {
+        "type": "string",
+        "pattern": "^T-[0-9]+$"
+      },
+      "ticketRequest": {
+        "type": "object",
+        "properties": {
+          "ticket_id": {
+            "$ref": "#/$defs/ticketId"
+          }
+        },
+        "required": [
+          "ticket_id"
+        ]
+      }
+    },
+    "properties": {
+      "detail_level": {
+        "enum": [
+          "summary",
+          "full"
+        ]
+      },
+      "include_comments": {
+        "const": true
+      },
+      "include_history": {
+        "const": true
+      }
+    },
+    "allOf": [
+      {
+        "$ref": "#/$defs/ticketRequest"
+      },
+      {
+        "if": {
+          "properties": {
+            "detail_level": {
+              "const": "full"
+            }
+          },
+          "required": [
+            "detail_level"
+          ]
+        },
+        "then": {
+          "anyOf": [
+            {
+              "required": [
+                "include_comments"
+              ]
+            },
+            {
+              "required": [
+                "include_history"
+              ]
+            }
+          ]
+        },
+        "else": {
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "include_comments"
+                ]
+              },
+              {
+                "required": [
+                  "include_history"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "unevaluatedProperties": false
+  },
+  "outputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "ticket_id": {
+        "type": "string",
+        "pattern": "^T-[0-9]+$"
+      }
+    },
+    "required": [
+      "ticket_id"
+    ],
+    "oneOf": [
+      {
+        "properties": {
+          "found": {
+            "const": true
+          },
+          "status": {
+            "enum": [
+              "open",
+              "closed"
+            ]
+          },
+          "comments": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "found",
+          "status"
+        ]
+      },
+      {
+        "properties": {
+          "found": {
+            "const": false
+          },
+          "error": {
+            "const": "NOT_FOUND"
+          }
+        },
+        "required": [
+          "found",
+          "error"
+        ]
+      }
+    ],
+    "unevaluatedProperties": false
+  }
+}
+
+```
+
+### **3. Example requests**
+
+**Valid: summary lookup**
+
+```
+
+{"ticket_id": "T-42"}
+    
+```
+
+The ticket ID is valid. No full-detail options are needed.
+
+**Valid: full lookup**
+
+```
+
+{
+  "ticket_id": "T-42",
+  "detail_level": "full",
+  "include_comments": true,
+  "include_history": true
+}
+    
+```
+
+Both flags are accepted because `anyOf` means at least one, not exactly one.
+
+**Invalid: full lookup without a section**
+
+```
+
+{
+  "ticket_id": "T-42",
+  "detail_level": "full"
+}
+    
+```
+
+Fails the conditional `then` rule because neither `include_comments` nor
+`include_history` is present.
+
+## **4. Example output**
+
+If the ticket is found:
+
+```
+
+{
+  "ticket_id": "T-42",
+  "found": true,
+  "status": "open",
+  "comments": ["Customer requested an update."],
+  "history": ["Ticket created", "Assigned to support"]
+}
+
+```
+
+If the ticket is not found:
+
+```
+
+{
+  "ticket_id": "T-42",
+  "found": false,
+  "error": "NOT_FOUND"
+}
+
+```
+
+The `oneOf` rule enforces the two distinct result shapes. A successful result
+must include `status`; a not-found result must include `error`.
+
+### **5. Important design detail**
+
+Notice that the example uses:
+
+```
+"unevaluatedProperties": false
+```
+
+rather than your original:
+
+```
+"additionalProperties": false
+```
+
+When `allOf` and `$ref` compose object schemas, `additionalProperties` may
+reject properties declared in another subschema. `unevaluatedProperties` can
+recognize properties successfully evaluated through the composition.
+
+Also, JSON Schema validates structure. It does not implement the lookup,
+automatically choose summary behavior, or control authorization. The MCP server
+must enforce those behaviors.
+
+**References:**
+[MCP 2026-07-28 — Tools specification](https://modelcontextprotocol.io/specification/2026-07-28/server/tools?utm_source=chatgpt.com)
+and [JSON Schema — Composition keywords](https://json-schema.org/understanding-json-schema/reference/combining?utm_source=chatgpt.com).
 
 ## Listing and caching
 
@@ -90,7 +363,9 @@ required in the request.
   "method": "tools/call",
   "params": {
     "name": "lookup_ticket",
-    "arguments": {"ticket_id": "T-100"}
+    "arguments": {
+      "ticket_id": "T-100"
+    }
   }
 }
 ```
@@ -101,15 +376,24 @@ required in the request.
   "id": 2,
   "result": {
     "resultType": "complete",
-    "content": [{"type": "text", "text": "T-100 is open"}],
-    "structuredContent": {"ticket_id": "T-100", "status": "open"},
+    "content": [
+      {
+        "type": "text",
+        "text": "T-100 is open"
+      }
+    ],
+    "structuredContent": {
+      "ticket_id": "T-100",
+      "status": "open"
+    },
     "isError": false
   }
 }
 ```
 
-`content` is the content-block representation. `structuredContent` is the
-machine-friendly object associated with `outputSchema`.
+`content` is the content-block representation.
+`structuredContent` is the machine-friendly object associated with
+`outputSchema`.
 
 ## Error layers
 
@@ -171,7 +455,7 @@ Run the tool-specific exercise from the repository root. It inspects the
 generated input schema and calls the discovered tool:
 
 ```bash
-cd reference/mcp/labs
+cd ../../../reference/mcp/labs
 UV_CACHE_DIR=.uv-cache uv sync --locked
 uv run python verify_primitives.py tools
 ```
