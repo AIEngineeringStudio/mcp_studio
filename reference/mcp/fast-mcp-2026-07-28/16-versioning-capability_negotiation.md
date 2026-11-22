@@ -108,7 +108,7 @@ legacy: initialize -> 2025-11-25; no discover result
 
 The complete runnable exercise is
 [`compare_protocol_eras.py`](../labs/compare_protocol_eras.py). Lesson 1's
-[`client.py`](../labs/transport_inspection/client.py) separately
+[`client.py`](../labs/lesson_1/client.py) separately
 shows the capabilities attached to an individual modern request.
 
 ## Compatibility policy

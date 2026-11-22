@@ -346,7 +346,7 @@ Select the demonstration using `--example discovery`, `--example metadata`, or
 client connects, even if only the metadata example is selected.
 
 For in-depth
-details: [README](../../../reference/mcp/labs/transport_inspection/README.md)
+details: [README](../labs/lesson_1/README.md)
 
 ### Run Commands
 
