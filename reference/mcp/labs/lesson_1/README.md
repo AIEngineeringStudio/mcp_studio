@@ -291,7 +291,7 @@ Verified: the client advertised optional elicitation support.
 **Important:** In FastMCP 4.x, `server/discover` is a protocol-discovery
 operation, not the old `initialize` handshake. The `2026-07-28` protocol carries
 version and client capabilities with each request. The client may also negotiate
-an older protocol if connecting to an older server.&#x20;
+an older protocol if connecting to an older server.
 
 For this example, the strict assertions deliberately fail if the modern protocol
 is not negotiated.

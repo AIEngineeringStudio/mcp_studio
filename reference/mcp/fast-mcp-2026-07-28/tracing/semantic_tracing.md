@@ -13,24 +13,43 @@ Semantic tracing establishes observability for both application boundaries:
    `exception`.
 
 ```
-CLIENT SIDE                             SERVER SIDE
+CLIENT SIDE                                  SERVER SIDE
 
-+--------------------+                  +--------------------+
-| Client Application |                  | Server Application |
-| verify_primitives  |                  | get_ticket()       |
-+--------------------+                  +--------------------+
-         |                                        ^
-         | Boundary 1                             | Boundary 2
-         v                                        |
-+--------------------+                  +--------------------+
-| FastMCP Client     |                  | FastMCP Server     |
-+--------------------+                  +--------------------+
-         |                                        ^
-         v                                        |
-+--------------------+                  +--------------------+
-| Client Transport   |----------------->| Server Transport   |
-+--------------------+                  +--------------------+
++----------------------------+               +----------------------------+
+| Client Application         |               | Server Application         |
+| verify_primitives.py       |               | get_ticket()               |
+|                            |               |                            |
+| SEMANTIC: CALL / RESULT    |               |                            |
++----------------------------+               +----------------------------+
+       |            ^                                ^            |  
+       | Semantic   |                                | Semantic   | 
+       v Boundary 1 |                                | Boundary 2 v
++----------------------------+               +----------------------------+
+| FastMCP Client             |               | FastMCP Server             |
+|                            |               |                            |
+|                            |               | SEMANTIC: IN / DONE        |
+|                            |               | (middleware boundary)      |
+|                            |               |                            |
+| JSON-RPC Layer             |               | JSON-RPC Layer             |
+|                            |               |                            |
+| [1] CLIENT OUT TRACE       |               | [2] SERVER IN TRACE        |
+| [4] CLIENT IN TRACE        |               | [3] SERVER OUT TRACE       |
+|                            |               |                            |
++----------------------------+               +----------------------------+
+       |            ^                                ^            |
+       | Protocol   |                                | Protocol   |
+       | Boundary 1 |                                | Boundary 2 |
+       v            |                                |            v
++----------------------------+               +----------------------------+
+| Client Transport           |               | Server Transport           |
+|                            |-- REQUEST --->|                            |
+| STDIO / HTTP               |<-- RESPONSE --| STDIO / HTTP               |
++----------------------------+               +----------------------------+
 ```
+
+**Semantic Boundary 2:**
+`SEMANTIC: IN / DONE` trace is inside FastMCP server middleware, not at the
+boundary between the server application and FastMCP.
 
 Our completion criterion is that, for tools, resources, and prompts, you can see
 the client call, server entry, server completion, and client result.
@@ -82,7 +101,6 @@ notifications, including discovery and protocol errors.
 
 Its `call_next()` lets you observe the resulting operation, but that result is
 not necessarily the final serialized JSON-RPC response.
-
 
 ### Create `semantic_trace_server.py`:
 

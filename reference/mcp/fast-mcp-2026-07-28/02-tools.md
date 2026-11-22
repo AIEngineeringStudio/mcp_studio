@@ -74,7 +74,7 @@ We'll extend your `lookup_ticket` tool while keeping `ticket_id` required.
 | `if` / `then` / `else` | Apply conditional rules        | Require extra options for a full lookup |
 
 The key distinction is that `oneOf` rejects an instance matching two branches,
-while `anyOf` accepts it.&#x20;
+while `anyOf` accepts it.
 
 ### **2. Complete MCP tool definition**
 
