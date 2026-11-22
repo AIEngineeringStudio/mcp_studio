@@ -6,6 +6,7 @@ import json
 
 from fastmcp import FastMCP
 from semantic_trace_server import SemanticTrace
+from protocol_trace_stdio import install_server_stdio_trace
 
 TICKETS = {
     "T-100": {"id": "T-100", "title": "Cannot sign in", "status": "open"},
@@ -57,6 +58,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.transport == "stdio":
+        # Intercepts SessionMessage streams inside FastMCP's normal stdio runner.
+        install_server_stdio_trace()
+
         mcp.run(transport="stdio")
     else:
         mcp.run(

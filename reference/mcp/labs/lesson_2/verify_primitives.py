@@ -15,6 +15,7 @@ from fastmcp.client.transports import (
 
 from server import mcp
 from semantic_trace_client import trace_client
+from protocol_trace_stdio import TracedStdioTransport
 
 
 async def verify_tools(client: Client) -> None:
@@ -81,7 +82,7 @@ def client_source(mode: str) -> Any:
     if mode == "in-memory":
         return mcp
     if mode == "stdio":
-        return StdioTransport(
+        return TracedStdioTransport(
             command=sys.executable,
             args=[
                 str(Path(__file__).resolve().resolve().with_name("server.py")),
