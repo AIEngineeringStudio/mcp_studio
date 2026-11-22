@@ -31,7 +31,7 @@ resolution for this concept snapshot.
 - **Core service:** [server.py](server.py), [client.py](client.py),
   [test_domain.py](test_domain.py), and [test_protocol.py](test_protocol.py).
 - **Modern request model:**
-  [client.py](transport_inspection/client.py),
+  [client.py](lesson_1/client.py),
   [verify_primitives.py](verify_primitives.py), and
   [compare_protocol_eras.py](compare_protocol_eras.py).
 - **Deprecated-feature replacements:**
