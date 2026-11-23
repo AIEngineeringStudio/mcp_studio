@@ -2,6 +2,18 @@ import sys
 from typing import Any
 
 from fastmcp.server.middleware import Middleware, MiddlewareContext, CallNext
+from datetime import datetime, timezone
+
+
+def _log(direction: str, method: str, item) -> None:
+    """Logging errors must never interrupt message delivery."""
+
+    timestamp = datetime.now(timezone.utc).isoformat(timespec="milliseconds")
+
+    print(f"\n\n[^^^^^^ SEMANTIC | SERVER-{direction}: [{method}] *******]\n"
+          f"\n{timestamp}"
+          f"\n{item}",
+          file=sys.stderr, flush=True)
 
 
 class SemanticTrace(Middleware):
@@ -13,17 +25,12 @@ class SemanticTrace(Middleware):
             context: MiddlewareContext,
             call_next: CallNext[Any, Any]
     ):
+        timestamp = datetime.now(timezone.utc).isoformat(
+            timespec="milliseconds")
+        method = context.method
+
         # [2] SERVER IN TRACE
-        # Observe messages and log necessary details
-        print("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
-              file=sys.stderr,
-              flush=True)
-        print(
-            f"\n[SERVER IN] {context.method}: {context.message!r}",
-            # What is `context.source` ??
-            file=sys.stderr,
-            flush=True,
-        )
+        _log("IN", method, f"[{method}]: {context.message!r}")
 
         # In Python, !r means use repr() inside an f-string.
         # It displays the developer representation of a value instead of its
@@ -40,24 +47,15 @@ class SemanticTrace(Middleware):
             # forward the original message unchanged
             result = await call_next(context)
         except Exception as exc:
-            print(
-                f"\n[SERVER ERROR] {context.method}: {exc!r}",
-                file=sys.stderr,
-                flush=True,
-            )
+
+            # SERVER ERROR TRACE
+            _log("ERROR", method, f"[{method}]: {exc!r}")
             print("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
                   file=sys.stderr,
                   flush=True)
             raise
 
         # [3] SERVER OUT TRACE
-        print(
-            f"\n[SERVER DONE] {context.method}: {result!r}",
-            file=sys.stderr,
-            flush=True
-        )
-        print("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
-              file=sys.stderr,
-              flush=True)
+        _log("OUT", method, f"[{method}]: {result!r}")
 
         return result

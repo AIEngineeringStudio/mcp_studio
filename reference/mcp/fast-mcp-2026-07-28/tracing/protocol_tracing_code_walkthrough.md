@@ -16,32 +16,32 @@ Imagine a stream as a pipe that carries messages.
 Without tracing:
 
 ```
-CLIENT                         SERVER
-+------------+               +------------+
-| MCP Client |               | MCP Server |
-+-----+------+               +------+-----+
-      |                             ^
-      |       JSON-RPC message      |
-      +---------------------------->+
-```
-
-With tracing:
-
-```
-CLIENT                              SERVER
-+------------+                   +------------+
-| MCP Client |                   | MCP Server |
-+-----+------+                   +------+-----+
-      |                                 ^
-      v                                 |
-+------------+                   +------------+
-| Trace OUT  |                   | Trace IN   |
-| Log message|                   | Log message|
-| Forward it |                   | Forward it |
-+-----+------+                   +------+-----+
-      |                                 ^
-      +---------------------------------+
-                   STDIO
+        CLIENT                         SERVER
+        +------------+               +------------+
+        | MCP Client |               | MCP Server |
+        +-----+------+               +------+-----+
+              |                             ^
+              |       JSON-RPC message      |
+              +---------------------------->+
+        ```
+        
+        With tracing:
+        
+        ```
+        CLIENT                              SERVER
+        +------------+                   +------------+
+        | MCP Client |                   | MCP Server |
+        +-----+------+                   +------+-----+
+              |                                 ^
+              v                                 |
+        +------------+                   +------------+
+        | Trace OUT  |                   | Trace IN   |
+        | Log message|                   | Log message|
+        | Forward it |                   | Forward it |
+        +-----+------+                   +------+-----+
+              |                                 ^
+              +---------------------------------+
+                           STDIO
 ```
 
 The trace objects sit between the MCP session and the real stream.

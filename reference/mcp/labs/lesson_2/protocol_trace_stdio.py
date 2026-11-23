@@ -27,7 +27,9 @@ from fastmcp.client.transports.base import ClientTransport, TransportOptions
 def _log(side: str, direction: str, item: SessionMessage | Exception) -> None:
     """Logging errors must never interrupt message delivery."""
     try:
-        timestamp = datetime.now(timezone.utc).isoformat(timespec="milliseconds")
+        timestamp = datetime.now(timezone.utc).isoformat(
+            timespec="milliseconds")
+
         if isinstance(item, SessionMessage):
             # Same JSON-RPC model serializer used by the SDK's stdio transport.
             envelope = item.message.model_dump_json(
@@ -35,9 +37,15 @@ def _log(side: str, direction: str, item: SessionMessage | Exception) -> None:
             )
         else:
             envelope = f"<transport exception: {type(item).__name__}: {item}>"
-        print(f"\n***[PROTOCOL]*** {timestamp} [{side} {direction}]"
-              f" {envelope}",
+
+        # print(f"\n************** [PROTOCOL-BEGIN] **************\n",
+        #       file=sys.stderr, flush=True)
+        print(f"\n\n[******** PROTOCOL: {side} {direction} ********]\n\n"
+              f"{timestamp}\n"
+              f"{envelope}",
               file=sys.stderr, flush=True)
+        # print(f"\n************** [PROTOCOL-END] **************\n",
+        #       file=sys.stderr, flush=True)
     except Exception:
         # Instrumentation must not introduce transport failures.
         pass
@@ -87,18 +95,18 @@ class TracedStdioTransport(ClientTransport):
 
     @asynccontextmanager
     async def connect_session(
-        self,
-        *,
-        transport_options: TransportOptions | None = None,
-        **session_kwargs: Any,
+            self,
+            *,
+            transport_options: TransportOptions | None = None,
+            **session_kwargs: Any,
     ) -> AsyncIterator[Any]:
         params = StdioServerParameters(command=self.command, args=self.args)
         async with stdio_client(params) as (read_stream, write_stream):
             options = transport_options or TransportOptions()
             async with options.session_class(
-                TraceReceiveStream(read_stream, "CLIENT"),
-                TraceSendStream(write_stream, "CLIENT"),
-                **session_kwargs,
+                    TraceReceiveStream(read_stream, "CLIENT"),
+                    TraceSendStream(write_stream, "CLIENT"),
+                    **session_kwargs,
             ) as session:
                 yield session
 

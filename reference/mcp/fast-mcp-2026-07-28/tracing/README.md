@@ -12,7 +12,7 @@ decisions.
 Your test client supports three transport modes:
 
 | Transport       | How messages travel                                        |
-|-----------------|------------------------------------------------------------|
+|-----------------|────────────────────────────────────────────────────────----|
 | In-memory       | Between client and server within one Python process        |
 | STDIO           | Through subprocess stdin/stdout                            |
 | Streamable HTTP | Through HTTP requests and responses, including SSE streams |
@@ -72,38 +72,38 @@ while `SERVER OUT` and `CLIENT IN` refer to responses in this example.
 Notifications can also travel in either direction.
 
 ```
-CLIENT SIDE                                  SERVER SIDE
-
-+----------------------------+               +----------------------------+
-| Client Application         |               | Server Application         |
-| verify_primitives.py       |               | get_ticket()               |
-|                            |               |                            |
-| SEMANTIC: CALL / RESULT    |               |                            |
-+----------------------------+               +----------------------------+
-       |            ^                                ^            |  
-       | Semantic   |                                | Semantic   | 
-       v Boundary 1 |                                | Boundary 2 v
-+----------------------------+               +----------------------------+
-| FastMCP Client             |               | FastMCP Server             |
-|                            |               |                            |
-|                            |               | SEMANTIC: IN / DONE        |
-|                            |               | (middleware boundary)      |
-|                            |               |                            |
-| JSON-RPC Layer             |               | JSON-RPC Layer             |
-|                            |               |                            |
-| [1] CLIENT OUT TRACE       |               | [2] SERVER IN TRACE        |
-| [4] CLIENT IN TRACE        |               | [3] SERVER OUT TRACE       |
-|                            |               |                            |
-+----------------------------+               +----------------------------+
-       |            ^                                ^            |
-       | Protocol   |                                | Protocol   |
-       | Boundary 1 |                                | Boundary 2 |
-       v            |                                |            v
-+----------------------------+               +----------------------------+
-| Client Transport           |               | Server Transport           |
-|                            |-- REQUEST --->|                            |
-| STDIO / HTTP               |<-- RESPONSE --| STDIO / HTTP               |
-+----------------------------+               +----------------------------+
+   CLIENT SIDE                                  SERVER SIDE
+   
+   ┌────────────────────────────┐               ┌────────────────────────────┐
+   │     Client Application     │               │    Server Application      │
+   │    verify_primitives.py    │               │       get_ticket()         │
+   │                            │               │                            │
+   │ SEMANTIC: CALL / RESULT    │               │                            │
+   └────────────────────────────┘               └────────────────────────────┘
+          │            ▲                                ▲            │  
+          │            │                                │            │ 
+          ▼            │                                │            ▼
+   ┌────────────────────────────┐               ┌────────────────────────────┐
+   │      FastMCP Client        │               │      FastMCP Server        │
+   │                            │               │                            │
+   │       JSON-RPC Layer       │               │       JSON-RPC Layer       │
+   │                            │               │                            │
+   │     SEMANTIC BOUNDARY 1    │               │     SEMANTIC BOUNDARY 2    │
+   │       (MIDDLEWARE)         │               │        (MIDDLEWARE )       │
+   │                            │               │                            │
+   │    [1] CLIENT-OUT TRACE    │               │   [2] SERVER-IN TRACE      │
+   │    [4] CLIENT-IN TRACE     │               │   [3] SERVER-OUT TRACE     │
+   │                            │               │                            │
+   └────────────────────────────┘               └────────────────────────────┘
+          │            ▲                                ▲            │
+          │ PROTOCOL   │                                │ PROTOCOL   │
+          │ BOUNDARY 1 │                                │ BOUNDARY 2 │
+          ▼            │                                │            ▼
+   ┌────────────────────────────┐               ┌────────────────────────────┐
+   │      Client Transport      │               │      Server Transport      │
+   │                            │-- REQUEST ---▶│                            │
+   │        STDIO / HTTP        │◀-- RESPONSE --│        STDIO / HTTP        │
+   └────────────────────────────┘               └────────────────────────────┘
 ```
 
 **Semantic Boundary 2:**
@@ -123,16 +123,16 @@ Use the same record structure for every transport:
 
 ```
 TraceRecord
-+-- timestamp
-+-- side           client | server
-+-- direction      OUT | IN
-+-- transport      in-memory | stdio | http
-+-- connection_id
-+-- message_type   request | response | error | notification
-+-- rpc_id         optional
-+-- method         optional
-+-- payload
-+-- error          optional
+    +-- timestamp
+    +-- side           client | server
+    +-- direction      OUT | IN
+    +-- transport      in-memory | stdio | http
+    +-- connection_id
+    +-- message_type   request | response | error | notification
+    +-- rpc_id         optional
+    +-- method         optional
+    +-- payload
+    +-- error          optional
 ```
 
 ### Example: your `get_ticket` tool
