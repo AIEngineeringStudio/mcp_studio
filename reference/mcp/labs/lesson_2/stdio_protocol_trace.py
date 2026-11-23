@@ -5,6 +5,8 @@ Do not use it with sensitive payloads unless you first add redaction.
 
 Integration note: install_server_stdio_trace() wraps the FastMCP 4.2
 server-runner's imported stdio_server symbol. This is version-sensitive.
+
+Version-sensitive server STDIO adapter for FastMCP 4.2. Logs stderr only.
 """
 
 from __future__ import annotations
@@ -33,16 +35,18 @@ def _log(side: str, direction: str, item: SessionMessage | Exception) -> None:
         if isinstance(item, SessionMessage):
             # Same JSON-RPC model serializer used by the SDK's stdio transport.
             envelope = item.message.model_dump_json(
-                by_alias=True, exclude_unset=True
+                by_alias=True,
+                exclude_unset=True
             )
+
         else:
             envelope = f"<transport exception: {type(item).__name__}: {item}>"
 
         # print(f"\n************** [PROTOCOL-BEGIN] **************\n",
         #       file=sys.stderr, flush=True)
-        print(f"\n\n[******** PROTOCOL: {side} {direction} ********]\n\n"
-              f"{timestamp}\n"
-              f"{envelope}",
+        print(f"\n\n[******** PROTOCOL(STDIO): {side} {direction} ********]\n"
+              f"\n{timestamp}"
+              f"\n{envelope}",
               file=sys.stderr, flush=True)
         # print(f"\n************** [PROTOCOL-END] **************\n",
         #       file=sys.stderr, flush=True)
@@ -60,7 +64,7 @@ class TraceReceiveStream(ObjectReceiveStream[SessionMessage | Exception]):
 
     async def receive(self) -> SessionMessage | Exception:
         item = await self._inner.receive()
-        _log(self._side, "IN", item)
+        _log(self._side, "-IN", item)
         return item
 
     async def aclose(self) -> None:
@@ -75,7 +79,7 @@ class TraceSendStream(ObjectSendStream[SessionMessage]):
         self._side = side
 
     async def send(self, item: SessionMessage) -> None:
-        _log(self._side, "OUT", item)
+        _log(self._side, "-OUT", item)
         await self._inner.send(item)
 
     async def aclose(self) -> None:

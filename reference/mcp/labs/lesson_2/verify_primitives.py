@@ -8,14 +8,12 @@ from pathlib import Path
 from typing import Any
 
 from fastmcp import Client
-from fastmcp.client.transports import (
-    StdioTransport,
-    StreamableHttpTransport,
-)
+from fastmcp.client.transports import StreamableHttpTransport
 
 from server import mcp
 from semantic_trace_client import trace_client
-from protocol_trace_stdio import TracedStdioTransport
+from http_protocol_trace import tracing_httpx_client_factory
+from stdio_protocol_trace import TracedStdioTransport
 
 
 async def verify_tools(client: Client) -> None:
@@ -91,7 +89,10 @@ def client_source(mode: str) -> Any:
             ],
         )
     if mode == "http":
-        return StreamableHttpTransport(url="http://127.0.0.1:8000/mcp")
+        return StreamableHttpTransport(
+            url="http://127.0.0.1:8000/mcp",
+            httpx_client_factory=tracing_httpx_client_factory,
+        )
     raise ValueError(f"Unsupported mode: {mode}")
 
 

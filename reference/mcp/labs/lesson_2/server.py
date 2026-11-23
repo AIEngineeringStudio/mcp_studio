@@ -6,7 +6,10 @@ import json
 
 from fastmcp import FastMCP
 from semantic_trace_server import SemanticTrace
-from protocol_trace_stdio import install_server_stdio_trace
+from starlette.middleware import Middleware
+
+from http_protocol_trace import HTTPProtocolTraceMiddleware
+from stdio_protocol_trace import install_server_stdio_trace
 
 TICKETS = {
     "T-100": {"id": "T-100", "title": "Cannot sign in", "status": "open"},
@@ -68,4 +71,5 @@ if __name__ == "__main__":
             host="127.0.0.1",
             port=8000,
             path="/mcp",
+            middleware=[Middleware(HTTPProtocolTraceMiddleware)]
         )
