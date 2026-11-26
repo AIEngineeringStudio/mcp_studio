@@ -69,6 +69,7 @@ async def bidirectional_batch(
             progress=total_processed,
             total=None,
             message=(
+                f"server update: processed "
                 f"batch {batch_number}, "
                 f"row {row}/{batch_size}, "
                 f"total={total_processed}"
