@@ -60,16 +60,17 @@ percentage as the progress value.
 
 ### **How it works**
 
-The client supplies a progress callback when calling the tool. 
-The SDK requests progress notifications and correlates them using a progress token.
+The client supplies a progress callback when calling the tool.
+The SDK requests progress notifications and correlates them using a progress
+token.
 
 ```python
 result = await client.call_tool(
-        "process_records",
-        {"count": 3, "delay_seconds": 0.0},
-        progress_handler=record_progress,
-        timeout=15,
-    )
+    "process_records",
+    {"count": 3, "delay_seconds": 0.0},
+    progress_handler=record_progress,
+    timeout=15,
+)
 ```
 
 `ctx.report_progress()` publishes progress through the request's
@@ -77,7 +78,6 @@ response stream.
 
 **Important distinction:** These are progress notifications, not partial tool
 results. The actual tool result is returned once execution finishes.
-
 
 ## Progress is not streaming data
 
@@ -204,7 +204,6 @@ package = false
 
 ```python
 from .process_records import process_records
-from .bidirectional_batch import bidirectional_batch
 ```
 
 **tools/process_records.py**
@@ -293,10 +292,10 @@ if __name__ == "__main__":
 
 ```
 
+### MCP Client
+
 The client opts into progress by supplying a progress handler. FastMCP then
 adds the progress token and delivers matching notifications to that handler.
-
-### MCP Client
 
 **verify_progress.py**
 
@@ -499,7 +498,6 @@ The complete runnable exercise is
 and records progress. It then cancels a second call after its first update and
 verifies the handler's cleanup path.
 
-
 ## **8. Run locally**
 
 Run the focused progress and cancellation exercise from [labs](./labs):
@@ -589,12 +587,6 @@ progress: received monotonic updates [1, 2, 3]
 
 For the transport-specific wire behavior, read:
 
-
-
-
-
-
-
 - [`12-progress-streaming.md`](../../concepts/12-progress-streaming.md)
 - [`25-reliability.md`](../../concepts/25-reliability.md)
 
@@ -631,7 +623,6 @@ that affect your original implementation.
 | Progress          | `ctx.session.report_progress()` | `ctx.report_progress()`     |
 | MRTR              | Explicit protocol handling      | High-level MRTR APIs        |
 | Streamable HTTP   | ASGI + Uvicorn                  | `mcp.run(transport="http")` |
-
 
 ## Official references
 
