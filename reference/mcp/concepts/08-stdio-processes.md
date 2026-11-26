@@ -16,6 +16,21 @@ read  <--------------------------- stdout
 diagnostics <--------------------- stderr
 ```
 
+| Output                            | Where it goes                 |
+|-----------------------------------|-------------------------------|
+| Server diagnostic prints and logs | `stderr`                      |
+| Server MCP messages               | `stdout`, managed by the SDK  |
+| Client diagnostic prints          | Client’s own `stdout` is fine |
+
+The key is that **the client’s stdout and the server’s stdout are separate
+streams**. The client reads MCP messages from the server’s stdout and sends MCP
+messages into the server’s stdin. Ordinary text must stay out of those protocol
+streams.
+
+So your client can use normal `print()`. 
+Diagnostic prints executed inside the stdio server—including its tool functions—should use
+`stderr`.
+
 Standard streams are operating-system channels. No HTTP port is needed.
 The client typically owns the child process lifetime.
 
