@@ -82,7 +82,6 @@ This example keeps the original ticket lookup behavior but adds a full-detail
 mode.
 
 ```json
-
 {
   "name": "lookup_ticket",
   "description": "Return one support ticket by its stable ticket ID.",
@@ -229,45 +228,38 @@ mode.
     "unevaluatedProperties": false
   }
 }
-
 ```
 
 ### **3. Example requests**
 
 **Valid: summary lookup**
 
-```
-
+```json
 {"ticket_id": "T-42"}
-    
 ```
 
 The ticket ID is valid. No full-detail options are needed.
 
 **Valid: full lookup**
 
-```
-
+```json
 {
   "ticket_id": "T-42",
   "detail_level": "full",
   "include_comments": true,
   "include_history": true
 }
-    
 ```
 
 Both flags are accepted because `anyOf` means at least one, not exactly one.
 
 **Invalid: full lookup without a section**
 
-```
-
+```json
 {
   "ticket_id": "T-42",
   "detail_level": "full"
-}
-    
+} 
 ```
 
 Fails the conditional `then` rule because neither `include_comments` nor
@@ -277,7 +269,7 @@ Fails the conditional `then` rule because neither `include_comments` nor
 
 If the ticket is found:
 
-```
+```json
 
 {
   "ticket_id": "T-42",
@@ -291,7 +283,7 @@ If the ticket is found:
 
 If the ticket is not found:
 
-```
+```json
 
 {
   "ticket_id": "T-42",

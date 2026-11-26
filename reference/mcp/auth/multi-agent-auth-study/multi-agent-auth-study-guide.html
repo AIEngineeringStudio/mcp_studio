@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Multi-Agent Authentication — Step-by-Step Learning Guide</title>
+<style>
+:root{--ink:#172941;--muted:#5e7188;--primary:#315aa0;--edge:#dce4ee;--canvas:#f5f7fb;--soft:#f0f4fa;--white:#fff;--accent:#0f7283}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--canvas);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink);line-height:1.65;font-size:15px}
+a{color:#225a9e;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px}
+a:hover{color:#1a4078}
+.app-header{height:66px;border-bottom:1px solid var(--edge);background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 26px;position:sticky;top:0;z-index:30}
+.brand{display:flex;align-items:center;gap:12px;font-weight:750;letter-spacing:.035em;font-size:13px;color:var(--ink)}
+.brand-icon{width:28px;height:28px;border-radius:7px;background:#244d88;color:white;display:grid;place-items:center;font-size:14px;font-weight:bold}
+.header-right{display:flex;align-items:center;gap:14px;color:var(--muted);font-size:12px}
+.print-btn{border:1px solid #c5d4e6;border-radius:7px;background:#fff;padding:8px 12px;font:inherit;font-weight:600;color:#26476b;cursor:pointer}
+.print-btn:hover{background:#eef4fc}
+.layout{max-width:1470px;margin:0 auto;display:grid;grid-template-columns:290px minmax(0,1fr);gap:30px;padding:30px}
+.sidebar{height:calc(100vh - 100px);position:sticky;top:92px;overflow:auto;padding:22px 12px 20px 0;border-right:1px solid var(--edge)}
+.side-title{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#61718a;font-weight:800;margin:0 13px 15px}
+.toc{display:flex;flex-direction:column;gap:2px}
+.toc-link{font-size:12.6px;text-decoration:none;color:#36516e;display:flex;align-items:flex-start;line-height:1.45;gap:11px;padding:9px 11px;border-radius:7px}
+.toc-link:hover{background:#edf3fa;color:#183c70}
+.toc-link.active{background:#e7effa;font-weight:700;color:#1a4983}
+.toc-num{flex:0 0 20px;color:#8a9aaf;font:600 11px/1.8 ui-monospace,SFMono-Regular,monospace}
+.search-box{width:calc(100% - 20px);margin:0 10px 19px;padding:11px 12px;border:1px solid #d1dce8;border-radius:9px;background:#fff;font-size:13px;outline:none}
+.search-box:focus{border-color:var(--primary)}
+.search-note{font-size:12px;color:#6d7f93;margin:7px 12px}
+.progress-wrap{margin:24px 12px 16px;border-top:1px solid var(--edge);padding-top:17px}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:#51677e;margin-bottom:10px}
+progress{width:100%;height:8px;accent-color:#2d7391}
+.article{width:min(100%,930px);min-width:0;padding-bottom:40px}
+.hero{background:#fff;border:1px solid var(--edge);box-shadow:0 10px 28px #24385e0a;border-radius:13px;padding:39px 42px 28px;margin-bottom:26px;border-top:5px solid #315a9d}
+.hero h1{font-size:34px;letter-spacing:-.035em;line-height:1.15;margin:0 0 20px;color:#1b3455}
+.hero>p:first-of-type{font-size:17px;color:#3b5571;font-weight:600}
+.hero p{color:#526a84;margin:10px 0;font-size:13.4px}
+.guide-section{position:relative;background:#fff;border:1px solid var(--edge);border-radius:13px;padding:32px 40px;margin-bottom:25px;box-shadow:0 10px 28px #24385e08;scroll-margin-top:91px}
+.guide-section h2{font-size:25px;line-height:1.25;letter-spacing:-.025em;margin:0 0 22px;color:#173d6d;border-bottom:1px solid #e5ebf3;padding-bottom:14px}
+.guide-section h3{font-size:17px;margin:30px 0 11px;color:#1e476f}
+.guide-section p,.guide-section ul,.guide-section ol{margin:12px 0}
+.guide-section li{padding-left:2px;margin:6px 0}
+.guide-section ul,.guide-section ol{padding-left:23px}
+.guide-section blockquote{margin:19px 0 23px;padding:15px 19px;background:#eef5fa;border-left:4px solid #268197;border-radius:0 7px 7px 0;color:#29475e}
+.guide-section blockquote p{margin:0}
+.guide-section strong{font-weight:740}
+.guide-section table{border-collapse:collapse;width:100%;font-size:12.5px;line-height:1.45;margin:20px 0;table-layout:auto}
+.guide-section th{background:#eff3f9;color:#1e466f;text-align:left;font-weight:750}
+.guide-section td,.guide-section th{border:1px solid #dbe4ed;padding:9px 11px;vertical-align:top}
+.guide-section tr:nth-child(even) td{background:#fbfcfe}
+.guide-section code{background:#edf2f7;border-radius:4px;color:#1d446c;padding:2px 4px;font:88% ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}
+.guide-section pre{display:block;overflow-x:auto;background:#f4f7fa;border:1px solid #dbe4ed;border-radius:9px;padding:17px 18px;color:#21415d;line-height:1.5;font:12.2px/1.52 ui-monospace,SFMono-Regular,Consolas,monospace;margin:17px 0}
+.guide-section pre code{background:transparent;color:inherit;padding:0;overflow-wrap:normal;font:inherit}
+.source-ref{font-weight:700;color:#597c9b;text-decoration:none;font-size:11px}
+.source-ref:hover{text-decoration:underline}
+.section-actions{display:flex;justify-content:flex-end;align-items:center;min-height:5px}
+.done-control{display:flex;align-items:center;gap:8px;color:#526e81;font-size:12px;font-weight:650;margin:-8px 0 8px;cursor:pointer}
+.done-control input{width:16px;height:16px;accent-color:#216f86;cursor:pointer}
+.guide-section:last-child{margin-bottom:0}
+.footer{font-size:12px;color:#76879a;text-align:center;padding:18px}
+@media(max-width:1090px){.layout{grid-template-columns:230px minmax(0,1fr);gap:20px;padding:18px}.guide-section{padding:27px 26px}.hero{padding:32px 28px}}
+@media(max-width:760px){.app-header{padding:0 15px}.header-right .hide-small{display:none}.layout{display:block;padding:13px}.sidebar{position:relative;top:auto;height:auto;max-height:245px;border-right:0;border-bottom:1px solid var(--edge);margin-bottom:20px;background:#fff;border-radius:10px;padding:15px}.toc{display:grid;grid-template-columns:1fr 1fr}.toc-link{font-size:11.8px}.progress-wrap{margin:12px}.hero{padding:25px 23px}.hero h1{font-size:26px}.guide-section{padding:25px 20px}.guide-section h2{font-size:22px}.guide-section table{font-size:11.5px}}
+@page{size:A4;margin:15mm 15mm 17mm;@bottom-left{content:"MULTI-AGENT AUTH  ·  STUDY GUIDE";font-family:Arial,sans-serif;font-size:7.5pt;color:#748499}@bottom-right{content:counter(page);font-family:Arial,sans-serif;font-size:8pt;color:#75869b}}
+@media print{
+html{scroll-behavior:auto}body{font-family:Arial,Helvetica,sans-serif;background:#fff;font-size:9.4pt;line-height:1.38;color:#15283e}
+.app-header,.sidebar,.section-actions,.footer{display:none!important}
+.layout{display:block;max-width:none;margin:0;padding:0}
+.article{width:100%;padding:0}
+.hero{border:0;border-top:4px solid #315a9d;box-shadow:none;border-radius:0;padding:9mm 0 7mm;margin:0 0 4mm}
+.hero h1{font-size:26pt;line-height:1.13;margin-bottom:6mm}
+.hero p{font-size:9pt}
+.guide-section{border:0;box-shadow:none;margin:0;padding:4mm 0 2mm;border-radius:0;break-before:auto}
+.guide-section:last-of-type{break-before:page}
+.guide-section h2{font-size:17pt;line-height:1.2;margin:2.5mm 0 3mm;border-bottom:1px solid #b9cadb;padding-bottom:3mm;break-after:avoid}
+.guide-section h3{font-size:12pt;margin:5mm 0 2mm;break-after:avoid}
+.guide-section p,.guide-section li{font-size:9.3pt;line-height:1.38;orphans:3;widows:3}
+.guide-section p,.guide-section ul,.guide-section ol{margin:2mm 0}
+.guide-section li{margin:1mm 0}
+.guide-section table{font-size:7.7pt;margin:3mm 0;line-height:1.34}
+.guide-section td,.guide-section th{padding:1.6mm 2mm}
+.guide-section tr{break-inside:avoid}
+.guide-section pre{font-size:7.4pt;line-height:1.25;padding:2.7mm;white-space:pre-wrap;overflow-wrap:anywhere;background:#f5f7fb;break-inside:avoid}
+.guide-section blockquote{padding:2.5mm 3mm;margin:3mm 0}
+a{color:#184c85;text-decoration:none}
+.guide-section code{font-size:8pt}
+}
+</style></head><body>
+<header class="app-header"><div class="brand"><span class="brand-icon">A</span><span>MULTI-AGENT AUTH · FIELD GUIDE</span></div>
+<div class="header-right"><span class="hide-small">Entra · GCP · OBO · ADK</span><button type="button" class="print-btn" id="print-btn">Print / Save as PDF</button></div></header>
+<div class="layout"><aside class="sidebar" aria-label="Study guide navigation"><div class="side-title">Study map</div>
+<input id="toc-search" class="search-box" aria-label="Find section" type="search" placeholder="Find a section…"><div class="toc"><a class="toc-link" href="#start-here-what-you-will-build" data-title="start here: what you will build"><span class="toc-num">01</span><span>Start here: what you will build</span></a><a class="toc-link" href="#1-learn-the-vocabulary-with-one-concrete-request" data-title="1. learn the vocabulary with one concrete request"><span class="toc-num">02</span><span>Learn the vocabulary with one concrete request</span></a><a class="toc-link" href="#2-your-learning-sequence-and-dependency-gates" data-title="2. your learning sequence and dependency gates"><span class="toc-num">03</span><span>Your learning sequence and dependency gates</span></a><a class="toc-link" href="#3-stage-0-build-the-minimum-baseline" data-title="3. stage 0 — build the minimum baseline"><span class="toc-num">04</span><span>Stage 0 — Build the minimum baseline</span></a><a class="toc-link" href="#4-stage-1-sign-in-the-employee-with-microsoft-entra-id" data-title="4. stage 1 — sign in the employee with microsoft entra id"><span class="toc-num">05</span><span>Stage 1 — Sign in the employee with Microsoft Entra ID</span></a><a class="toc-link" href="#5-stage-2-protect-the-orchestrator-as-an-entra-api" data-title="5. stage 2 — protect the orchestrator as an entra api"><span class="toc-num">06</span><span>Stage 2 — Protect the orchestrator as an Entra API</span></a><a class="toc-link" href="#6-stage-3-implement-the-first-entra-obo-exchange" data-title="6. stage 3 — implement the first entra obo exchange"><span class="toc-num">07</span><span>Stage 3 — Implement the first Entra OBO exchange</span></a><a class="toc-link" href="#7-stage-4-authorize-google-calendar-separately" data-title="7. stage 4 — authorize google calendar separately"><span class="toc-num">08</span><span>Stage 4 — Authorize Google Calendar separately</span></a><a class="toc-link" href="#8-stage-5-place-credentials-behind-a-real-boundary" data-title="8. stage 5 — place credentials behind a real boundary"><span class="toc-num">09</span><span>Stage 5 — Place credentials behind a real boundary</span></a><a class="toc-link" href="#9-stage-6-split-the-calendar-tool-into-a-second-agent" data-title="9. stage 6 — split the calendar tool into a second agent"><span class="toc-num">10</span><span>Stage 6 — Split the calendar tool into a second agent</span></a><a class="toc-link" href="#10-stage-7-pass-user-context-without-giving-b-arbitrary-power" data-title="10. stage 7 — pass user context without giving b arbitrary power"><span class="toc-num">11</span><span>Stage 7 — Pass user context without giving B arbitrary power</span></a><a class="toc-link" href="#11-stage-8-add-graph-agent-c-and-multi-hop-obo" data-title="11. stage 8 — add graph agent c and multi-hop obo"><span class="toc-num">12</span><span>Stage 8 — Add Graph agent C and multi-hop OBO</span></a><a class="toc-link" href="#12-stage-9-integrate-authentication-with-google-adk-and-a2a" data-title="12. stage 9 — integrate authentication with google adk and a2a"><span class="toc-num">13</span><span>Stage 9 — Integrate authentication with Google ADK and A2A</span></a><a class="toc-link" href="#13-stage-10-select-gcp-azure-and-agent-workload-identity-correctly" data-title="13. stage 10 — select gcp, azure and agent workload identity correctly"><span class="toc-num">14</span><span>Stage 10 — Select GCP, Azure and agent workload identity correctly</span></a><a class="toc-link" href="#14-stage-11-prove-isolation-failures-and-recovery" data-title="14. stage 11 — prove isolation, failures and recovery"><span class="toc-num">15</span><span>Stage 11 — Prove isolation, failures and recovery</span></a><a class="toc-link" href="#15-suggested-implementation-boundaries-and-api-contract" data-title="15. suggested implementation boundaries and api contract"><span class="toc-num">16</span><span>Suggested implementation boundaries and API contract</span></a><a class="toc-link" href="#16-important-corrections-to-the-supplied-source-guides" data-title="16. important corrections to the supplied source guides"><span class="toc-num">17</span><span>Important corrections to the supplied source guides</span></a><a class="toc-link" href="#17-official-reference-map-checked-13-november-2026" data-title="17. official reference map (checked 13 november 2026)"><span class="toc-num">18</span><span>Official reference map (checked 13 November 2026)</span></a></div><div class="search-note" id="search-note"></div>
+<div class="progress-wrap"><div class="progress-label"><strong>Stages completed</strong><span id="progress-count">0 / 12</span></div><progress id="study-progress" value="0" max="12"></progress></div></aside>
+<main class="article"><div class="hero"><h1>Multi-Agent Authentication: A Step-by-Step Learning and Implementation Guide</h1>
+<p><strong>Microsoft Entra ID · OAuth/OIDC · On-Behalf-Of (OBO) · Google Cloud · Google ADK · Google Calendar · Agent-to-Agent Security</strong></p>
+<p><strong>Revision:</strong> 13 November 2026<br/>
+<strong>Level:</strong> Developer with Python and HTTP basics; no prior identity experience required<br/>
+<strong>Method:</strong> One realistic project, one security decision at a time. Build in stages; verify every trust boundary before adding the next.<br/>
+<strong>Format:</strong> Design-first implementation guide. It specifies what to configure, implement, observe, and reject; it does not supply an unreviewed full codebase.</p>
+<blockquote>
+<p><strong>Project scenario (synthetic):</strong> An employee signs in with Microsoft Entra ID and asks an assistant either <strong>“Am I free on Friday?”</strong> or <strong>“Show my Microsoft profile.”</strong> An orchestrator routes the first request to a Google Calendar agent and the second to a Microsoft Graph agent. Only the employee's authorized data may be returned. All examples use fictional identities and identifiers.</p>
+</blockquote>
+</div><section id="section-start-here-what-you-will-build" class="guide-section" data-stage=""><div class="section-actions"></div><h2 id="start-here-what-you-will-build">Start here: what you will build</h2>
+<p><strong>Three agents, three different authentication problems.</strong></p>
+<pre class="diagram"><code class="language-text">                                 Microsoft Entra ID
+                              (login, user API tokens,
+                                     OBO)
+                                       |
+                                       |
+Browser -- login --&gt; Web Client -- token for API A --&gt; [A: Orchestrator]
+                                                         |           |
+                                  Google workload ID token|           |Entra OBO token
+                                  (aud = agent B)         |           |(aud = agent C)
+                                                         v           v
+                                                 [B: Calendar]   [C: Graph]
+                                                      |               |
+                                        Google OAuth  |               | Entra OBO
+                                        user token    |               | (aud = Graph)
+                                                      v               v
+                                               Google Calendar    Microsoft Graph
+
+Browser &lt;-- signed session cookie --&gt; Web Client / backend session store
+OAuth tokens and refresh tokens stay server-side; never in LLM prompts.
+</code></pre>
+<p><strong>Deployment assumption:</strong> Python + Google ADK; a FastAPI web client; separate agent services on Google Cloud Run for the distributed stage; Microsoft Entra ID is the employee identity provider. The first labs run locally. The Entra-protected Graph agent may run on Google Cloud even though its user API tokens come from Microsoft. Google OAuth for Calendar is independent of Entra OBO. <strong>Cloud Run deployment detail:</strong> if agent A is a private Cloud Run service behind a separate web client, that client authenticates to Cloud Run with a Google workload ID token <strong>and</strong> to A's application API with Entra <code>T_A</code>; these are independent gate checks (use the documented dual-header pattern).</p>
+<p><strong>Successful finish:</strong> A second employee cannot read the first employee's calendar; a token for agent A is refused by agent C; Google Calendar refuses write operations; a revoked Google grant triggers re-consent; and Graph can be called only after a valid Entra OBO exchange.</p>
+<h3>The three rules that prevent most errors</h3>
+<ol>
+<li id="ref-m1"><strong>An access token is for one resource audience.</strong> Agent C must reject an access token addressed to agent A. OBO produces a <em>new</em> token for a new audience; it does not make an old token universal. <a class="source-ref" href="#ref-m1">[M1]</a><a class="source-ref" href="#ref-m3">[M3]</a></li>
+<li id="ref-m1"><strong>Entra OBO does not produce a Google Calendar token.</strong> Microsoft Graph/custom Entra APIs use Entra delegation. Google Calendar requires a Google OAuth grant (or a separately justified Google Workspace service-account design). <a class="source-ref" href="#ref-m1">[M1]</a><a class="source-ref" href="#ref-g1">[G1]</a></li>
+<li id="ref-g3"><strong>Agent identity is not user authorization.</strong> A Cloud Run identity token can prove which service called agent B; it does not prove whose calendar that service may read. You must authorize the employee and the specific grant separately. <a class="source-ref" href="#ref-g3">[G3]</a><a class="source-ref" href="#ref-a1">[A1]</a></li>
+</ol>
+</section><section id="section-1-learn-the-vocabulary-with-one-concrete-request" class="guide-section" data-stage=""><div class="section-actions"></div><h2 id="1-learn-the-vocabulary-with-one-concrete-request">1. Learn the vocabulary with one concrete request</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Question it answers</th>
+<th>This project's example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authentication (AuthN)</td>
+<td>Who signed in, or which workload is calling?</td>
+<td>Entra login for employee; Cloud Run identity for service A</td>
+</tr>
+<tr>
+<td>Authorization (AuthZ)</td>
+<td>May this actor perform this action on this data?</td>
+<td>Employee can read only their own linked calendar</td>
+</tr>
+<tr>
+<td>OIDC ID token</td>
+<td>Who authenticated to the client?</td>
+<td>Entra ID token for browser sign-in</td>
+</tr>
+<tr>
+<td>OAuth access token</td>
+<td>Which API may be called, with which grant?</td>
+<td>Entra token for <code>api://agent-a</code>; Google token for Calendar</td>
+</tr>
+<tr>
+<td>Refresh token</td>
+<td>Can the client obtain a new access token?</td>
+<td>Stored in a protected server-side Google OAuth vault</td>
+</tr>
+<tr>
+<td>Scope (<code>scp</code>)</td>
+<td>What delegated permission is requested or granted?</td>
+<td><code>access_as_user</code>, <code>User.Read</code>, <code>calendar.readonly</code></td>
+</tr>
+<tr>
+<td>Audience (<code>aud</code>)</td>
+<td>Which resource is allowed to receive this token?</td>
+<td>Agent A, agent C, Graph, or Cloud Run service B</td>
+</tr>
+<tr>
+<td>Issuer (<code>iss</code>)</td>
+<td>Which authority issued the token?</td>
+<td>Microsoft identity platform or Google</td>
+</tr>
+<tr>
+<td>Subject / tenant</td>
+<td>Which identity owns the request?</td>
+<td>Entra <code>(tid, oid)</code>; Google <code>(iss, sub)</code></td>
+</tr>
+<tr>
+<td>OBO</td>
+<td>Can a middle-tier API request a different user-delegated token?</td>
+<td>Agent C exchanges an Entra token for a Graph token</td>
+</tr>
+<tr>
+<td>Workload identity</td>
+<td>Which process/service is calling?</td>
+<td>Cloud Run service account; optionally SPIFFE/SPIRE</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The decision:</strong> Never treat a <code>user_id</code> string, email address, or agent name in a request body as proof of identity. Bind identity to a validated token or a trusted server-side session. <a class="source-ref" href="#ref-m3">[M3]</a><a class="source-ref" href="#ref-a1">[A1]</a></p>
+<h3>Token trace: fictional values, not live JWTs</h3>
+<pre class=""><code class="language-text">T_A: issuer=Entra, aud=api://agent-a, scope=access_as_user, user=(tenant-01, alice-oid)
+T_C: issuer=Entra, aud=api://agent-c, scope=access_as_user, user=(tenant-01, alice-oid)
+T_G: issuer=Entra, aud=Microsoft Graph, scope=User.Read, user=(tenant-01, alice-oid)
+T_B: issuer=Google, aud=https://calendar-agent-...run.app, principal=agent-a-service
+T_CAL: issuer=Google OAuth, scope=calendar.readonly, Google user=google-sub-01
+</code></pre>
+<p>The first three are Microsoft user-delegated API access tokens. <code>T_B</code> is a <strong>Google-signed workload ID token</strong> for reaching Cloud Run, not the employee's Calendar token. <code>T_CAL</code> is the <strong>Google user-delegated access token</strong> used only when calling Calendar. Exact access-token claim encodings can differ; validate with supported middleware rather than comparing raw token strings. <a class="source-ref" href="#ref-m3">[M3]</a><a class="source-ref" href="#ref-g3">[G3]</a></p>
+</section><section id="section-2-your-learning-sequence-and-dependency-gates" class="guide-section" data-stage=""><div class="section-actions"></div><h2 id="2-your-learning-sequence-and-dependency-gates">2. Your learning sequence and dependency gates</h2>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>One decision</th>
+<th>End state</th>
+<th>Go forward only when…</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>What breaks without identity?</td>
+<td>Simple local assistant and one mock calendar tool</td>
+<td>You can describe the missing trust boundary</td>
+</tr>
+<tr>
+<td>1</td>
+<td>How does the user sign in?</td>
+<td>Entra sign-in and server session</td>
+<td>Wrong user / invalid login is rejected</td>
+</tr>
+<tr>
+<td>2</td>
+<td>How does agent A protect its API?</td>
+<td>Entra bearer token for agent A</td>
+<td>Wrong audience and missing scope are denied</td>
+</tr>
+<tr>
+<td>3</td>
+<td>How does OBO differ from token forwarding?</td>
+<td>Agent A → Graph via Entra OBO</td>
+<td>Graph works; original A token is not passed to Graph</td>
+</tr>
+<tr>
+<td>4</td>
+<td>How is Google access delegated?</td>
+<td>Calendar read-only consent</td>
+<td>You can read, but not change, events</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Where are tokens owned and stored?</td>
+<td>Per-user token broker</td>
+<td>Another user or agent cannot fetch them</td>
+</tr>
+<tr>
+<td>6</td>
+<td>How do agents call each other?</td>
+<td>A → B authenticated service request</td>
+<td>Unauthenticated callers are rejected</td>
+</tr>
+<tr>
+<td>7</td>
+<td>How is user context propagated safely?</td>
+<td>B authorizes employee grant reference</td>
+<td>Swapped <code>user_id</code> and grant references fail</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Can delegation cross two Entra APIs?</td>
+<td>A → C → Microsoft Graph</td>
+<td>Each audience is correct at every hop</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Who handles interrupted agent auth?</td>
+<td>ADK auth integration</td>
+<td>Consent can resume safely without showing secrets</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Which cloud identity do workloads use?</td>
+<td>GCP managed identity, optional federation</td>
+<td>No long-lived service-account key is required</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Is the system ready for failure?</td>
+<td>Negative tests and operations</td>
+<td>Every deny path has a known recovery</td>
+</tr>
+</tbody>
+</table>
+</section><section id="section-3-stage-0-build-the-minimum-baseline" class="guide-section" data-stage="0"><div class="section-actions"><label class="done-control"><input type="checkbox" class="stage-complete" data-stage="0"><span>Mark stage complete</span></label></div><h2 id="3-stage-0-build-the-minimum-baseline">3. Stage 0 — Build the minimum baseline</h2>
+<p><strong>Requirement:</strong> The assistant answers a natural language calendar question. <strong>Baseline failure:</strong> If the tool accepts <code>user_id=alice</code> from the model or HTTP body, another person can ask it to fetch Alice's data.</p>
+<p><strong>Options:</strong> (a) one local agent plus a mock tool; (b) multiple agents immediately; (c) production identity infrastructure first. <strong>Choose (a)</strong> because agent orchestration is not an authentication mechanism and early complexity hides the failure.</p>
+<p><strong>Implementation path:</strong></p>
+<ol>
+<li>Define a local Google ADK orchestrator with two tools: <code>read_mock_calendar()</code> and <code>read_mock_profile()</code>.</li>
+<li>Create two fake users, Alice and Bob, with distinct calendar events.</li>
+<li>Add a local FastAPI endpoint <code>POST /chat</code>, but keep all resources fake.</li>
+<li>Record which incoming value picks the data owner. If it is request JSON or model text, mark this design <strong>intentionally insecure</strong>.</li>
+<li>Write down the boundary to fix: <strong>HTTP requester → authenticated application session → authorized owner of data</strong>.</li>
+</ol>
+<p><strong>Observe:</strong> A request that changes only <code>user_id</code> can currently switch calendars. This is your controlled failing test. <strong>Recovery:</strong> Do not expose this baseline publicly; replace the caller-provided identity in Stages 1–2.</p>
+<p><strong>Design changes if:</strong> You are learning identity alone rather than ADK. Then use two regular HTTP handlers; the authentication decisions remain identical.</p>
+</section><section id="section-4-stage-1-sign-in-the-employee-with-microsoft-entra-id" class="guide-section" data-stage="1"><div class="section-actions"><label class="done-control"><input type="checkbox" class="stage-complete" data-stage="1"><span>Mark stage complete</span></label></div><h2 id="4-stage-1-sign-in-the-employee-with-microsoft-entra-id">4. Stage 1 — Sign in the employee with Microsoft Entra ID</h2>
+<p><strong>Requirement:</strong> Only a real tenant user may establish a session. <strong>Baseline failure:</strong> A signed <code>uid</code> cookie created from browser-supplied data still does not prove a Microsoft login.</p>
+<p><strong>Options:</strong> (a) OIDC authorization code + PKCE; (b) username/password sent to the app; (c) client-only login followed by trusting an arbitrary user ID. <strong>Choose (a)</strong> and use an authentication library, not handcrafted OAuth HTTP. <a class="source-ref" href="#ref-m2">[M2]</a></p>
+<p><strong>Entra console actions:</strong></p>
+<ol>
+<li>Create or select an Entra tenant and a dedicated test user. Follow your supplied <code>entra_user_guide(1).md</code> for creating a user and copying the Object ID; do not use a real person's password in test data.</li>
+<li>In <strong>Entra admin center → App registrations → New registration</strong>, create a <strong>single-tenant web client</strong> named <code>study-web-client</code>.</li>
+<li>Configure a <strong>Web</strong> redirect URI for local testing, for example <code>http://localhost:8000/auth/entra/callback</code>. Production redirect URIs must use HTTPS.</li>
+<li>Record <code>TENANT_ID</code> and the client's <code>CLIENT_ID</code>. Configure the confidential-client credential on the server; store it outside source control. Prefer a certificate or federated credential where supported in production.</li>
+<li>Use <strong>OIDC authorization code flow with PKCE</strong>, <code>state</code> and <code>nonce</code>; validate the callback through an approved library.</li>
+<li>On successful login, create a random <strong>server-side session ID</strong> and an <code>HttpOnly</code>, <code>Secure</code> (under HTTPS), <code>SameSite</code> cookie. Keep Microsoft tokens on the server, not in the browser or the LLM context.</li>
+<li>Derive the application user key from the verified <strong><code>(tid, oid)</code></strong>, not the email address. Define an allowlist or application role/group policy as a separate authorization step.</li>
+</ol>
+<p><strong>Information flow:</strong> Browser → Entra <code>/authorize</code> → browser callback containing an authorization code → server exchanges code → validated ID-token claims → app session. The ID token is not the bearer token for agent A or Graph.</p>
+<p><strong>Failure and recovery:</strong> A callback with a different <code>state</code> is rejected; restart the login. A missing group claim is not proof of membership (consider Entra group overage or a roles-based design). <a class="source-ref" href="#ref-m4">[M4]</a></p>
+<p><strong>Verified when:</strong> Two distinct users receive distinct sessions; forged cookie or mismatched callback state fails. <strong>Design changes if:</strong> You are building a SPA/mobile client; public-client credential handling differs, but PKCE remains relevant.</p>
+</section><section id="section-5-stage-2-protect-the-orchestrator-as-an-entra-api" class="guide-section" data-stage="2"><div class="section-actions"><label class="done-control"><input type="checkbox" class="stage-complete" data-stage="2"><span>Mark stage complete</span></label></div><h2 id="5-stage-2-protect-the-orchestrator-as-an-entra-api">5. Stage 2 — Protect the orchestrator as an Entra API</h2>
+<p><strong>Requirement:</strong> Agent A must know <strong>who called</strong> and <strong>whether they may use this API</strong>. <strong>Baseline failure:</strong> A valid Entra ID token sent to <code>/chat</code> is not automatically a valid API access token.</p>
+<p><strong>Options:</strong> (a) only an application session for a monolith; (b) separate API resource with OAuth scopes; (c) allow any token signed by Microsoft. <strong>Choose (b)</strong> for learning multi-hop OBO. (a) is simpler if you will never split services; <strong>never choose (c)</strong>.</p>
+<p><strong>Entra console actions:</strong></p>
+<ol>
+<li>Register a second application, <code>study-agent-a-api</code> (resource API A).</li>
+<li>Under <strong>Expose an API</strong>, define Application ID URI and delegated scope <code>access_as_user</code>.</li>
+<li>Grant the <strong>web client</strong> delegated permission to API A; configure consent as required by your tenant.</li>
+<li>At login, have the web client obtain a separate API <strong>access token whose audience is agent A</strong>, not Microsoft Graph.</li>
+<li id="ref-m3">In agent A's HTTP middleware, validate token signature, version-appropriate issuer metadata, <code>iss</code>, expected <code>aud</code>, time constraints, tenant, delegated <code>scp=access_as_user</code>, and allowed calling client where required. Use supported Entra-aware middleware. <a class="source-ref" href="#ref-m3">[M3]</a></li>
+<li id="ref-g3">Reject missing authentication with <strong>401</strong>; reject valid identity lacking permission with <strong>403</strong>. For a separately deployed <strong>private</strong> Cloud Run A, additionally require a Google workload ID token at the Cloud Run gate; the application still verifies Entra <code>T_A</code> in its own bearer header. <a class="source-ref" href="#ref-g3">[G3]</a></li>
+<li>Resolve owner identity from the verified token; ignore any browser-supplied <code>oid</code>, <code>tenant</code> or <code>email</code> as an authority.</li>
+</ol>
+<p><strong>Information flow (local):</strong> <code>Web client -- T_A (aud=agent-a, scp=access_as_user) --&gt; Agent A</code>. The API authorizes the user and sets the internal request principal <code>tenant/user</code>. On private Cloud Run, there is an additional front-door <strong>Google ID token for A</strong>, while <code>T_A</code> stays the application-level delegated token.</p>
+<p><strong>Failure and recovery:</strong> Present a <strong>Graph token</strong> directly to agent A. It must reject the token for <strong>wrong audience</strong>, even if Graph's token is valid. Get a fresh token targeted at A; never change validation to accept arbitrary audiences.</p>
+<p><strong>Verified when:</strong> A accepts a correct token and rejects missing signature, wrong issuer, wrong audience, expired token and insufficient scope. <strong>Design changes if:</strong> The UI/backend is one monolithic server: the API can use a verified server session internally, but the lesson about audience validation remains essential for a separate resource API.</p>
+</section><section id="section-6-stage-3-implement-the-first-entra-obo-exchange" class="guide-section" data-stage="3"><div class="section-actions"><label class="done-control"><input type="checkbox" class="stage-complete" data-stage="3"><span>Mark stage complete</span></label></div><h2 id="6-stage-3-implement-the-first-entra-obo-exchange">6. Stage 3 — Implement the first Entra OBO exchange</h2>
+<p><strong>Requirement:</strong> The backend must call <code>GET https://graph.microsoft.com/v1.0/me</code> for the signed-in employee. <strong>Baseline failure:</strong> Sending <code>T_A</code> to Graph is incorrect because it was issued for agent A, not Graph.</p>
+<p><strong>Options:</strong> (a) forward <code>T_A</code> to Graph; (b) ask the employee to sign in again to Graph; (c) perform Entra <strong>On-Behalf-Of</strong> from the confidential middle tier. <strong>Choose (c)</strong>. <a class="source-ref" href="#ref-m1">[M1]</a></p>
+<p><strong>Build actions:</strong></p>
+<ol>
+<li>In <strong>agent A's</strong> Entra registration, add Microsoft Graph <strong>delegated</strong> <code>User.Read</code> permission and complete required consent.</li>
+<li>Configure agent A as a confidential client with a protected credential (certificate preferred for production; a secret may be used for a short-lived local lab).</li>
+<li>After agent A validates <code>T_A</code>, use an approved MSAL-supported OBO API with <strong><code>T_A</code> as the user assertion</strong> and <strong>Graph's delegated scope</strong> as the target.</li>
+<li>Let Entra issue <strong><code>T_G</code> whose audience is Microsoft Graph</strong>. Cache tokens according to the library's guidance; never serialize tokens into agent-visible tool output.</li>
+<li>Call <code>/v1.0/me</code> using <code>T_G</code>, return only the minimum profile fields needed by the task.</li>
+</ol>
+<p><strong>Exact movement:</strong></p>
+<pre class="diagram"><code class="language-text">Web client ---- T_A: aud=agent-a ----&gt; Agent A
+Agent A -- T_A assertion + its confidential-client proof --&gt; Entra /token
+Entra -------- T_G: aud=Graph, scp=User.Read -------&gt; Agent A
+Agent A ---- T_G: Authorization Bearer -----------&gt; Microsoft Graph /me
+Microsoft Graph ---- profile fields ----------------&gt; Agent A
+</code></pre>
+<p><strong>Failure and recovery:</strong> Missing consent yields a consent/interaction error; do not silently turn it into an app-only Graph call. Initiate the appropriate consent/admin process and retry after the grant is present. An app-only token does <strong>not</strong> represent the user and is not an OBO assertion. <a class="source-ref" href="#ref-m1">[M1]</a></p>
+<p><strong>Verified when:</strong> <code>Graph /me</code> returns the test user; agent A never forwards <code>T_A</code> to Graph. <strong>Design changes if:</strong> The task is purely service-owned data with no signed-in user. Use client credentials/application permissions only after separate approval; that is not OBO.</p>
+</section><section id="section-7-stage-4-authorize-google-calendar-separately" class="guide-section" data-stage="4"><div class="section-actions"><label class="done-control"><input type="checkbox" class="stage-complete" data-stage="4"><span>Mark stage complete</span></label></div><h2 id="7-stage-4-authorize-google-calendar-separately">7. Stage 4 — Authorize Google Calendar separately</h2>
+<p><strong>Requirement:</strong> Read the user's Google Calendar, including if their Google email differs from their Entra email. <strong>Baseline failure:</strong> An Entra token, even one obtained using OBO, is not a Google Calendar token.</p>
+<p><strong>Options:</strong> (a) Google three-legged OAuth for the employee; (b) Google Workspace domain-wide delegation administered for an organization; (c) guess account mapping by matching email. <strong>Choose (a)</strong> for a user-owned learning project. (b) is a separate enterprise administration design, not a shortcut. <a class="source-ref" href="#ref-g1">[G1]</a><a class="source-ref" href="#ref-g2">[G2]</a></p>
+<p><strong>Google Cloud console actions:</strong></p>
+<ol>
+<li>Create a test Google Cloud project and enable <strong>Google Calendar API</strong>.</li>
+<li>In <strong>Google Auth Platform / OAuth consent configuration</strong>, configure an appropriate audience and add a test user if the app is in testing status. Console labels can change.</li>
+<li>Create an <strong>OAuth client of type Web application</strong> and register exact callback <code>http://localhost:8000/auth/google/callback</code> for local testing.</li>
+<li id="ref-g2">Request <strong><code>https://www.googleapis.com/auth/calendar.readonly</code></strong>. This reads calendar data without write permissions. If the app needs only busy/free intervals, evaluate the narrower <code>calendar.freebusy</code> scope. <a class="source-ref" href="#ref-g2">[G2]</a></li>
+<li>Start Google authorization from a <strong>verified Entra session</strong>. Generate unpredictable, one-use <strong><code>state</code></strong> and PKCE parameters as supported by the chosen OAuth library. Store <code>state -&gt; authenticated session/user, verifier, expiry</code> on the server.</li>
+<li>Validate returned <code>state</code>, redeem the authorization code on the server, bind the grant to the confirmed Entra user key <code>(tid, oid)</code>, and obtain an independently verified Google account identifier when account identity must be displayed/controlled.</li>
+<li id="ref-g1">Store the granted access/refresh credentials server-side and call the Calendar API using <strong>the Google token</strong>, not the Entra token. For access after the current visit, request offline access and handle the possibility that no new refresh token is returned on later consents. <a class="source-ref" href="#ref-g1">[G1]</a></li>
+<li>Attempt a <strong>write</strong> operation with only read-only scope; verify that it is denied.</li>
+</ol>
+<p><strong>Exact movement:</strong></p>
+<pre class="diagram"><code class="language-text">Entra-authenticated session -- starts consent --&gt; Google /authorize
+Google -- auth code + matching random state --&gt; /auth/google/callback
+Backend -- auth code + verifier --&gt; Google token endpoint
+Google -- T_CAL: delegated calendar.readonly --&gt; protected token vault
+Calendar tool -- T_CAL --&gt; Google Calendar API
+</code></pre>
+<p><strong>Failure and recovery:</strong> User denies consent or revokes the grant: return <strong>“Connect Google Calendar”</strong>, delete/mark the stale grant, and restart Google authorization. Never retry indefinitely or use another user's token.</p>
+<p><strong>Verified when:</strong> Alice can read her linked Google Calendar; Alice cannot write events; Bob's account is never silently substituted. <strong>Design changes if:</strong> Your enterprise requires a managed Google Workspace account—add account-linking policy and admin controls rather than inferring identity from equal email strings.</p>
+</section><section id="section-8-stage-5-place-credentials-behind-a-real-boundary" class="guide-section" data-stage="5"><div class="section-actions"><label class="done-control"><input type="checkbox" class="stage-complete" data-stage="5"><span>Mark stage complete</span></label></div><h2 id="8-stage-5-place-credentials-behind-a-real-boundary">8. Stage 5 — Place credentials behind a real boundary</h2>
+<p><strong>Requirement:</strong> Multiple agents need API data without being able to inspect each other's refresh tokens. <strong>Baseline failure:</strong> A locally encrypted file plus a <code>fetch_my_spiffe_svid()</code> check <em>inside the same process</em> is not a separate authorization boundary. A compromised process that already has file/key access can bypass its own check.</p>
+<p><strong>Options:</strong> (a) encrypted local files for a single-user lab; (b) central credential broker/vault with service authentication and per-user authorization; (c) store tokens in ADK session state. <strong>Use (a) only locally</strong>, <strong>choose (b)</strong> for distributed services, and avoid (c) for production. ADK warns about sensitive credential storage in session state. <a class="source-ref" href="#ref-a1">[A1]</a><a class="source-ref" href="#ref-g5">[G5]</a></p>
+<p><strong>Broker contract (design, not code):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Data ownership / access rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Employee key</td>
+<td>Entra <code>(tenant_id, object_id)</code>; derived from validated identity</td>
+</tr>
+<tr>
+<td>Google account key</td>
+<td>Verified Google <code>(issuer, sub)</code> if account identity is obtained</td>
+</tr>
+<tr>
+<td>OAuth grant</td>
+<td>Google client, authorized scopes, encrypted refresh token, status, expiry metadata</td>
+</tr>
+<tr>
+<td>Agent A</td>
+<td>Can request an authorized <em>read operation</em> for its authenticated user</td>
+</tr>
+<tr>
+<td>Agent B</td>
+<td>Can perform calendar reads for a short-lived, authenticated and authorized request</td>
+</tr>
+<tr>
+<td>Broker</td>
+<td>Validates caller workload identity <strong>and</strong> user-grant ownership before using a credential</td>
+</tr>
+<tr>
+<td>LLM/ADK messages</td>
+<td>Contain task intent and sanitized results, <strong>never tokens or secrets</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Implementation path:</strong> Use a proper credential manager if available for the runtime (Google's Agent Identity auth manager is documented for ADK), or implement a narrow internal broker backed by a managed secret store and protected database. Give each service only its minimal IAM permissions. Prefer an operation-level broker that returns data rather than refresh tokens. <a class="source-ref" href="#ref-g5">[G5]</a></p>
+<p><strong>Failure and recovery:</strong> Agent B submits a grant reference belonging to Bob while the signed request context says Alice. Broker refuses it and logs a safe audit record. <strong>Verified when:</strong> A stolen grant ID alone cannot read or retrieve credentials. <strong>Design changes if:</strong> All tools run inside one trusted backend with one operator; broker can be deferred until you split trust boundaries.</p>
+</section><section id="section-9-stage-6-split-the-calendar-tool-into-a-second-agent" class="guide-section" data-stage="6"><div class="section-actions"><label class="done-control"><input type="checkbox" class="stage-complete" data-stage="6"><span>Mark stage complete</span></label></div><h2 id="9-stage-6-split-the-calendar-tool-into-a-second-agent">9. Stage 6 — Split the calendar tool into a second agent</h2>
+<p><strong>Requirement:</strong> Agent A on Cloud Run invokes independent agent B on Cloud Run. <strong>Baseline failure:</strong> HTTP routing or an A2A agent card is not proof that the caller is trusted.</p>
+<p><strong>Options:</strong> (a) public endpoint with a hardcoded shared API key; (b) private Cloud Run service authenticated by service-account-issued <strong>Google ID token</strong>; (c) SPIFFE mTLS service mesh. <strong>Choose (b)</strong> on Cloud Run; use (c) when a heterogeneous service mesh is a real requirement. <a class="source-ref" href="#ref-g3">[G3]</a><a class="source-ref" href="#ref-a2">[A2]</a></p>
+<p><strong>GCP implementation path:</strong></p>
+<ol>
+<li>Deploy the minimal <strong>calendar agent B</strong> as a separate authenticated Cloud Run service.</li>
+<li>Give <strong>agent A</strong> its own runtime service account, for example <code>agent-a-runtime</code>.</li>
+<li>Grant that principal <strong>Cloud Run Invoker</strong> only on B. Disable unauthenticated access to B.</li>
+<li>When A calls B, obtain a <strong>Google-signed ID token</strong> with <code>aud</code> set to B's configured service URL or supported custom audience. Use supported Google auth libraries or metadata credentials; do not create a JSON service-account key.</li>
+<li>B relies on Cloud Run's caller authentication and still performs its <strong>own authorization</strong> for what operation and whose data may be used.</li>
+<li>Send a narrow request such as <code>read_availability(start, end, grant_ref, signed_context)</code> rather than a raw Google token.</li>
+</ol>
+<p><strong>Information movement:</strong></p>
+<pre class="diagram"><code class="language-text">Agent A -- ID token: aud=Cloud Run B --&gt; Cloud Run IAM gate
+Cloud Run gate -- authenticated request --&gt; Agent B
+Agent B -- signed user context + grant reference --&gt; credential broker
+Broker -- authorized Calendar read --&gt; Google Calendar
+Agent B &lt;------------------------- sanitized availability result
+</code></pre>
+<p><strong>Failure and recovery:</strong> A calls B with an ID token for the wrong URL: Cloud Run denies before B runs. Obtain a new audience-bound ID token; never relax audience validation. <a class="source-ref" href="#ref-g3">[G3]</a></p>
+<p><strong>Verified when:</strong> A can invoke B; an anonymous call and wrong-audience token fail. <strong>Design changes if:</strong> A runs in Azure: use <strong>GCP Workload Identity Federation</strong> to obtain appropriate Google credentials; do not copy a service-account private key. <a class="source-ref" href="#ref-g4">[G4]</a></p>
+</section><section id="section-10-stage-7-pass-user-context-without-giving-b-arbitrary-power" class="guide-section" data-stage="7"><div class="section-actions"><label class="done-control"><input type="checkbox" class="stage-complete" data-stage="7"><span>Mark stage complete</span></label></div><h2 id="10-stage-7-pass-user-context-without-giving-b-arbitrary-power">10. Stage 7 — Pass user context without giving B arbitrary power</h2>
+<p><strong>Requirement:</strong> A chooses the employee for a calendar read; B must not trust an arbitrary <code>user_id</code> in an agent-generated payload. <strong>Baseline failure:</strong> Valid machine identity from A proves which service called B, but not that the employee authorized reading a given grant.</p>
+<p><strong>Options:</strong> (a) forward the browser's Entra access token to every agent; (b) put a plain <code>user_id</code> field in an A2A message; (c) issue a short-lived, audience-specific <strong>signed user context</strong> and enforce grant ownership at B/broker. <strong>Choose (c)</strong> for the Google specialist. This signed context is an application authorization design, <strong>not a Microsoft OBO token</strong>.</p>
+<p><strong>Suggested signed context fields (fictional):</strong></p>
+<pre class=""><code class="language-text">issuer=your-internal-auth-broker
+subject=(tenant-01, alice-oid)
+audience=calendar-agent-b
+action=calendar.read
+expires=short-lived timestamp
+request_id=unique ID
+grant_ref=alice-calendar-grant-07
+</code></pre>
+<p><strong>Build actions:</strong></p>
+<ol>
+<li>Only the trusted entry/backend issues the context <strong>after</strong> verifying the Entra principal and its permissions.</li>
+<li>B authenticates the caller service through Cloud Run IAM, validates context signature, issuer, audience, expiry and allowed action, and rejects replay as required by your threat model.</li>
+<li>Broker verifies <code>grant_ref</code> actually belongs to the employee in the signed context. The context is not itself a Google refresh token.</li>
+<li>Return only the minimum time slots needed, with structured access-denied errors. Never include context secrets in model prompts or traces.</li>
+</ol>
+<p><strong>Failure and recovery:</strong> An attacker changes <code>grant_ref</code> from Alice's to Bob's: signature mismatch or broker ownership check denies the operation. Correct the mapping; never silently fall back to the first available Google account.</p>
+<p><strong>Verified when:</strong> Every data read is associated with an authenticated service, an approved user, an allowed operation, and the correct grant owner. <strong>Design changes if:</strong> B is an Entra-protected API and itself needs Microsoft delegation: use a properly audience-targeted <strong>Entra token/OBO</strong> rather than this internal context alone.</p>
+</section><section id="section-11-stage-8-add-graph-agent-c-and-multi-hop-obo" class="guide-section" data-stage="8"><div class="section-actions"><label class="done-control"><input type="checkbox" class="stage-complete" data-stage="8"><span>Mark stage complete</span></label></div><h2 id="11-stage-8-add-graph-agent-c-and-multi-hop-obo">11. Stage 8 — Add Graph agent C and multi-hop OBO</h2>
+<p><strong>Requirement:</strong> An independent Graph specialist C must read <code>/me</code> for the user. <strong>Baseline failure:</strong> An access token addressed to A cannot be used as the incoming token to C. C cannot redeem a Graph token received from A for OBO as C.</p>
+<p><strong>Options:</strong> (a) keep Graph tool inside A (simplest); (b) A obtains an Entra delegated token for C, then C performs its own OBO to Graph; (c) pass the original token end to end unchanged. <strong>Choose (b)</strong> when C is independently deployed; otherwise (a) is simpler. <a class="source-ref" href="#ref-m1">[M1]</a></p>
+<p><strong>Entra implementation path:</strong></p>
+<ol>
+<li>Create an <strong>Entra API registration C</strong> exposing delegated <code>access_as_user</code>.</li>
+<li>Allow <strong>agent A</strong> to request C's delegated scope, with appropriate consent.</li>
+<li>Configure C as a confidential client allowed to request Microsoft Graph <code>User.Read</code> with consent.</li>
+<li>A validates <code>T_A</code>, then performs an OBO exchange to obtain <strong><code>T_C</code> whose <code>aud</code> is C</strong>.</li>
+<li>A calls C with <code>T_C</code>. C validates issuer, signature, audience, expiry, scope, tenant, user and authorized calling client.</li>
+<li>C performs a <strong>second OBO exchange</strong> using <code>T_C</code> as its assertion, obtains <strong><code>T_G</code> for Graph</strong>, calls <code>/me</code>, and returns allowed fields only.</li>
+</ol>
+<p><strong>Two-hop trace:</strong></p>
+<pre class="diagram"><code class="language-text">Web client -- T_A (aud=A) --&gt; A
+A -- OBO assertion T_A --&gt; Entra --&gt; T_C (aud=C)
+A -- T_C --&gt; C
+C -- OBO assertion T_C --&gt; Entra --&gt; T_G (aud=Graph)
+C -- T_G --&gt; Microsoft Graph /me
+</code></pre>
+<p><strong>Extra Cloud Run layer (optional):</strong> If C is also a private Cloud Run service, A may need a <strong>Google ID token</strong> for the Cloud Run front door <strong>and</strong> an Entra <code>Authorization</code> bearer token for C's API authorization. Cloud Run documents <code>X-Serverless-Authorization</code> for its ID token when the application needs the regular <code>Authorization</code> header for its own token. Do not confuse these credentials. <a class="source-ref" href="#ref-g3">[G3]</a></p>
+<p><strong>Failure and recovery:</strong> <code>T_A</code> sent directly to C returns 401 for wrong audience. Request <code>T_C</code> via OBO. A consent failure needs an authorization remedy; it must not trigger app-only fallback. <strong>Verified when:</strong> C never accepts <code>T_A</code>, and Graph sees only <code>T_G</code>.</p>
+</section><section id="section-12-stage-9-integrate-authentication-with-google-adk-and-a2a" class="guide-section" data-stage="9"><div class="section-actions"><label class="done-control"><input type="checkbox" class="stage-complete" data-stage="9"><span>Mark stage complete</span></label></div><h2 id="12-stage-9-integrate-authentication-with-google-adk-and-a2a">12. Stage 9 — Integrate authentication with Google ADK and A2A</h2>
+<p><strong>Requirement:</strong> A tool may discover missing user consent during an agent run. <strong>Baseline failure:</strong> A model response containing an OAuth code or raw access token creates a credential exposure path.</p>
+<p><strong>Options:</strong> (a) implement browser authorization redirects in FastAPI and give ADK already-authorized tools; (b) use ADK's tool authentication / credential request and client-side resume flow; (c) let the LLM generate OAuth links from instructions. <strong>Choose (a) first for understanding; evaluate (b) once redirects and session isolation work. Never choose (c).</strong> <a class="source-ref" href="#ref-a1">[A1]</a></p>
+<p><strong>ADK integration path:</strong></p>
+<ol>
+<li>Keep a dedicated <strong>authentication adapter</strong> between HTTP, token manager and agent runtime. The model selects a safe tool; the adapter owns the credential.</li>
+<li>When the Calendar grant is missing, return a structured authorization-needed result, <strong>not the credential</strong>, and let the trusted web client initiate Google OAuth.</li>
+<li id="ref-a1">If using ADK's native interactive tool flow, follow current ADK documentation for <code>AuthScheme</code>, <code>AuthCredential</code>, <code>adk_request_credential</code> and resume handling. Persist pending auth state per user/session/invocation and validate the callback. ADK APIs and event names change between versions; pin the implementation version. <a class="source-ref" href="#ref-a1">[A1]</a></li>
+<li>Keep independent user/session records. Never use a global <code>user1</code> identity or shared mutable token dictionary in a multi-user deployment.</li>
+<li id="ref-a2">For remote agents using <strong>A2A</strong>, declare supported security schemes in the agent card, but enforce them at the endpoint. Every task operation, task lookup and result must enforce the caller's authorized visibility. A2A permits an auth-required task state; do not relay tokens in ordinary agent messages. <a class="source-ref" href="#ref-a2">[A2]</a></li>
+</ol>
+<p><strong>Failure and recovery:</strong> OAuth completes in the wrong browser session. Reject due to state/session mismatch; ask the correct session to restart. <strong>Verified when:</strong> Login/consent resumes the intended pending operation once and the LLM never sees an OAuth authorization code.</p>
+<p><strong>Design changes if:</strong> Your product front end already integrates with ADK's auth manager or a managed A2A authorization handoff. Prefer the official managed integration over reproducing the same broker behavior.</p>
+</section><section id="section-13-stage-10-select-gcp-azure-and-agent-workload-identity-correctly" class="guide-section" data-stage="10"><div class="section-actions"><label class="done-control"><input type="checkbox" class="stage-complete" data-stage="10"><span>Mark stage complete</span></label></div><h2 id="13-stage-10-select-gcp-azure-and-agent-workload-identity-correctly">13. Stage 10 — Select GCP, Azure and agent workload identity correctly</h2>
+<p><strong>Requirement:</strong> Each deployed agent must prove its own workload identity without long-lived shared keys. <strong>Baseline failure:</strong> A service-account JSON key copied into every agent grants broad access and is difficult to rotate.</p>
+<table>
+<thead>
+<tr>
+<th>Deployment</th>
+<th>Preferred starting point</th>
+<th>Do not mistake it for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A and B on Cloud Run</td>
+<td>Attached service accounts + Google audience-bound ID tokens + IAM Invoker</td>
+<td>Employee's Google Calendar delegation</td>
+</tr>
+<tr>
+<td>A on Azure, B on GCP</td>
+<td>GCP Workload Identity Federation with a mapped trusted external Azure/Entra workload identity</td>
+<td>Entra <strong>user OBO</strong> for Google Calendar</td>
+</tr>
+<tr>
+<td>Mixed Kubernetes / on-prem</td>
+<td>SPIFFE/SPIRE workload credentials, enforced by a separate mTLS gateway or broker</td>
+<td>A local function that self-checks its SVID</td>
+</tr>
+<tr>
+<td>Agent needs Graph delegated user data</td>
+<td>Microsoft Entra OBO via confidential API credentials</td>
+<td>Cloud Run Invoker permission</td>
+</tr>
+<tr>
+<td>Microsoft Entra Agent ID</td>
+<td>Agent identity blueprint and child identities, with their documented agent-specific OBO flows</td>
+<td>Generic SPIFFE identity or an interactive sign-in app</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Optional cross-cloud build:</strong> Configure a GCP workload identity pool/provider for the trusted Azure workload; restrict attribute mappings and IAM membership; obtain short-lived Google credentials via federation; use an audience-targeted Google ID token to invoke B where supported. Verify the precise credential flow for your deployment against the current federation documentation. <a class="source-ref" href="#ref-g4">[G4]</a></p>
+<p><strong>Optional Microsoft Entra Agent ID track:</strong> Microsoft documents <strong>agent identity blueprints</strong> and agent-specific OBO. Their blueprints/child agent identities do <strong>not</strong> perform a normal interactive <code>/authorize</code> sign-in; a regular client app signs in the human and the agent performs downstream token exchange under documented constraints. Keep this as a <strong>separate advanced lab</strong> after ordinary app-registration OBO works. Availability, admin prerequisites and SDK versions must be confirmed for your tenant. <a class="source-ref" href="#ref-m5">[M5]</a></p>
+<p><strong>Optional Google-managed track:</strong> Google documents <strong>Agent Identity auth manager</strong> as a vault/broker for outbound tool credentials, with ADK integration. Evaluate it as a replacement for a custom token broker, subject to product availability in your project. <a class="source-ref" href="#ref-g5">[G5]</a></p>
+<p><strong>Failure and recovery:</strong> A Cloud Run 403 after deployment: verify caller principal, <code>roles/run.invoker</code>, token audience and runtime service account. Do not expose the service publicly as a debugging shortcut.</p>
+</section><section id="section-14-stage-11-prove-isolation-failures-and-recovery" class="guide-section" data-stage="11"><div class="section-actions"><label class="done-control"><input type="checkbox" class="stage-complete" data-stage="11"><span>Mark stage complete</span></label></div><h2 id="14-stage-11-prove-isolation-failures-and-recovery">14. Stage 11 — Prove isolation, failures and recovery</h2>
+<p>Run these <strong>negative tests</strong> before production deployment. Each is a test of a boundary, not a quiz.</p>
+<table>
+<thead>
+<tr>
+<th>Inject this failure</th>
+<th>Expected result</th>
+<th>Recovery path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No session / expired browser session</td>
+<td>401 or sign-in redirect</td>
+<td>Restart Entra login</td>
+</tr>
+<tr>
+<td>Invalid OAuth <code>state</code> or PKCE verifier</td>
+<td>Callback rejected; no grant saved</td>
+<td>Begin a fresh consent attempt</td>
+</tr>
+<tr>
+<td>Entra access token <code>aud=Graph</code> at agent A</td>
+<td>401, wrong audience</td>
+<td>Acquire token for A</td>
+</tr>
+<tr>
+<td>Entra token <code>aud=A</code> at agent C</td>
+<td>401, wrong audience</td>
+<td>A performs OBO to C</td>
+</tr>
+<tr>
+<td>Correct Entra token, missing <code>access_as_user</code> scope</td>
+<td>403</td>
+<td>Obtain the proper delegated permission and consent</td>
+</tr>
+<tr>
+<td>Graph <code>User.Read</code> consent missing</td>
+<td>OBO fails without privileged fallback</td>
+<td>Obtain appropriate consent</td>
+</tr>
+<tr>
+<td>Call B without Google workload ID token</td>
+<td>Cloud Run denies request</td>
+<td>Use authorized service account and ID token</td>
+</tr>
+<tr>
+<td>Call B with ID token for wrong audience</td>
+<td>Cloud Run denies request</td>
+<td>Request ID token for B</td>
+</tr>
+<tr>
+<td>B asks broker for Bob's grant while acting for Alice</td>
+<td>Deny; no credential returned</td>
+<td>Fix identity/grant association</td>
+</tr>
+<tr>
+<td>Google grant revoked or refresh rejected</td>
+<td>Calendar read stops; authorization-needed signal</td>
+<td>Delete stale grant and request re-consent</td>
+</tr>
+<tr>
+<td>Calendar write attempted with read-only scope</td>
+<td>Google API rejects</td>
+<td>Keep read-only or seek new consent via explicit product decision</td>
+</tr>
+<tr>
+<td>A2A task ID of another employee</td>
+<td>Deny or disclose nothing</td>
+<td>Enforce owner/tenant on every task operation</td>
+</tr>
+<tr>
+<td>Service key / secret exposed</td>
+<td>Treat credential as compromised</td>
+<td>Revoke/rotate; audit access; prevent recurrence</td>
+</tr>
+</tbody>
+</table>
+<h3>End-to-end request 1: “Am I free Friday?”</h3>
+<pre class=""><code class="language-text">1. Browser session identifies Alice as (tenant-01, alice-oid).
+2. Web client obtains T_A for API A; A validates and authorizes the caller.
+3. A routes to Calendar agent B using Google ID token T_B (aud=B).
+4. A also supplies a short-lived signed context for Alice, action=calendar.read.
+5. B validates the context. Broker checks Alice owns the linked grant.
+6. Broker uses Alice's Google T_CAL to read Google Calendar.
+7. B returns only availability intervals. A answers Alice.
+8. Bob's request must use Bob's authenticated identity and Bob's own grant.
+</code></pre>
+<h3>End-to-end request 2: “Show my Microsoft profile.”</h3>
+<pre class=""><code class="language-text">1. Browser calls A with Microsoft T_A (aud=A).
+2. A validates T_A and asks Entra for T_C using OBO.
+3. A calls C with T_C (aud=C).
+4. C validates T_C; C OBO-exchanges it for T_G (aud=Graph).
+5. C calls Microsoft Graph /me using T_G.
+6. C returns only allowed profile fields; A responds to Alice.
+</code></pre>
+<p><strong>What to observe without logging credentials:</strong> request ID, stage name, authorization decision, user key (prefer a pseudonymous internal ID), caller service principal, target audience, requested scope, provider error category, and latency. Avoid logging bearer tokens, refresh tokens, authorization codes, full unredacted claims, or private Calendar events.</p>
+</section><section id="section-15-suggested-implementation-boundaries-and-api-contract" class="guide-section" data-stage=""><div class="section-actions"></div><h2 id="15-suggested-implementation-boundaries-and-api-contract">15. Suggested implementation boundaries and API contract</h2>
+<pre class=""><code class="language-text">multi-agent-auth-study/
+  web/                 # OIDC login, callbacks, secure session, /chat
+  auth/                # Entra client/API validation, OBO, Google OAuth
+  policies/            # employee permissions and grant ownership
+  broker/              # managed credential access and read-only operations
+  agents/
+    orchestrator/      # route safe requests; no direct token exposition to model
+    calendar/          # Cloud Run B: Google Calendar specialist
+    graph/             # Entra API C: Graph specialist
+  tests/
+    identity/          # wrong issuer/audience/scope, callback CSRF
+    delegation/        # OBO, consent, revocation, cross-user isolation
+    workload/          # Cloud Run IAM audience and caller permissions
+  infra/               # app registrations, IAM, redirect URI definitions
+</code></pre>
+<p><strong>Minimal HTTP contract (illustrative, not a deployed API):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Caller and accepted credential</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET /login</code></td>
+<td>Browser, no session yet</td>
+<td>Start Entra auth code + PKCE</td>
+</tr>
+<tr>
+<td><code>GET /auth/entra/callback</code></td>
+<td>Entra redirect with bound state</td>
+<td>Validate login, create app session</td>
+</tr>
+<tr>
+<td><code>POST /chat</code></td>
+<td>Web session or <code>T_A</code> depending on front-end topology</td>
+<td>Authorize user and route agent work</td>
+</tr>
+<tr>
+<td><code>GET /auth/google/start</code></td>
+<td>Authenticated user session</td>
+<td>Start separate Calendar OAuth grant</td>
+</tr>
+<tr>
+<td><code>GET /auth/google/callback</code></td>
+<td>Google redirect with bound state</td>
+<td>Save per-user Google grant</td>
+</tr>
+<tr>
+<td><code>POST /agent-b/availability</code></td>
+<td>Cloud Run service identity + signed user context</td>
+<td>Verify caller/owner; read Calendar</td>
+</tr>
+<tr>
+<td><code>POST /agent-c/profile</code></td>
+<td>Entra delegated <code>T_C</code> for C; optionally Cloud Run IAM</td>
+<td>Validate C token; OBO to Graph</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Data ownership:</strong> The employee owns the intent and delegated permission; the Microsoft identity platform and Google issue their own credentials; the application owns its sessions and authorization policy; the broker controls access to stored refresh tokens; each API validates its own inbound token. An LLM output cannot override any of those checks.</p>
+</section><section id="section-16-important-corrections-to-the-supplied-source-guides" class="guide-section" data-stage=""><div class="section-actions"></div><h2 id="16-important-corrections-to-the-supplied-source-guides">16. Important corrections to the supplied source guides</h2>
+<p>Your four uploaded documents contain a useful single-agent calendar project, Entra test-user setup, ADK OAuth examples, and a SPIFFE extension. Use them as a <strong>historical learning baseline</strong>, not as a production security specification. These points need correction or stricter treatment:</p>
+<table>
+<thead>
+<tr>
+<th>Existing pattern in supplied material</th>
+<th>What this guide requires instead</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Google OAuth <code>state=user_id</code> (Entra OID)</td>
+<td>Random, unguessable, one-time <code>state</code> mapped <strong>server-side</strong> to the authenticated user/session and PKCE verifier. A user ID alone does not protect against CSRF.</td>
+</tr>
+<tr>
+<td>Passing ID tokens or arbitrary Entra tokens to downstream APIs</td>
+<td>Use a <strong>resource-specific access token</strong>; validate the recipient audience. ID tokens are for the client sign-in.</td>
+</tr>
+<tr>
+<td>Treating Entra login + Google consent as one OBO chain</td>
+<td>Keep them separate: Entra OBO is Microsoft identity-platform delegation; Calendar uses Google OAuth.</td>
+</tr>
+<tr>
+<td>Showing an OAuth authorization code on the callback HTML page</td>
+<td>Redeem the code only on the server, clean the redirect URL, and never expose it to the model or ordinary application output.</td>
+</tr>
+<tr>
+<td>Hardcoded ADK <code>user1</code> or shared in-memory auth maps</td>
+<td>Bind unique authenticated users to separate sessions and server-side credentials. Use a durable session store when distributed.</td>
+</tr>
+<tr>
+<td>Using self-fetched SPIFFE SVID to authorize access to a file already readable by the same process</td>
+<td>Enforce workload identity at an <strong>independent</strong> gateway, vault or broker boundary; otherwise it is only a self-check.</td>
+</tr>
+<tr>
+<td>Assuming Google and Entra emails match</td>
+<td>Make Google account linkage explicit and verify the grant's actual owner. Use Entra <code>(tid, oid)</code> as internal employee identity.</td>
+</tr>
+<tr>
+<td>Assuming group claims are always present</td>
+<td>Handle Entra group overage or choose a more direct application-role design.</td>
+</tr>
+<tr>
+<td>Enabling implicit ID-token issuance for an authorization-code-only app</td>
+<td>Do not add implicit flow settings unless a separate documented flow requires them. Use auth code + PKCE.</td>
+</tr>
+<tr>
+<td>Treating old ADK auth examples as version-independent</td>
+<td>Follow current official ADK <code>adk_request_credential</code> flow and pin library versions.</td>
+</tr>
+</tbody>
+</table>
+</section><section id="section-17-official-reference-map-checked-13-november-2026" class="guide-section" data-stage=""><div class="section-actions"></div><h2 id="17-official-reference-map-checked-13-november-2026">17. Official reference map (checked 13 November 2026)</h2>
+<p><strong>Microsoft Entra / OAuth</strong></p>
+<ul>
+<li id="ref-m1"><strong>[M1]</strong> <a href="https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-on-behalf-of-flow">Microsoft identity platform — OAuth 2.0 On-Behalf-Of flow</a> — assertion audience, confidential middle tiers, delegated permissions.</li>
+<li id="ref-m2"><strong>[M2]</strong> <a href="https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow">Microsoft identity platform — authorization code flow</a> — OIDC, PKCE, redirect processing, secrets/certificates.</li>
+<li id="ref-m3"><strong>[M3]</strong> <a href="https://learn.microsoft.com/en-us/entra/identity-platform/access-tokens">Microsoft identity platform — access tokens</a> and <a href="https://learn.microsoft.com/en-us/entra/identity-platform/claims-validation">claims validation</a> — audience, issuer, tenant, scope, caller.</li>
+<li id="ref-m4"><strong>[M4]</strong> <a href="https://learn.microsoft.com/en-us/entra/identity-platform/access-token-claims-reference">Microsoft identity platform — access-token claims reference</a> — groups and overage handling.</li>
+<li id="ref-m5"><strong>[M5]</strong> <a href="https://learn.microsoft.com/en-us/entra/agent-id/agent-on-behalf-of-oauth-flow">Microsoft Entra Agent ID — agent OBO</a>, <a href="https://learn.microsoft.com/en-us/entra/agent-id/agent-oauth-protocols">agent authentication protocols</a> and <a href="https://learn.microsoft.com/en-us/entra/agent-id/create-blueprint">create a blueprint</a> — advanced distinct product flow.</li>
+</ul>
+<p><strong>Google / agent protocols</strong></p>
+<ul>
+<li id="ref-g1"><strong>[G1]</strong> <a href="https://developers.google.com/identity/protocols/oauth2/web-server">Google OAuth — web-server applications</a> — user consent, state, offline access and refresh.</li>
+<li id="ref-g2"><strong>[G2]</strong> <a href="https://developers.google.com/workspace/calendar/api/auth">Google Calendar API scopes</a> — <code>calendar.readonly</code>, <code>calendar.freebusy</code> and authorization choices.</li>
+<li id="ref-g3"><strong>[G3]</strong> <a href="https://docs.cloud.google.com/run/docs/authenticating/service-to-service">Cloud Run — service-to-service authentication</a> — Invoker IAM, ID-token audience and dual headers.</li>
+<li id="ref-g4"><strong>[G4]</strong> <a href="https://docs.cloud.google.com/iam/docs/workload-identity-federation">Google Cloud — Workload Identity Federation</a> and <a href="https://docs.cloud.google.com/iam/docs/workload-identity-federation-with-other-clouds">Azure setup</a> — keyless external workload access.</li>
+<li id="ref-g5"><strong>[G5]</strong> <a href="https://docs.cloud.google.com/iam/docs/auth-manager-overview">Google Cloud — Agent Identity auth manager</a> — centralized outbound tool credentials and ADK integration.</li>
+<li id="ref-a1"><strong>[A1]</strong> <a href="https://adk.dev/tools-custom/authentication/">Google ADK — tool authentication</a> — credential request/resume and credential storage risks.</li>
+<li id="ref-a2"><strong>[A2]</strong> <a href="https://a2a-protocol.org/latest/specification/">A2A protocol specification</a> — discovery, declared security schemes, per-task authorization and auth-required states.</li>
+</ul>
+<p><strong>Uploaded source material used as the starting point</strong></p>
+<ul>
+<li><code>study_doc(1).md</code> — existing Calendar agent flow, Entra OBO, token store and SPIFFE explanation.</li>
+<li><code>entra_user_guide(1).md</code> — test-user creation and end-to-end login sequence.</li>
+<li><code>adk-entra-auth-guide(1).md</code> — ADK tool authentication, refresh and deployment notes; version-dependent examples require review.</li>
+<li><code>_agent_auth_claude.md</code> — broader project evolution, linked Entra/Google consent, code paths and proposed workload identity additions.</li>
+</ul>
+<p><strong>Scope note:</strong> Vendor documentation changes. Verify current SDK/API signatures and tenant/product availability before building a production implementation. This guide describes security and architecture decisions rather than claiming that the full system has been implemented or tested.</p>
+</section><footer class="footer">Official sources are linked in Section 17 · Verified 13 November 2026 · All names and tokens in examples are fictional</footer></main></div>
+<script>
+(function(){
+  const checks=[...document.querySelectorAll('.stage-complete')];
+  const bar=document.getElementById('study-progress');
+  const count=document.getElementById('progress-count');
+  const key='multi-agent-auth-guide-stage-completed-v1';
+  let saved={}; try{saved=JSON.parse(localStorage.getItem(key)||'{}')}catch(e){}
+  checks.forEach(ch=>{ch.checked=!!saved[ch.dataset.stage];ch.addEventListener('change',()=>{saved[ch.dataset.stage]=ch.checked;try{localStorage.setItem(key,JSON.stringify(saved))}catch(e){};update()})});
+  function update(){const done=checks.filter(ch=>ch.checked).length;bar.max=checks.length;bar.value=done;count.textContent=done+' / '+checks.length}
+  update();
+  const search=document.getElementById('toc-search');
+  const note=document.getElementById('search-note');
+  const links=[...document.querySelectorAll('.toc-link')];
+  search.addEventListener('input',()=>{let hits=0;const q=search.value.toLowerCase().trim();for(const a of links){const match=!q||a.dataset.title.includes(q);a.style.display=match?'flex':'none';if(match)hits++}note.textContent=q?hits+' matching sections':''});
+  search.addEventListener('keydown',(ev)=>{if(ev.key==='Enter'){const first=links.find(x=>x.style.display!=='none');if(first){first.click();search.blur()}}});
+  const h2s=[...document.querySelectorAll('.guide-section h2')];
+  if('IntersectionObserver' in window){
+    const byId=Object.fromEntries(links.map(x=>[x.hash.slice(1),x]));
+    const obs=new IntersectionObserver(entries=>{for(const e of entries){if(e.isIntersecting){for(const a of links)a.classList.remove('active');byId[e.target.id]?.classList.add('active')}}},{rootMargin:'-95px 0px -70% 0px',threshold:[0]});
+    h2s.forEach(x=>obs.observe(x));
+  }
+  document.getElementById('print-btn').addEventListener('click',()=>window.print());
+})();
+</script></body></html>

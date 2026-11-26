@@ -318,3 +318,7 @@ deploy_*
 #!*.sql
 #!*.zip
 
+/.obsidian/app.json
+/.obsidian/appearance.json
+/.obsidian/core-plugins.json
+/.obsidian/workspace.json
