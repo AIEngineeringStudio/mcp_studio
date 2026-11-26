@@ -11,7 +11,7 @@ from fastmcp import Client
 from fastmcp.client.transports import StdioTransport, StreamableHttpTransport
 
 from server import mcp
-from tools.process_records import cleanup_finished
+from tools.process_records import cancellation_seen, cleanup_finished
 
 SERVER_URL = "http://127.0.0.1:8000/mcp"
 PROTOCOL_VERSION = "2026-07-28"
@@ -62,6 +62,107 @@ async def example_progress(client: Client) -> None:
     print("progress: received monotonic updates [1, 2, 3]", flush=True)
 
 
+async def cancel_call(call: asyncio.Task[Any]) -> bool:
+    """Cancel from an async user-action handler on the call's event loop.
+
+    Return True if the client task ends cancelled, or False if it returns
+    normally (already finished, or cancellation was suppressed). Tool failures
+    propagate to the caller. This does not verify remote server cleanup.
+
+    This function has no dependency on progress notifications or test timing.
+    """
+    if call.done():
+        print("[CANCEL] Call already finished; observing its outcome", flush=True)
+    else:
+        print("[CANCEL] Cancellation requested; cancelling the call", flush=True)
+        call.cancel()
+
+    try:
+        await call
+    except asyncio.CancelledError:
+        print("cancellation: client call raised CancelledError", flush=True)
+        return True
+    else:
+        print("cancellation: client call returned normally", flush=True)
+        return False
+
+
+async def example_cancel(client: Client, transport_name: str) -> None:
+    """Test cancel_call at a predictable point, then verify server cancellation.
+
+    A real async Cancel handler invokes await cancel_call(call) directly.
+    Only this test wrapper waits for progress and asserts cancellation.
+    """
+    # TEST SETUP: this CLIENT event selects a repeatable cancellation point.
+    # Progress crosses stdio/HTTP before this callback sets the local event.
+    first_progress = asyncio.Event()
+
+    async def record_first_progress(
+            current: float, total: float | None, message: str | None,
+    ) -> None:
+        print(f"[PROGRESS] {message}", flush=True)
+        first_progress.set()
+
+    print("\n--- cancel ---", flush=True)
+    # The delay leaves time to cancel before the full call finishes.
+    call = asyncio.create_task(
+        client.call_tool(
+            "process_records",
+            {"count": 20, "delay_seconds": 0.5},
+            progress_handler=record_first_progress,
+            timeout=15,
+        )
+    )
+    try:
+        # TEST TRIGGER: replace this wait with a user action in an application.
+        await asyncio.wait_for(first_progress.wait(), timeout=WAIT_SECONDS)
+        if call.done():
+            # Surface a tool failure, or report that the test missed its window.
+            await call
+            raise AssertionError(
+                "Tool finished before cancellation could be tested")
+
+        print("[TEST] First progress received; invoking cancel_call", flush=True)
+
+        # SHARED ACTION: the same function an async Cancel handler would invoke.
+        was_cancelled = await cancel_call(call)
+
+        # TEST EXPECTATION: normal completion is valid in an application, but
+        # means this test did not observe the cancellation it was verifying.
+        if not was_cancelled:
+            raise AssertionError("Cancelled call returned normally")
+    except TimeoutError:
+        # If the call failed before reporting progress, surface that failure.
+        if call.done():
+            await call
+        raise
+    finally:
+        # TEST TEARDOWN: stop unfinished work if setup or verification failed.
+        if not call.done():
+            call.cancel()
+            with suppress(asyncio.CancelledError):
+                await call
+
+    # TEST VERIFICATION: the client task's CancelledError does not prove that
+    # the server caught cancellation. These events live in server memory.
+    if transport_name == "in-memory":
+        # The tool clears both signals BEFORE first progress. Their set values
+        # therefore belong to this call, not a previous sequential test call.
+        await asyncio.wait_for(cancellation_seen.wait(), timeout=WAIT_SECONDS)
+        print("cancellation: server caught CancelledError", flush=True)
+        await asyncio.wait_for(cleanup_finished.wait(), timeout=WAIT_SECONDS)
+        print("cleanup: server finally block verified via shared event",
+              flush=True)
+    else:
+        # Importing these events here does NOT share them with another process.
+        print(
+            "server checks: shared-event verification skipped (separate process). "
+            "Look for [CANCELLED] and [CLEANUP] on server stderr; use "
+            "--transport in-memory to assert both events.",
+            flush=True,
+        )
+
+
 async def main(transport_name: str, example_name: str) -> None:
     async with Client(
             transport=client_source(transport_name),
@@ -81,6 +182,8 @@ async def main(transport_name: str, example_name: str) -> None:
 
         if example_name == "progress":
             await example_progress(client)
+        elif example_name == "cancel":
+            await example_cancel(client, transport_name)
         else:
             raise ValueError(f"Unsupported example: {example_name}")
 
@@ -94,7 +197,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--example",
-        choices=["progress"],
+        choices=["progress", "cancel"],
         required=True,
     )
     args = parser.parse_args()
