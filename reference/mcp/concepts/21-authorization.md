@@ -221,8 +221,8 @@ uv sync --locked --python 3.14.3
 uv run python verify_auth_calendar.py
 ```
 
-See [the server](../labs/auth_calendar_server.py) and
-[the verification flow](../labs/verify_auth_calendar.py).
+See [the server](../fast-mcp-2026-07-28/labs/auth_calendar_server.py) and
+[the verification flow](../fast-mcp-2026-07-28/labs/verify_auth_calendar.py).
 
 ## Evolve the concept lab into production
 

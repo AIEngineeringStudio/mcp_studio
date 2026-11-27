@@ -416,8 +416,8 @@ from fastapi import FastAPI
 from mcp.server.fastmcp import FastMCP
 
 # Import our two tools
-from tools.stream_tool import stream_numbers
-from tools.bidirectional import bidirectional_batch
+from tools import stream_numbers
+from tools import bidirectional_batch
 from logging_config import setup_logging
 
 # ── Bootstrap ────────────────────────────────────────────

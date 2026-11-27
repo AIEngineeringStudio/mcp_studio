@@ -33,7 +33,7 @@ model, not whether the implementation happens to use a database SELECT.
 
 ## Observe the lab
 
-The [server](../labs/server.py) registers
+The [server](../fast-mcp-2026-07-28/labs/server.py) registers
 `@mcp.resource("ticket://{ticket_id}")`. Its handler reads the same fixture as
 the lookup tool and serializes it as JSON text. The client's
 `read_resource("ticket://T-100")` check confirms that expected content arrives.
@@ -61,7 +61,7 @@ print(resources[0].text)
 ```
 
 This snippet assumes the connected client created in concept 07. See the
-[complete client](../labs/client.py) for imports, setup, and cleanup.
+[complete client](../fast-mcp-2026-07-28/labs/client.py) for imports, setup, and cleanup.
 
 The resource handler does not change ticket status. Keeping reads free of
 business mutations makes caching and repeated retrieval easier to reason about.

@@ -259,8 +259,8 @@ The same commands apply to Intel and Apple Silicon Macs. The current validation
 record covers Intel macOS; compatible native wheels must still be confirmed on
 Apple Silicon.
 
-The files are [auth_calendar_server.py](../labs/auth_calendar_server.py) and
-[verify_auth_calendar.py](../labs/verify_auth_calendar.py). The credential
+The files are [auth_calendar_server.py](../fast-mcp-2026-07-28/labs/auth_calendar_server.py) and
+[verify_auth_calendar.py](../fast-mcp-2026-07-28/labs/verify_auth_calendar.py). The credential
 broker is explicitly a simulation. It never contacts Google, Microsoft, or a
 real authorization server.
 

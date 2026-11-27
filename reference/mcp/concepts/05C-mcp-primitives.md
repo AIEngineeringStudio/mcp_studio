@@ -135,7 +135,7 @@ def summarize_ticket(ticket_id: str) -> str:
     return f"Summarize ticket {ticket_id} and state its status."
 ```
 
-This is the same structure used in the [complete lab server](../labs/server.py).
+This is the same structure used in the [complete lab server](../fast-mcp-2026-07-28/labs/server.py).
 Concept 07 provides the pinned environment and exact commands to run it.
 
 ## Choose by the user's intent

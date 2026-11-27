@@ -115,7 +115,7 @@ travel; it does not change the ticket tool's contract or business behavior.
 
 ## Run the same contracts
 
-After [lab setup](../labs/README.md), start the server in terminal 1:
+After [lab setup](../fast-mcp-2026-07-28/labs/README.md), start the server in terminal 1:
 
 ```bash
 uv run python server.py --http

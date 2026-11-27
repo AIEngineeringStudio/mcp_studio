@@ -110,7 +110,7 @@ violates business rules.
 
 ## Observe the local model
 
-Run the dependency-free [continuation simulation](../labs/continuation_model.py):
+Run the dependency-free [continuation simulation](../fast-mcp-2026-07-28/labs/continuation_model.py):
 
 ```bash
 python3 reference/mcp/labs/continuation_model.py

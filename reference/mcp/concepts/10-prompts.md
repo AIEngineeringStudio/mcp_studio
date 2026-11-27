@@ -23,7 +23,7 @@ fetch a ticket, call an LLM, execute a tool, or create a summary.
 
 ## Inspect the supplied prompt
 
-In [server.py](../labs/server.py), `summarize_ticket` accepts a ticket ID and
+In [server.py](../fast-mcp-2026-07-28/labs/server.py), `summarize_ticket` accepts a ticket ID and
 returns instructions referring to that ID. The client obtains the prompt and
 checks its text. The example is deliberately simple: it does not silently read
 data while generating instructions.

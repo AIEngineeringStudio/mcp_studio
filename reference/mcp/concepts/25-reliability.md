@@ -30,7 +30,7 @@ request ID while preserving the same business operation key. Reusing an
 operation key with different arguments should be rejected or handled under an
 explicit contract.
 
-The [continuation model](../labs/continuation_model.py) demonstrates sequential
+The [continuation model](../fast-mcp-2026-07-28/labs/continuation_model.py) demonstrates sequential
 result reuse. Production requires atomic claim/commit behavior and durable
 storage, not only a dictionary.
 

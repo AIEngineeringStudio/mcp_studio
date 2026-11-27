@@ -17,7 +17,7 @@ configuration. A successful HTTP status cannot establish tenant isolation.
 
 ## Run the supplied checks
 
-After [lab setup](../labs/README.md), run these from the lab directory:
+After [lab setup](../fast-mcp-2026-07-28/labs/README.md), run these from the lab directory:
 
 ```bash
 uv run python -m unittest -v test_domain.py test_protocol.py
@@ -82,7 +82,7 @@ change. Restore the name after the experiment.
 ## Sources and next step
 
 - [Archived testing and tracing example](../fastMcp-fastApi-uvicorn-ngnix-docker/11_AutomatedTests_Metrics_DistributedTracing.md)
-- [Archived observability notes](../fast-mcp/09-observability.md)
+- [Archived observability notes](../fast-mcp/2026-07-28/09-observability.md)
 - [Official reference](https://gofastmcp.com/docs/clients/client) — checked 2026-11-15.
 
 Next: [Logs, metrics, and traces](28-observability.md).

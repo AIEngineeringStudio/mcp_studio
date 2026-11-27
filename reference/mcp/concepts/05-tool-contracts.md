@@ -227,7 +227,7 @@ policy, introduced in concept 25.
 
 ## Inspect the discovered contract
 
-After completing the [lab setup](../labs/README.md), the client can list tools:
+After completing the [lab setup](../fast-mcp-2026-07-28/labs/README.md), the client can list tools:
 
 ```python
 async with Client(mcp) as client:
@@ -238,7 +238,7 @@ async with Client(mcp) as client:
 ```
 
 The exact FastMCP client is imported and created in the complete
-[lab client](../labs/client.py). Inspecting discovery distinguishes two
+[lab client](../fast-mcp-2026-07-28/labs/client.py). Inspecting discovery distinguishes two
 questions:
 
 ```
