@@ -67,7 +67,7 @@ These are example compositions, not required stacks.
 The existing MCP track remains the prerequisite for MCP Apps:
 
 1. **MCP:** host, client, server, tools, resources, and request/result flow.
-   Use the [maintained MCP course](../../reference/mcp/learning/README.md).
+   Use the [maintained MCP course](../../reference/01-mcp-concepts/learning/README.md).
 2. **MCP Apps:** tool-linked UI resource, compatible host, embedded view,
    sandbox, and text fallback.
 3. **App Bridge:** host-side bridge between the embedded view and the MCP

@@ -14,16 +14,16 @@ for AI architecture requests; do not preload its entire curriculum.
 
 Paths below are relative to this skill directory.
 
-1. Read [the course index](../../reference/mcp/README.md) to locate
+1. Read [the course index](../../reference/01-mcp-concepts/README.md) to locate
    the requested concept and its prerequisites.
-2. Read [the version baseline](../../reference/mcp/VERSIONS.md) when
+2. Read [the version baseline](../../reference/01-mcp-concepts/VERSIONS.md) when
    explaining protocol mechanics or writing SDK code. It is dated evidence,
    not a permanent claim about the latest release.
 3. Read only the selected concept guide and prerequisites the learner needs.
    Use its local-source links for additional examples.
 4. If investigating an archive discrepancy, read
-   [the review](../../reference/mcp/catalog/REVIEW.md) and search
-   [the machine inventory](../../reference/mcp/catalog/inventory.json).
+   [the review](../../reference/01-mcp-concepts/catalog/REVIEW.md) and search
+   [the machine inventory](../../reference/01-mcp-concepts/catalog/inventory.json).
    Locate relevant headings, then read the actual source section before using
    it. Never treat an automated topic tag as proof of correctness.
 
