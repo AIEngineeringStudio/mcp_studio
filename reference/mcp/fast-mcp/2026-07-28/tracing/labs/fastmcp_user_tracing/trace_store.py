@@ -186,7 +186,7 @@ def store_for(side: str) -> TraceStore:
 
 
 def emit(side: str, **fields: Any) -> None:
-    """Best-effort entry point; tracing must never break live MCP traffic."""
+    """Best-effort entry point; tracingl must never break live MCP traffic."""
     try:
         store_for(side).record(**fields)
     except Exception as exc:

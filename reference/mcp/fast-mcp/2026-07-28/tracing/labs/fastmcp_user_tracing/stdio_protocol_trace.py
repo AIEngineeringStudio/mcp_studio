@@ -1,4 +1,4 @@
-"""Your STDIO SessionMessage tracing with shared JSONL correlation.
+"""Your STDIO SessionMessage tracingl with shared JSONL correlation.
 
 FastMCP 4.2 runner interception is version-sensitive. Instrumentation never
 replaces a SessionMessage; STDIO child gets a trace-only environment variable.

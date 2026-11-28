@@ -1,3 +1,35 @@
+# Concept Hierarchy
+
+```
+    ┌──────────────────────────────────────────────────────────────────────┐
+    │                        Model Context Protocol                        │
+    ├──────────────────────────────────────────────────────────────────────┤
+    │                                                                      │
+    │  PROTOCOL LAYER                                                      │
+    │  ├── JSON-RPC 2.0 ─────────── message format                         │
+    │  └── Transport ────────────── How messages travel                    │
+    │       ├── Streamable HTTP                                            │
+    │       └── stdio                                                      │
+    │                                                                      │
+    │  COMPONENT LAYER                                                     │
+    │  ├── MCP Host   ───────────── exposes capabilities                   │
+    │  ├── MCP Server ───────────── exposes capabilities                   │
+    │  └── MCP Client ───────────── manages protocol communication         │
+    │                                                                      │
+    │  CAPABILITY LAYER                                                    │
+    │  ├── Tools ────────────────── executable operation                   │
+    │  ├── Resources ────────────── readable context identified by a URI   │
+    │  ├── Prompts ──────────────── reusable interaction templates         │
+    │  └── Elicitation ──────────── server can ask the user for input      │
+    │                                                                      │
+    │  LIFECYCLE LAYER                                                     │
+    │  ├── Discovery (optional) ─── List available items                   │
+    │  ├── Invocation ───────────── tools/call + request metadata          │
+    │  └── Shutdown ─────────────── Clean disconnect                       │
+    │                                                                      │
+    └──────────────────────────────────────────────────────────────────────┘
+```
+
 # Lesson 1 — MCP and the modern request model
 
 ## Baseline and Outcome
@@ -9,10 +41,40 @@ After this lesson, you can identify the host, client, and server; read one MCP
 request; and explain why MCP `2026-07-28` does not use an initialization
 handshake or a protocol session.
 
+## What MCP Actually Is
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  MCP = Model Context Protocol                                               │
+│                                                                             │
+│  DEFINITION:                                                                │
+│  MCP is a standard contract between an AI application and                   │
+│  external capabilities.                                                     │
+│                                                                             │
+│  This standardized protocol lets an AI application discover and call        │
+│  tools/resources/prompts exposed by a server.                               │
+│                                                                             │
+│  Think of it as:                                                            │
+│  • A "USB port" for AI — plug in any tool                                   │
+│  • A contract between AI and tools                                          │
+│  • Language-agnostic protocol (works with any programming language)         │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
 ## The problem MCP solves
+
+Suppose an application A wants to call capabilities exposed by application B.
+Without a shared protocol, A must know B's proprietary API:
+
+```
+A ───── custom integration ─────> B
+```
 
 Without a shared protocol,
 every AI application needs a custom integration for every external system.
+
+Every integration has to reinvent discovery, argument typing, invocation,
+error handling, and session management.
 
 MCP standardizes communication between an MCP client and an MCP server.
 
@@ -33,32 +95,338 @@ MCP Server
 Business Service
 ```
 
-### **MCP architecture with two connection types**
-
-**STDIO, Streamable HTTP transports**, using MCP `2026-07-28`.
+### Comparison
 
 ```
-┌──────────────────────────────────────┐
-│ HOST APPLICATION (Python Process A)  │
-│                                      │
-│  ┌────────────┐    ┌────────────┐    │
-│  │ MCP Client │    │ MCP Client │    │
-│  │     A      │    │     B      │    │
-│  └──────┬─────┘    └──────┬─────┘    │
-│         │                 │          │
-└─────────┼─────────────────┼──────────┘
-          │                 │
-          │ STDIO           │ Streamable HTTP
-          │                 │
-          ▼                 ▼
-  ┌────────────────┐   ┌────────────────┐
-  │ MCP Server A   │   │ MCP Server B   │
-  │                │   │                │
-  │ Local Process B│   │ Remote Process │
-  └────────────────┘   └────────────────┘
+WITHOUT MCP:                          WITH MCP:
+─────────────────────────────────     ─────────────────────────────────
+• Custom integration per tool         • Standard interface for all tools
+• Tight coupling                      • Loose coupling
+• Hard to swap tools                  • Easy to add/remove tools
+• Vendor lock-in                      • Interoperability
+• No standard discovery               • Built-in tool discovery 
 ```
 
-### **What changes between the two?**
+MCP standardizes communication.
+
+MCP does not:
+> - define how your LLM or agent should reason
+> - run a model
+> - decide when a model should use a tool
+
+## High-Level Architecture
+
+```
+
+
+                     ┌──────────────────────────┐
+                     │        MCP CLIENT        │
+                     │   ( Agent / App / IDE )  │
+                     └────────────┬─────────────┘
+                                  │ JSON-RPC Messages
+                                  ▼
+                     ┌──────────────────────────┐
+                     │        TRANSPORT         │
+                     ├──────────────────────────┤
+                     │     stdio                │
+                     │     Streamable HTTP      │
+                     └────────────┬─────────────┘
+                                  │ JSON-RPC Messages
+                                  ▼
+                     ┌──────────────────────────┐
+                     │        MCP SERVER        │
+                     │ (tools + data + prompts) │
+                     └────────────┬─────────────┘
+                                  │                             
+          ┌───────────────────────┼─────────────────────────┐
+          │                       │                         │
+          ▼                       ▼                         ▼
+┌──────────────────────┐ ┌──────────────────────┐ ┌──────────────────────┐ 
+│         TOOLS        │ │      RESOURCES       │ │       PROMPTS        │ 
+│       (actions)      │ │        (data)        │ │     (templates)      │ 
+├──────────────────────┤ ├──────────────────────┤ ├──────────────────────┤ 
+│   tools/list         │ │  resources/list      │ │   prompts/list       │ 
+│   tools/call         │ │  resources/read      │ │   prompts/get        │ 
+│   streaming          │ │  subscriptions       │ │   arguments          │
+│   progress/cancel    │ │  templates           │ │                      │ 
+└──────────────────────┘ └──────────────────────┘ └──────────────────────┘   
+```
+
+## The main participants
+
+```
+Host
+└── Client
+    └── Server
+        ├── Tools
+        ├── Resources
+        └── Prompts
+```
+
+“The host creates an MCP client which negotiates capabilities with the server
+over a stdio/http transport.”
+
+#### Host
+
+> A MCP host is the **application containing the AI experience**.
+> It orchestrates MCP clients.
+>
+> It coordinates the model, user experience, permissions, and one or more MCP
+> clients.
+
+**Examples:** AI desktop application, IDE, agent runtime, or chat application.
+
+#### Client
+
+> An MCP client is **the protocol participant inside the host**.
+>
+>A client communicates with one MCP server and attaches protocol metadata to
+> every request.
+
+Professional wording:
+
+> “The host owns the user interaction, while its MCP client manages protocol
+> communication with the server.”
+
+#### Server
+
+> An MCP server is a program that **exposes capabilities and context**.
+>
+> It receives only the context sent through its MCP client. It does not
+> automatically see the host's whole conversation or other servers.
+
+It does **not necessarily contain an LLM**. It may simply expose database
+queries, API calls, calculations, files, or business operations.
+
+## MCP has two layers
+
+```
+┌────────────────────────────────────────────┐
+│ Data layer                                 │
+│                                            │
+│ JSON-RPC methods, schemas, results, errors │
+│ capabilities: tools, resources, prompts,   │
+│ notifications, elicitation                 │
+└────────────────────────────────────────────┘
+                  │
+                  ▼
+┌────────────────────────────────────────────┐
+│ Transport layer                            │
+│                                            │
+│ stdio                                      │
+│ Streamable HTTP                            │
+└────────────────────────────────────────────┘
+```
+
+The **data layer** defines what messages mean.
+
+The **transport layer** defines **how messages travel**.
+
+## Data Layer (Message Format)
+
+At the wire level,
+MCP protocol messages use JSON-RPC 2.0.
+
+MCP supports two message types.
+
+1. **request:** expects a response.
+
+    ```
+    ┌─────────────────────────────────────────────────────────────────────────────┐
+    │ JSON-RPC 2.0 REQUEST                                                        │
+    ├─────────────────────────────────────────────────────────────────────────────┤
+    │                                                                             │
+    │   {                                                                         │
+    │     "jsonrpc": "2.0",        // Always "2.0"                                │
+    │     "id": 1                  // Request ID (for matching response)          │
+    │     "method": "tools/call",  // The method being called                     │
+    │     "params": {...},         // Method parameters                           │
+    │   }                                                                         │
+    │                                                                             │
+    └─────────────────────────────────────────────────────────────────────────────┘
+    ```
+
+   The matching result uses the same `id`:
+
+   The `id` lets a client match responses to requests even when several
+   requests are in flight concurrently.
+
+    ```
+    ┌─────────────────────────────────────────────────────────────────────────────┐
+    │ JSON-RPC 2.0 SUCCESS RESPONSE                                               │
+    ├─────────────────────────────────────────────────────────────────────────────┤
+    │                                                                             │
+    │   {                                                                         │
+    │     "jsonrpc": "2.0",        // Always "2.0"                                │
+    │     "id": 1,                 // Matches request ID                          │
+    │     "result": {                                                             │
+    │         "structuredContent": { "x": 1, "y": 2, "sum": 3 },                  │
+    │         "isError": false                                                    │
+    │     }                                                                       │
+    │   }                                                                         │
+    │                                                                             │
+    └─────────────────────────────────────────────────────────────────────────────┘
+    ```
+
+   ### Error Boundaries
+
+   An unsuccessful JSON-RPC request contains `error` instead of `result`.
+
+    ```
+    ┌──────────────┬────────────────────────────────┬────────────────────────────┐
+    │ LAYER        │ EXAMPLE                        │ OBSERVABLE FORM            │
+    ├──────────────┼────────────────────────────────┼────────────────────────────┤
+    │ Tool         │ Tool raises or returns an error│ Call result, isError:true  │
+    │ MCP/JSON-RPC │ Unknown method, bad request    │ JSON-RPC error object      │
+    │ HTTP         │ Wrong route, bad media type    │ HTTP 4xx/5xx               │
+    │ Network      │ Server unreachable             │ Client transport exception │
+    │ Process      │ Startup/config failure         │ Runtime/lifespan error     │
+    └──────────────┴────────────────────────────────┴────────────────────────────┘
+    ```
+
+    ```
+    ┌─────────────────────────────────────────────────────────────────────────────┐
+    │ JSON-RPC 2.0 ERROR RESPONSE                                                 │
+    ├─────────────────────────────────────────────────────────────────────────────┤
+    │                                                                             │
+    │   {                                                                         │
+    │     "jsonrpc": "2.0",                                                       │
+    │     "id": 1,                                                                │
+    │     "error": {                                                              │
+    │       "code": -32600,        // Error code                                  │
+    │       "message": "Invalid Request",                                         │
+    │       "data": {...}          // Optional additional info                    │
+    │     }                                                                       │
+    │   }                                                                         │
+    │                                                                             │
+    └─────────────────────────────────────────────────────────────────────────────┘
+    ```
+
+   **Key distinction:** Protocol errors are separate from HTTP errors
+
+    - HTTP `200 OK` reports whether the transport exchange worked.
+      It does not by itself prove a tool call succeeded — check `isError`
+    - JSON-RPC `result/error` reports whether the requested operation worked.
+
+2. **notification:** is one-way. No response is expected.
+
+Used for:
+
+- progress/update
+- log/message
+- resource/changed
+
+A notification deliberately has no `id`:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "notifications/initialized"
+}
+```
+
+A **method** identifies the operation, for example:
+
+```
+┌─────────────────────┬────────────────────────────────────────┐
+│ METHOD              │ PURPOSE                                │
+├─────────────────────┼────────────────────────────────────────┤
+│ discovery(optional) │ Start session, negotiate capabilities  │
+│ tools/list          │ Get available tools                    │
+│ tools/call          │ Execute a tool                         │
+│ resources/list      │ Get available resources                │
+│ resources/read      │ Read a resource's content              │
+│ prompts/list        │ Get available prompts                  │
+│ prompts/get         │ Get a prompt template                  │
+│ notifications/*     │ Various fire-and-forget notifications  │
+│ ping                │ Keep connection alive                  │
+└─────────────────────┴────────────────────────────────────────┘
+```
+
+**Note:**
+> > That naming convention is worth internalizing.
+
+## Transport Layer
+
+Transport carries JSON-RPC messages.
+
+MCP's two standard transports:
+
+- `stdio` for local process communication and
+- `Streamable HTTP` for network communication.
+
+| Transport       | Use Case                    |
+|-----------------|-----------------------------|
+| stdio           | Local process tools         |
+| Streamable HTTP | HTTP streaming of responses |
+
+```
+ Client
+  │
+  │ JSON-RPC
+  ▼
+ Transport
+  │
+  ▼
+ Server
+```
+
+```
+┌─────────────────┬──────────────────────────────────────────────────────────┐
+│ TRANSPORT       │ DETAILS                                                  │
+├─────────────────┼──────────────────────────────────────────────────────────┤
+│ Streamable HTTP │ Single HTTP endpoint.                                    │
+│                 │                                                          │
+│                 │ POST for client → server messages;                       │
+│                 │ optional GET opens an SSE-formatted event stream         │
+│                 │ for server→client messages.                              │
+│                 │                                                          │
+│                 │ Best for: remote/deployed servers, scaling.              │
+├─────────────────┼──────────────────────────────────────────────────────────┤
+│ stdio           │ Standard input/output pipes                              │
+│                 │                                                          │
+│                 │ HOW IT WORKS:                                            │
+│                 │ • Client spawns server as subprocess                     │
+│                 │ • Communication via stdin/stdout                         │
+│                 │                                                          │
+│                 │ Best for: local tools, IDE plugins, CLIs.                │
+│                 │ Do NOT print logs to stdout — it's the wire.             │
+└─────────────────┴──────────────────────────────────────────────────────────┘
+
+LEGACY / DEPRECATED:
+"HTTP+SSE" — a separate, older transport (distinct GET-SSE and POST endpoints).
+Still seen in some clients for backward compatibility, but new servers 
+should not implement it.
+
+HTTP+SSE is superseded by Streamable HTTP. 
+```
+
+### MCP architecture with two connection types
+
+**STDIO, Streamable HTTP transports**
+
+```
+┌────────────────────────────────────────┐
+│ HOST APPLICATION (Python Process A)    │
+│                                        │
+│  ┌────────────┐       ┌────────────┐   │
+│  │ MCP Client │       │ MCP Client │   │
+│  │     A      │       │     B      │   │
+│  └──────┬─────┘       └──────┬─────┘   │
+│         │                    │         │
+└─────────┼────────────────────┼─────────┘
+          │                    │
+          │ STDIO              │ Streamable HTTP
+          │                    │
+          ▼                    ▼
+ ┌─────────────────┐    ┌────────────────┐
+ │ MCP Server A    │    │ MCP Server B   │
+ │                 │    │                │
+ │ Local Process B │    │ Remote Process │
+ └─────────────────┘    └────────────────┘
+```
+
+### What changes between the two?
 
 The key architectural difference is that while STDIO crosses a process boundary,
 HTTP crosses an HTTP service boundary.
@@ -68,37 +436,14 @@ HTTP crosses an HTTP service boundary.
 | STDIO           | Separate local process    | Standard input/output pipes |
 | Streamable HTTP | HTTP server, often remote | HTTP requests and responses |
 
-**Host:**
+#### Important distinction:
 
-> The application that coordinates the model, user experience, permissions,
-> and one or more MCP clients.
-
-**Client:**
-
-> The protocol participant inside the host. One client communicates with one
-> server and attaches protocol metadata to every request.
-
-**Server:**
-
-> A focused service that exposes tools, resources, and prompts. It receives
-> only the context sent through its MCP client; it does not automatically see
-> the host's whole conversation or other servers.
-
-MCP standardizes communication. It does not define how an agent reasons, how a
-database is organized, or how business authorization is decided.
-
-## Data layer and transport layer
-
-```
-MCP data layer
-  JSON-RPC methods, schemas, results, errors, capabilities
-
-MCP transport layer
-  stdio or Streamable HTTP carrying those messages
-```
+A `tools/call` is **NOT an HTTP operation**.
+It is an **MCP protocol operation** that could travel over `stdio` or `HTTP`
 
 Changing from stdio to HTTP should not change the meaning of `tools/call`.
-It changes process and network behavior, not the tool contract.
+It changes process and network behavior - **how messages travel**,
+not the **tool contract** (what the tool does).
 
 ## Modern MCP is stateless at the protocol layer
 
@@ -129,6 +474,22 @@ session-opening handshake.
 
 ## Read one complete request
 
+### MCP Client sends sever/discover (JSON-RPC) to MCP Server
+
+→ CLIENT TO SERVER:
+
+```json
+
+```
+
+← SERVER TO CLIENT:
+
+```json
+
+```
+
+### MCP Client sends tools/call (JSON-RPC) to MCP Server
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -150,6 +511,10 @@ session-opening handshake.
   }
 }
 ```
+
+### MCP Server sends response (JSON-RPC)
+
+← SERVER TO CLIENT:
 
 ```json
 {
@@ -235,7 +600,7 @@ serialization, and transport integration.
 
 You still own business behavior, authorization, and state.
 
-### **MCP architecture with three connection types**
+### MCP architecture with three connection types
 
 This diagram includes **STDIO, Streamable HTTP, and in-memory communication**,
 using MCP `2026-07-28` and FastMCP `4.2.0` context.
@@ -269,7 +634,7 @@ using MCP `2026-07-28` and FastMCP `4.2.0` context.
   └────────────────┘   └────────────────┘
 ```
 
-### **What changes between the three?**
+### What changes between the three?
 
 The key architectural difference is that
 **in-memory keeps the client and server in one process**.
@@ -317,6 +682,38 @@ MODERN:  optional server/discover -> self-contained operations
 
 Do not send `initialize` while claiming protocol version `2026-07-28`.
 FastMCP 4 can negotiate with both eras, but the wire flows remain distinct.
+
+## SUMMARY
+
+> MCP `2026-07-28` is a stateless JSON-RPC protocol. Each request carries its
+> protocol version and client capabilities, so any compatible server instance
+> can process it without an initialization session.
+
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+
+ 1. MCP = standard protocol for AI clients to call tools/data/prompts.
+  
+  2. Server EXPOSES capabilities, Client CALLS them.
+  
+  3. All messages use JSON-RPC 2.0.
+  
+  4. Two standard transports: 
+      - stdio (local) and 
+      - Streamable HTTP (remote).
+  
+        Standalone SSE ("HTTP+SSE") is deprecated legacy, not a third option.
+     
+  5. Discovery: */list· 
+     Execution: */call.
+   
+  6. A capability being advertised ≠ its list being non-empty.
+  
+  7. HTTP 200 ≠ tool success — check isError in the JSON-RPC result.
+
+└─────────────────────────────────────────────────────────────────────────────┘
+```
 
 ## Hands-on checkpoint
 
@@ -371,7 +768,7 @@ uv run python transport_inspection/client.py --transport stdio --example discove
 
 ### HTTP
 
-**Server: **
+**Server:**
 
 ```bash
 cd ../../../reference/mcp/labs
@@ -386,25 +783,6 @@ cd ../../../reference/mcp/labs
 UV_CACHE_DIR=.uv-cache uv sync --locked
 uv run python transport_inspection/client.py --transport http --example discovery
 ```
-
-### Troubleshooting
-
-1. Port/address already in use
-    ```
-   ERROR:    
-   [Errno 48] error while attempting to bind on address ('127.0.0.1', 8000): 
-   [errno 48] address already in use
-   ```
-
-    ```shell
-      lsof -tiTCP:8000 -sTCP:LISTEN | xargs -r kill
-    ```
-
-   On macOS, where xargs -r may not be supported, use:
-
-    ```shell
-      pids=$(lsof -tiTCP:8000 -sTCP:LISTEN); [ -z "$pids" ] || kill $pids
-    ```
 
 ## Expected shape of the output
 
@@ -448,11 +826,44 @@ version. The key difference is that Example A never calls a tool.
 
 The same commands work on Intel and Apple Silicon Macs.
 
-**Say it professionally:**
+# Troubleshooting
 
-> MCP `2026-07-28` is a stateless JSON-RPC protocol. Each request carries its
-> protocol version and client capabilities, so any compatible server instance
-> can process it without an initialization session.
+## Debugging Checklist
+
+```
+┌─────────────────────────────┬───────────────────────────────────────────────┐
+│ PROBLEM                     │ CHECK                                         │
+├─────────────────────────────┼───────────────────────────────────────────────┤
+│ Tools not discovered        │ Is MCP server running? Check /health          │
+├─────────────────────────────┼───────────────────────────────────────────────┤
+│ 404 on endpoint             │ Transport mismatch (stdio vs HTTP)            │
+├─────────────────────────────┼───────────────────────────────────────────────┤
+│ Tool returns empty          │ Check underlying data source                  │
+├─────────────────────────────┼───────────────────────────────────────────────┤
+│ Connection refused          │ Check port / process / networking             │
+├─────────────────────────────┼───────────────────────────────────────────────┤
+│ JSON parse error            │ Tool not returning valid JSON string          │
+├─────────────────────────────┼───────────────────────────────────────────────┤
+│ Timeout                     │ Long-running tool, increase timeout           │
+└─────────────────────────────┴───────────────────────────────────────────────┘
+```
+
+1. Port/address already in use
+    ```
+   ERROR:    
+   [Errno 48] error while attempting to bind on address ('127.0.0.1', 8000): 
+   [errno 48] address already in use
+   ```
+
+    ```shell
+      lsof -tiTCP:8000 -sTCP:LISTEN | xargs -r kill
+    ```
+
+   On macOS, where xargs -r may not be supported, use:
+
+    ```shell
+      pids=$(lsof -tiTCP:8000 -sTCP:LISTEN); [ -z "$pids" ] || kill $pids
+    ```
 
 ## Official references
 

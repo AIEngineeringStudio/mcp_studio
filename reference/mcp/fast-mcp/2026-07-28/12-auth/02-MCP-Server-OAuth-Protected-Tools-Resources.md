@@ -203,7 +203,7 @@ Auth model (RFC 9728 — Protected Resource Metadata)
 ────────────────────────────────────────────────────
 • GET  /.well-known/oauth-protected-resource  → AS discovery metadata
 • All MCP requests arrive at POST/GET /mcp
-• A pure-ASGI auth middleware validates the Bearer token via the AS introspection
+• A pure-ASGI 12-auth middleware validates the Bearer token via the AS introspection
   endpoint and stores the result in a ContextVar before the MCP handler runs.
 • tools/list and resources/list responses are FILTERED so protected items are
   invisible to clients whose token lacks the required scope.
@@ -314,7 +314,7 @@ class IntrospectionTokenVerifier:
 _verifier = IntrospectionTokenVerifier()
 
 
-# ── Pure-ASGI auth middleware ──────────────────────────────────────────────────
+# ── Pure-ASGI 12-auth middleware ──────────────────────────────────────────────────
 class BearerAuthMiddleware:
     """
     Validates the Authorization: Bearer header on every HTTP request.
@@ -387,7 +387,7 @@ RESOURCE_SCOPES: dict[str, Optional[str]] = {
 # ── Tool definitions ───────────────────────────────────────────────────────────
 _TOOL_LIST_ITEMS = types.Tool(
     name="list_items",
-    description="List all public inventory items (no auth required).",
+    description="List all public inventory items (no 12-auth required).",
     inputSchema={"type": "object", "properties": {}, "required": []},
 )
 
@@ -399,7 +399,7 @@ _TOOL_GET_PRIVATE = types.Tool(
 
 _TOOL_CREATE_ITEM = types.Tool(
     name="create_item",
-    description="Create a new inventory item (no auth required).",
+    description="Create a new inventory item (no 12-auth required).",
     inputSchema={
         "type": "object",
         "properties": {
@@ -583,7 +583,7 @@ _starlette = Starlette(
     lifespan=lifespan,
 )
 
-# Wrap with our pure-ASGI auth middleware (outermost layer)
+# Wrap with our pure-ASGI 12-auth middleware (outermost layer)
 app = BearerAuthMiddleware(_starlette)
 
 # ── Entry point ────────────────────────────────────────────────────────────────
@@ -748,9 +748,9 @@ async def build_agent() -> tuple[Agent, contextlib.AsyncExitStack]:
         instruction=(
             "You are a helpful assistant that exercises a protected MCP server. "
             "When asked to 'run the full demo', call ALL four tools in order:\n"
-            "  1. list_items          — no auth needed\n"
+            "  1. list_items          — no 12-auth needed\n"
             "  2. get_private_data    — data:read scope\n"
-            "  3. create_item         — no auth needed (create name='DemoItem')\n"
+            "  3. create_item         — no 12-auth needed (create name='DemoItem')\n"
             "  4. update_private_data — data:write scope (set owner='demo-agent')\n"
             "Report the result of each call clearly."
         ),
@@ -819,9 +819,9 @@ try:
         instruction=(
             "You are a helpful assistant that exercises a protected MCP server. "
             "When asked to 'run the full demo', call ALL four tools in order:\n"
-            "  1. list_items          — no auth needed\n"
+            "  1. list_items          — no 12-auth needed\n"
             "  2. get_private_data    — data:read scope\n"
-            "  3. create_item         — no auth needed (name='DemoItem')\n"
+            "  3. create_item         — no 12-auth needed (name='DemoItem')\n"
             "  4. update_private_data — data:write scope (set owner='demo-agent')\n"
             "Report the result of each call clearly."
         ),
@@ -843,7 +843,7 @@ async def run_demo() -> None:
     """
     Programmatically drives the agent through all four tools and prints results.
     Verifies:
-      • Public tools are callable without special auth.
+      • Public tools are callable without special 12-auth.
       • Protected tools are callable when the right delegated token is used.
     """
     logging.basicConfig(level=logging.INFO)
@@ -1066,7 +1066,7 @@ curl -s -X POST http://localhost:8001/mcp \
   -d '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}'
 # → all four tools visible
 
-# 7. Call protected tool without auth → error
+# 7. Call protected tool without 12-auth → error
 curl -s -X POST http://localhost:8001/mcp \
   -H "Content-Type: application/json" \
   -H "Accept: application/json, text/event-stream" \

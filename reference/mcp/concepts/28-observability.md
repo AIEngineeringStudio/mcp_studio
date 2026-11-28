@@ -106,7 +106,7 @@ application logging to use stderr so it cannot corrupt protocol stdout.
 ## Sources and next step
 
 - [Archived testing and tracing example](../fastMcp-fastApi-uvicorn-ngnix-docker/11_AutomatedTests_Metrics_DistributedTracing.md)
-- [Archived observability notes](../fast-mcp/2026-07-28/09-observability.md)
+- [Archived observability notes](../fast-mcp/2026-07-28/11-observability.md)
 - [Official reference](https://opentelemetry.io/docs/concepts/signals/) — checked 2026-11-15.
 
 Next: [Scaling and MCP gateways](29-scaling-gateways.md).

@@ -8,8 +8,9 @@ import hmac
 from fastmcp import Client, FastMCP
 from mcp_types import PromptReference
 
-
-TICKETS = ["T-100", "T-101", "T-200", "T-201", "T-300"]
+TICKETS = ["T-100", "T-101",
+           "T-200", "T-201", "T-202", "T-203", "T-204", "T-205",
+           "T-300"]
 CURSOR_KEY = b"lesson-only-key"
 
 
@@ -56,7 +57,8 @@ def complete_ticket_id(ref, argument, _context):
     """Suggest authorized ticket IDs matching the typed prefix."""
     if isinstance(ref, PromptReference) and ref.name == "triage_ticket":
         if argument.name == "ticket_id":
-            return [item for item in TICKETS if item.startswith(argument.value)]
+            return [item for item in TICKETS if
+                    item.startswith(argument.value)]
     return None
 
 
@@ -76,10 +78,11 @@ async def main() -> None:
             PromptReference(name="triage_ticket"),
             {"name": "ticket_id", "value": "T-2"},
         )
-        assert completion.values == ["T-200", "T-201"]
+        assert completion.values == ["T-200", "T-201", "T-202", "T-203",
+                                     "T-204", "T-205"]
 
     print("pagination: followed opaque cursors and collected all five tickets")
-    print("completion: T-2 -> ['T-200', 'T-201']")
+    print(f"completion: T-2 -> {completion.values}")
     print("validation remains required for the final supplied argument")
 
 

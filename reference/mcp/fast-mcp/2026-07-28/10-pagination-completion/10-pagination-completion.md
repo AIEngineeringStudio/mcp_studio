@@ -159,7 +159,7 @@ MCP client and server APIs.
 
 For deeper cache and invalidation rules, read:
 
-- [`../concepts/26-pagination-cache.md`](../../concepts/26-pagination-cache.md)
+- [`../concepts/26-pagination-cache.md`](../../../concepts/26-pagination-cache.md)
 
 **Say it professionally:**
 

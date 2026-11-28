@@ -19,7 +19,7 @@ TICKETS = {
 
 mcp = FastMCP("Ticket learning service")
 
-# Register server-side semantic tracing
+# Register server-side semantic tracingl
 mcp.add_middleware(SemanticTrace())
 
 

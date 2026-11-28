@@ -5,6 +5,12 @@
 After this lesson, you can design a tool contract, distinguish discovery from
 execution, and classify protocol errors separately from tool execution errors.
 
+## Say it professionally:
+
+> An MCP tool has a discovery contract and an execution contract. JSON Schema
+> constrains structure, while the implementation still enforces business rules,
+> authorization, side-effect policy, and failure semantics.
+
 ## A tool has two planes
 
 ```
@@ -20,7 +26,6 @@ A tool is model-controlled: a model can select it based on its description and
 schema. The host should still provide visibility and user control for sensitive
 or consequential calls.
 
-
 ```json
 {
   "name": "lookup_ticket",
@@ -29,18 +34,33 @@ or consequential calls.
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
     "properties": {
-      "ticket_id": {"type": "string", "pattern": "^T-[0-9]+$"}
+      "ticket_id": {
+        "type": "string",
+        "pattern": "^T-[0-9]+$"
+      }
     },
-    "required": ["ticket_id"],
+    "required": [
+      "ticket_id"
+    ],
     "additionalProperties": false
   },
   "outputSchema": {
     "type": "object",
     "properties": {
-      "ticket_id": {"type": "string"},
-      "status": {"enum": ["open", "closed"]}
+      "ticket_id": {
+        "type": "string"
+      },
+      "status": {
+        "enum": [
+          "open",
+          "closed"
+        ]
+      }
     },
-    "required": ["ticket_id", "status"]
+    "required": [
+      "ticket_id",
+      "status"
+    ]
   }
 }
 ```
@@ -235,7 +255,9 @@ mode.
 **Valid: summary lookup**
 
 ```json
-{"ticket_id": "T-42"}
+{
+  "ticket_id": "T-42"
+}
 ```
 
 The ticket ID is valid. No full-detail options are needed.
@@ -275,8 +297,13 @@ If the ticket is found:
   "ticket_id": "T-42",
   "found": true,
   "status": "open",
-  "comments": ["Customer requested an update."],
-  "history": ["Ticket created", "Assigned to support"]
+  "comments": [
+    "Customer requested an update."
+  ],
+  "history": [
+    "Ticket created",
+    "Assigned to support"
+  ]
 }
 
 ```
@@ -403,7 +430,17 @@ required in the request.
 Never use `isError: false` to signal failure. Never reveal internal stack
 traces or secrets in model-visible content.
 
-## FastMCP implementation
+## HTTP routing metadata
+
+Modern Streamable HTTP sends `Mcp-Method` on every request and `Mcp-Name` for
+`tools/call`, `resources/read`, and `prompts/get`. A tool schema may use
+`x-mcp-header` to mirror selected primitive arguments into `Mcp-Param-*`
+headers. This is routing metadata, not a substitute for request-body validation
+or authorization.
+
+## Hands-on checkpoint
+
+### FastMCP implementation
 
 ```python
 from typing import Literal
@@ -443,7 +480,11 @@ The [client check](labs/verify_primitives.py) calls `client.list_tools()`, finds
 the argument, calls the wrapper, and returns the record:
 
 ```json
-{"id": "T-100", "title": "Cannot sign in", "status": "open"}
+{
+  "id": "T-100",
+  "title": "Cannot sign in",
+  "status": "open"
+}
 ```
 
 The check reads the parsed object from `result.data` and prints the text
@@ -454,48 +495,14 @@ result model would make that contract stricter. An unknown ID raises
 `ValueError` in `lookup_ticket`; this local check covers only the successful
 call, not the failure path or authorization.
 
-## HTTP routing metadata
-
-Modern Streamable HTTP sends `Mcp-Method` on every request and `Mcp-Name` for
-`tools/call`, `resources/read`, and `prompts/get`. A tool schema may use
-`x-mcp-header` to mirror selected primitive arguments into `Mcp-Param-*`
-headers. This is routing metadata, not a substitute for request-body validation
-or authorization.
-
-## Hands-on checkpoint
-
-**Execution boundary:**
-
-> In-memory MCP. This isolates discovery and the successful tool call from
-> process and network concerns.
-
-From the repository root, run the two Python files beside this guide. The
-existing `../labs/pyproject.toml` and lockfile provide the pinned dependencies:
-
-```bash
-cd reference/mcp/fast-mcp-2026-07-28
-UV_CACHE_DIR=../labs/.uv-cache uv run --project ../labs --locked python verify_primitives.py --transport in-memory --focus tools
-```
-
-Expected output:
-
-```
-tools: discovered get_ticket and called it successfully
-```
-
 The script also prints the actual generated schemas and the ticket JSON. Its
 `--transport stdio` option starts the adjacent `server.py` as a subprocess;
 `--transport http` expects that server already running at
 `http://127.0.0.1:8000/mcp`. The `--focus tools` choice runs only this check.
 
-Read [`../concepts/05-tool-contracts.md`](../../../concepts/05-tool-contracts.md) for
+Read [
+`../concepts/05-tool-contracts.md`](../../../concepts/05-tool-contracts.md) for
 the deeper contract-design lesson.
-
-**Say it professionally:**
-
-> An MCP tool has a discovery contract and an execution contract. JSON Schema
-> constrains structure, while the implementation still enforces business rules,
-> authorization, side-effect policy, and failure semantics.
 
 ## Official references
 

@@ -212,7 +212,7 @@ Auth flow
 3. Both tokens are sent as HTTP headers on the MCP Streamable HTTP connection.
 4. MCP server decodes them per-request and:
      - Returns only the tools the role permits in tools/list
-     - Enforces auth on every tool call / resource read
+     - Enforces 12-auth on every tool call / resource read
 5. ADK sees only what the server returns — admin_tool is invisible to non-admins.
 
 Run:
@@ -328,12 +328,12 @@ if __name__ == "__main__":
 
 Auth context is carried per-request via contextvars.ContextVar.
 A single Server() instance is created at module load; its handlers
-read request-scoped auth state from ContextVars set by the ASGI handler.
+read request-scoped 12-auth state from ContextVars set by the ASGI handler.
 
 Concurrency safety:
   asyncio runs one task per request. ContextVar.set() affects only the
   current task's context — concurrent requests cannot observe each other's
-  auth state. ContextVar.reset() in the finally block is belt-and-suspenders
+  12-auth state. ContextVar.reset() in the finally block is belt-and-suspenders
   cleanup; asyncio task contexts are already isolated.
 
 Run: uvicorn mcp_server:app --port 8000
@@ -359,7 +359,7 @@ JWT_SECRET = os.environ["JWT_SECRET"]
 JWT_ALGORITHM = "HS256"
 VALID_OAUTH_TOKENS: set[str] = set(os.environ["VALID_OAUTH_TOKENS"].split(","))
 
-# ── Per-request auth context ──────────────────────────────────────────────────
+# ── Per-request 12-auth context ──────────────────────────────────────────────────
 # Set once by the ASGI handler before MCP dispatch; read by server handlers.
 # Default None means "unauthenticated".
 _jwt_payload: ContextVar[dict | None] = ContextVar("jwt_payload", default=None)
@@ -424,7 +424,7 @@ _ALL_RESOURCES: list[types.Resource] = [
     types.Resource(
         uri="public://info",  # type: ignore[arg-type]
         name="Public Info",
-        description="Open resource, no auth required.",
+        description="Open resource, no 12-auth required.",
         mimeType="application/json",
     ),
     types.Resource(
@@ -436,7 +436,7 @@ _ALL_RESOURCES: list[types.Resource] = [
 ]
 
 # ── Single shared Server instance ─────────────────────────────────────────────
-server = Server("auth-demo-mcp")
+server = Server("12-auth-demo-mcp")
 
 
 @server.list_tools()
@@ -523,13 +523,13 @@ async def read_resource(uri: str) -> str:
 # ── ASGI handler ──────────────────────────────────────────────────────────────
 async def handle_mcp(request: Request) -> Any:
     """
-    1. Decode auth headers — fail fast before touching MCP machinery.
+    1. Decode 12-auth headers — fail fast before touching MCP machinery.
     2. Set ContextVars for this async task's context.
     3. Dispatch to the shared server via a per-request transport.
     4. Reset ContextVars unconditionally in finally.
 
     The transport is per-request because it represents one HTTP connection.
-    The server is shared because it is stateless w.r.t. auth.
+    The server is shared because it is stateless w.r.t. 12-auth.
     """
     # ── 1. Parse and validate credentials ─────────────────────────────────────
     jwt_payload: dict | None = None

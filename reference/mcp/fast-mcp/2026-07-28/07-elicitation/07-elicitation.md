@@ -5,6 +5,12 @@
 After this lesson, you can trace an elicitation request, distinguish
 `input_required` from a final result, and design retry-safe continuation state.
 
+## **Say it professionally:**
+
+> Modern elicitation is a multi-round state machine. The server returns an
+> `input_required` result, the client gathers input, and the client retries the
+> original operation with a new request ID and explicit continuation data.
+
 ## Why elicitation exists
 
 A tool sometimes need user's input after it starts. The server must not invent
@@ -516,7 +522,6 @@ from fastmcp.client.transports import (
     StreamableHttpTransport,
 )
 
-
 SERVER_URL = "http://127.0.0.1:8000/mcp"
 PROTOCOL_VERSION = "2026-07-28"
 
@@ -524,7 +529,6 @@ PROTOCOL_VERSION = "2026-07-28"
 # ── Transport selection ──────────────────────────
 
 def client_source(mode: str) -> Any:
-
     if mode == "in-memory":
         from server import mcp
 
@@ -555,23 +559,21 @@ def client_source(mode: str) -> Any:
 # ── Progress handler ────────────────────────────
 
 async def progress_handler(
-    progress: float,
-    total: float | None,
-    message: str | None,
+        progress: float,
+        total: float | None,
+        message: str | None,
 ) -> None:
-
     print(f"[PROGRESS] {message}", flush=True)
 
 
 # ── Elicitation handler ─────────────────────────
 
 async def elicitation_handler(
-    message,
-    response_type,
-    params,
-    context,
+        message,
+        response_type,
+        params,
+        context,
 ):
-
     print(f"\n[ELICIT] {message}")
 
     while True:
@@ -604,9 +606,8 @@ async def elicitation_handler(
 # ── Tool invocation ─────────────────────────────
 
 async def run_elicitation_example(
-    client: Client,
+        client: Client,
 ) -> None:
-
     result = await client.call_tool(
         "bidirectional_batch",
         arguments={
@@ -620,17 +621,16 @@ async def run_elicitation_example(
 # ── Main ────────────────────────────────────────
 
 async def main(
-    transport_name: str,
-    example_name: str,
+        transport_name: str,
+        example_name: str,
 ) -> None:
-
     async with Client(
-        transport=client_source(transport_name),
-        name=f"verify-{example_name}-client",
-        mode="auto",
-        init_timeout=10,
-        progress_handler=progress_handler,
-        elicitation_handler=elicitation_handler,
+            transport=client_source(transport_name),
+            name=f"verify-{example_name}-client",
+            mode="auto",
+            init_timeout=10,
+            progress_handler=progress_handler,
+            elicitation_handler=elicitation_handler,
     ) as client:
 
         print(f"Transport: {transport_name}")
@@ -656,7 +656,6 @@ async def main(
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(
         description=__doc__
     )
@@ -734,7 +733,6 @@ uv run server.py --transport http
 uv run pythonclient.py --transport http --example elicitation
 ```
 
-
 **Expected output:**
 
 ```
@@ -770,12 +768,6 @@ Then read
 [`../concepts/13-elicitation.md`](../../../concepts/13-elicitation.md) and
 [
 `../concepts/14-continuation-state.md`](../../../concepts/14-continuation-state.md).
-
-**Say it professionally:**
-
-> Modern elicitation is a multi-round state machine. The server returns an
-> `input_required` result, the client gathers input, and the client retries the
-> original operation with a new request ID and explicit continuation data.
 
 ## Official references
 

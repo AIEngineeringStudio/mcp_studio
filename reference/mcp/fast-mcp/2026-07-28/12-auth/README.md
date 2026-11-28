@@ -6,8 +6,8 @@ but it is not a single consistent course.
 
 For the maintained learning path, use:
 
-1. [OAuth discovery and delegated calendar access](../concepts/20-oauth-discovery.md).
-2. [Authorization, tool visibility, and calendar isolation](../concepts/21-authorization.md).
+1. [OAuth discovery and delegated calendar access](../../../concepts/20-oauth-discovery.md).
+2. [Authorization, tool visibility, and calendar isolation](../../../concepts/21-authorization.md).
 3. [The runnable calendar authorization lab](../fast-mcp-2026-07-28/labs/auth_calendar_server.py).
 4. [The automated verification flow](../fast-mcp-2026-07-28/labs/verify_auth_calendar.py).
 

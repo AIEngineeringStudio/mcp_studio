@@ -67,7 +67,7 @@ npm install
 node resource-server.js
 
 # Terminal 2
-node auth-server.js
+node 12-auth-server.js
 
 # Terminal 3
 node client.js
@@ -269,7 +269,7 @@ def authorize(
         "client_id": client_id, "redirect_uri": redirect_uri,
         "scope": scope, "resource": resource, "challenge": code_challenge,
     }
-    print(f"[auth] code issued for {client_id}")
+    print(f"[12-auth] code issued for {client_id}")
     url = f"{redirect_uri}?code={code}" + (f"&state={state}" if state else "")
     return RedirectResponse(url)
 
@@ -310,7 +310,7 @@ async def token(
     }
     access_token = jwt.encode(claims, _private_pem, algorithm="RS256",
                               headers={"kid": KID})
-    print(f"[auth] token issued  client={client_id}  aud={record['resource']}")
+    print(f"[12-auth] token issued  client={client_id}  aud={record['resource']}")
     return {"access_token": access_token, "token_type": "Bearer",
             "expires_in": 3600}
 
@@ -362,7 +362,7 @@ def resource_metadata():
     }
 
 
-# ── Fetch JWKS from auth server and verify Bearer token ──────────────────────
+# ── Fetch JWKS from 12-auth server and verify Bearer token ──────────────────────
 async def verify_bearer(request: Request):
     auth = request.headers.get("authorization", "")
     if not auth.startswith("Bearer "):
@@ -673,7 +673,7 @@ The client fetches that URL and gets back a document like:
 {
   "resource": "http://mcp-server",
   "authorization_servers": [
-    "http://auth-server"
+    "http://12-auth-server"
   ]
 }
 ```
@@ -902,7 +902,7 @@ Gets back:
 ```json
 {
   "authorization_servers": [
-    "https://auth.theirservice.com"
+    "https://12-auth.theirservice.com"
   ]
 }
 ```
@@ -1194,7 +1194,7 @@ exchange. The code above starts *after* you already have that user token.
 Agent with delegated access via OAuth 2.0 Token Exchange (RFC 8693).
 
 Flow:
-  1. Discover MCP server's auth server (RFC 9728)
+  1. Discover MCP server's 12-auth server (RFC 9728)
   2. Exchange the user's token for a delegated token scoped to the MCP server
   3. Connect to MCP and call tools — token carries both user + agent identity
 """
@@ -1212,7 +1212,7 @@ TOKEN_TYPE_ACCESS = "urn:ietf:params:oauth:token-type:access_token"
 GRANT_TOKEN_EXCHANGE = "urn:ietf:params:oauth:grant-type:token-exchange"
 
 
-# ── Step 1: Discover the auth server from the MCP server's metadata ──────────
+# ── Step 1: Discover the 12-auth server from the MCP server's metadata ──────────
 async def discover(mcp_url: str) -> dict:
     async with httpx.AsyncClient() as http:
         # RFC 9728 — protected resource metadata
@@ -1229,7 +1229,7 @@ async def discover(mcp_url: str) -> dict:
 # ── Step 2: Exchange user token → delegated token scoped to the MCP server ───
 async def exchange_token(asm: dict, user_access_token: str) -> dict:
     """
-    Sends the user's token to the auth server.
+    Sends the user's token to the 12-auth server.
     Gets back a new token that says:
       sub = the user
       act = your agent
@@ -1762,7 +1762,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
 
 @app.get("/.well-known/oauth-protected-resource")
 def resource_metadata():
-    """RFC 9728 — tells clients which auth server to use."""
+    """RFC 9728 — tells clients which 12-auth server to use."""
     return {
         "resource": RESOURCE_URL,
         "authorization_servers": [AUTH_BASE],

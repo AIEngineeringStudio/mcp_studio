@@ -155,7 +155,7 @@ def verify_oauth(authorization: str = Header(...)):
 
 @app.get("/public")
 def public_data():
-    return {"data": "This is public information — no auth needed."}
+    return {"data": "This is public information — no 12-auth needed."}
 
 
 @app.get("/profile")
@@ -262,7 +262,7 @@ def get_user_profile() -> str:
         headers={"Authorization": f"Bearer {jwt_token}"},
     )
     if resp.status_code == 401:
-        return f"JWT auth failed: {resp.text}"
+        return f"JWT 12-auth failed: {resp.text}"
     resp.raise_for_status()
     return json.dumps(resp.json())
 
@@ -310,7 +310,7 @@ def protected_report() -> str:
         headers={"Authorization": f"Bearer {oauth_token}"},
     )
     if resp.status_code == 401:
-        return f"OAuth auth failed: {resp.text}"
+        return f"OAuth 12-auth failed: {resp.text}"
     resp.raise_for_status()
     return resp.text
 
@@ -320,7 +320,7 @@ def protected_report() -> str:
 def configure_tokens(jwt: str, oauth: str, role: str = "user") -> str:
     """
     Internal bootstrap tool — agent injects credentials into this MCP session.
-    In production, use a secure credential vault or per-session auth middleware.
+    In production, use a secure credential vault or per-session 12-auth middleware.
     """
     TOKEN_STORE["jwt"] = jwt
     TOKEN_STORE["oauth"] = oauth

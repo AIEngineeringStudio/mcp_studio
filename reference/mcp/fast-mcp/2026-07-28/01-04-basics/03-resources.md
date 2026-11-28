@@ -5,6 +5,16 @@
 After this lesson, you can choose between a resource and a tool, design stable
 resource URIs, and explain how modern clients receive resource changes.
 
+
+## **Say it professionally:**
+
+> Resources expose addressable context through stable URIs. In MCP
+> `2026-07-28`, long-lived resource and catalog changes flow through a
+> `subscriptions/listen` response stream rather than connection-scoped
+> subscribe methods or a standalone GET stream.
+
+TODO: subscriptions/listen
+
 ## Resources are addressable context
 
 ```
@@ -73,41 +83,6 @@ Concrete URI: ticket://T-100
 Template parameters are encoded in the URI. They are not a tool-style
 `inputSchema`. Validate decoded values, normalize carefully, and enforce
 authorization after resolution.
-
-```python
-import json
-
-from fastmcp import FastMCP
-
-mcp = FastMCP("Ticket resources")
-
-
-@mcp.resource("ticket://{ticket_id}", mime_type="application/json")
-def read_ticket(ticket_id: str) -> str:
-    """Read one synthetic ticket."""
-    return json.dumps({"ticket_id": ticket_id, "status": "open"})
-```
-
-### Follow the local ticket example
-
-The [server](labs/server.py) registers both forms. The fixed
-`@mcp.resource("tickets://closed")` returns a list containing synthetic ticket
-`T-101`. The parameterized `@mcp.resource("ticket://{ticket_id}")` calls the
-same `lookup_ticket` domain function as the tool and returns JSON text for the
-requested ticket. The fixed URI is not a snapshot: its function runs when the
-client reads it.
-
-The [client check](labs/verify_primitives.py) first calls
-`client.list_resource_templates()` and finds `ticket://{ticket_id}`. It then
-calls `client.list_resources()` and finds the complete URI
-`tickets://closed`. Neither listing contains the ticket content. Two
-`client.read_resource(...)` calls retrieve the content: the fixed URI yields
-`T-101` with status `closed`; `ticket://T-100` yields `T-100` with status
-`open`. The script decodes the returned text with `json.loads` before printing
-the ticket fields.
-
-These records are synthetic and have no authorization logic. A production
-handler must validate the decoded ID and check access to the resolved ticket.
 
 ## Resources vs Resource Templates
 
@@ -232,10 +207,42 @@ notifications stay on the originating request's response stream.
 
 ## Hands-on checkpoint
 
-**Execution boundary:**
+```python
+import json
 
-> In-memory MCP. The client still sends resource discovery and read requests;
-> only the process and network boundaries are removed.
+from fastmcp import FastMCP
+
+mcp = FastMCP("Ticket resources")
+
+
+@mcp.resource("ticket://{ticket_id}", mime_type="application/json")
+def read_ticket(ticket_id: str) -> str:
+    """Read one synthetic ticket."""
+    return json.dumps({"ticket_id": ticket_id, "status": "open"})
+```
+
+### Follow the local ticket example
+
+The [server](labs/server.py) registers both forms. The fixed
+`@mcp.resource("tickets://closed")` returns a list containing synthetic ticket
+`T-101`. The parameterized `@mcp.resource("ticket://{ticket_id}")` calls the
+same `lookup_ticket` domain function as the tool and returns JSON text for the
+requested ticket. The fixed URI is not a snapshot: its function runs when the
+client reads it.
+
+The [client check](labs/verify_primitives.py) first calls
+`client.list_resource_templates()` and finds `ticket://{ticket_id}`. It then
+calls `client.list_resources()` and finds the complete URI
+`tickets://closed`. Neither listing contains the ticket content. Two
+`client.read_resource(...)` calls retrieve the content: the fixed URI yields
+`T-101` with status `closed`; `ticket://T-100` yields `T-100` with status
+`open`. The script decodes the returned text with `json.loads` before printing
+the ticket fields.
+
+These records are synthetic and have no authorization logic. A production
+handler must validate the decoded ID and check access to the resolved ticket.
+
+### How to run
 
 From the repository root, run the example files beside this guide. The pinned
 environment is supplied by `../labs/pyproject.toml` and its lockfile:
@@ -262,15 +269,8 @@ two reads. `--transport stdio` runs the adjacent server in a subprocess;
 `--transport http` requires a separately running server at
 `http://127.0.0.1:8000/mcp`.
 
-Read [`../concepts/09-resources.md`](../../../concepts/09-resources.md) for the deeper
-resource-design lesson.
-
-**Say it professionally:**
-
-> Resources expose addressable context through stable URIs. In MCP
-> `2026-07-28`, long-lived resource and catalog changes flow through a
-> `subscriptions/listen` response stream rather than connection-scoped
-> subscribe methods or a standalone GET stream.
+Read [`../concepts/09-resources.md`](../../../concepts/09-resources.md) for the
+deeper resource-design lesson.
 
 ## Official references
 

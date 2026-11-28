@@ -5,6 +5,11 @@
 After this lesson, you can distinguish a prompt from a tool or resource and
 trace `prompts/list` and `prompts/get` in the modern protocol.
 
+## **Say it professionally:**
+
+> An MCP prompt is a discoverable, parameterized message template. Fetching it
+> returns messages; it does not invoke a model or authorize an operation.
+
 ## A prompt is a definition, then a rendered result
 
 ```
@@ -47,7 +52,9 @@ The repeated modern request `_meta` is omitted here for readability.
   "method": "prompts/get",
   "params": {
     "name": "triage_ticket",
-    "arguments": {"ticket_id": "T-100"}
+    "arguments": {
+      "ticket_id": "T-100"
+    }
   }
 }
 ```
@@ -80,50 +87,6 @@ Prompt argument declarations are simpler than a tool's JSON Schema contract.
 FastMCP may offer richer Python typing, but do not assume every generated
 constraint is represented identically on the wire.
 
-## FastMCP implementation
-
-```python
-from fastmcp import FastMCP
-
-mcp = FastMCP("Ticket prompts")
-
-
-@mcp.prompt
-def triage_ticket(ticket_id: str) -> str:
-    """Guide a support-ticket triage review."""
-    return f"Review ticket {ticket_id} and identify the next action."
-```
-
-### Follow the local ticket example
-
-The runnable [server](labs/server.py) registers
-`summarize_ticket(ticket_id: str) -> str` with `@mcp.prompt`. This is a
-different prompt from the illustrative `triage_ticket` above. The function
-formats an instruction using the ID; it does not call `lookup_ticket`, read a
-resource, or invoke a model.
-
-The [client check](labs/verify_primitives.py) calls `client.list_prompts()`, finds
-`summarize_ticket`, and prints its declared required `ticket_id` argument.
-It then calls:
-
-```python
-result = await client.get_prompt(
-    "summarize_ticket", {"ticket_id": "T-100"}
-)
-```
-
-FastMCP turns the returned string into one `user` message. The client prints
-its text:
-
-```text
-Summarize ticket T-100 using the provided ticket data. State its status and distinguish facts from missing information.
-```
-
-The words “provided ticket data” do not cause a ticket read. The host must
-provide ticket data separately, for example by reading `ticket://T-100`, and
-decide whether to send both the data and this message to a model. A prompt
-parameter is not an authorization check for the ticket.
-
 ## Multi-round prompt retrieval
 
 `prompts/get` is one of only three core requests that may return an
@@ -146,18 +109,53 @@ code.
 
 ## Hands-on checkpoint
 
-**Execution boundary:**
+### FastMCP implementation
 
-> In-memory MCP. The client performs prompt discovery and retrieval without
-> launching a model or opening a network port.
+```python
+from fastmcp import FastMCP
+
+mcp = FastMCP("Ticket prompts")
+
+
+@mcp.prompt
+def triage_ticket(ticket_id: str) -> str:
+    """Guide a support-ticket triage review."""
+    return f"Review ticket {ticket_id} and identify the next action."
+```
+
+### Follow the local ticket example
+
+The runnable [server](labs/server.py) registers
+`summarize_ticket(ticket_id: str) -> str` with `@mcp.prompt`. This is a
+different prompt from the illustrative `triage_ticket` above. The function
+formats an instruction using the ID; it does not call `lookup_ticket`, read a
+resource, or invoke a model.
+
+The [client check](labs/verify_primitives.py) calls `client.list_prompts()`,
+finds
+`summarize_ticket`, and prints its declared required `ticket_id` argument.
+It then calls:
+
+```python
+result = await client.get_prompt(
+    "summarize_ticket", {"ticket_id": "T-100"}
+)
+```
+
+FastMCP turns the returned string into one `user` message. The client prints
+its text:
+
+```text
+Summarize ticket T-100 using the provided ticket data. State its status and distinguish facts from missing information.
+```
+
+The words “provided ticket data” do not cause a ticket read. The host must
+provide ticket data separately, for example by reading `ticket://T-100`, and
+decide whether to send both the data and this message to a model. A prompt
+parameter is not an authorization check for the ticket.
 
 From the repository root, run the example files beside this guide. The pinned
 environment comes from `../labs/pyproject.toml` and its lockfile:
-
-```bash
-cd reference/mcp/fast-mcp-2026-07-28
-UV_CACHE_DIR=../labs/.uv-cache uv run --project ../labs --locked python verify_primitives.py --transport in-memory --focus prompts
-```
 
 Expected output:
 
@@ -171,12 +169,15 @@ and text. `--transport stdio` starts the adjacent `server.py` as a subprocess;
 `--transport http` expects it already running at
 `http://127.0.0.1:8000/mcp`.
 
-Read [`../concepts/10-prompts.md`](../../../concepts/10-prompts.md) for a deeper trace.
+### How to run
 
-**Say it professionally:**
+```bash
+cd reference/mcp/fast-mcp-2026-07-28
+UV_CACHE_DIR=../labs/.uv-cache uv run --project ../labs --locked python verify_primitives.py --transport in-memory --focus prompts
+```
 
-> An MCP prompt is a discoverable, parameterized message template. Fetching it
-> returns messages; it does not invoke a model or authorize an operation.
+Read [`../concepts/10-prompts.md`](../../../concepts/10-prompts.md) for a deeper
+trace.
 
 ## Official references
 
