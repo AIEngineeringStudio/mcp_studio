@@ -5,7 +5,6 @@ import argparse
 import json
 
 from fastmcp import FastMCP
-from starlette.middleware import Middleware
 
 TICKETS = {
     "T-100": {"id": "T-100", "title": "Cannot sign in", "status": "open"},
