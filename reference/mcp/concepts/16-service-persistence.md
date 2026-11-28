@@ -102,7 +102,7 @@ PostgreSQL without moving JSON-RPC parsing into the data layer.
 ## Sources and next step
 
 - [Archived service and persistence example](../fastMcp-fastApi-uvicorn-ngnix-docker/4_ServiceLayer_Persistence_AsyncIO.md)
-- [Archived MCP walkthrough](../walk-through-docs/walkthrough_doc.md)
+- [Archived MCP walkthrough](../../fast-mcp/walk-through-docs/walkthrough_doc.md)
 - [Official reference](https://www.postgresql.org/docs/current/tutorial-transactions.html) — checked 2026-11-15.
 
 Next: [Application lifespan and dependency ownership](17-application-lifespan.md).

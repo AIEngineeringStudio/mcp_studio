@@ -156,8 +156,8 @@ The complete runnable files are
 [`verify_auth_calendar.py`](labs/verify_auth_calendar.py).
 
 Read the detailed sequence in
-[`../concepts/20-oauth-discovery.md`](../../concepts/20-oauth-discovery.md) and
-[`../concepts/21-authorization.md`](../../concepts/21-authorization.md).
+[`../concepts/20-oauth-discovery.md`](../../mcp/concepts/20-oauth-discovery.md) and
+[`../concepts/21-authorization.md`](../../mcp/concepts/21-authorization.md).
 
 **Say it professionally:**
 

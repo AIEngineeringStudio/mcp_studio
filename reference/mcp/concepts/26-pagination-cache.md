@@ -94,9 +94,9 @@ happens when records change between page requests.
 
 ## Sources and next step
 
-- [Archived MCP walkthrough](../walk-through-docs/walkthrough_doc.md)
-- [Archived pagination notes](../fast-mcp/2026-07-28/10-pagination-completion/10-pagination-completion.md)
-- [Archived reconnect and state notes](../streamable/streamable-6.md)
+- [Archived MCP walkthrough](../../fast-mcp/walk-through-docs/walkthrough_doc.md)
+- [Archived pagination notes](../../fast-mcp/2026-07-28/10-pagination-completion/10-pagination-completion.md)
+- [Archived reconnect and state notes](../../../_archive/streamable/streamable-6.md)
 - [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/subscriptions) — checked 2026-11-15.
 
 Next: [Testing and debugging MCP by layer](27-testing.md).

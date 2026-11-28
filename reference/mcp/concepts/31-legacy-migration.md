@@ -94,7 +94,7 @@ features.
 
 ## Sources and next step
 
-- [Archived MCP walkthrough](../walk-through-docs/walk-through.md)
+- [Archived MCP walkthrough](../../fast-mcp/walk-through-docs/walk-through.md)
 - [Archived legacy elicitation example](../fastMcp-fastApi-uvicorn-ngnix-docker/81_MCP_Elicitation.md)
 - [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/changelog) — checked 2026-11-15.
 

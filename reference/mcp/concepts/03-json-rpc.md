@@ -287,8 +287,8 @@ server. Concept 07 uses the actual client and framework.
 
 ## Sources and next step
 
-- [Archived MCP walkthrough](../walk-through-docs/walk-through.md)
-- [Archived MCP introduction](../fast-mcp/01-what-mcp-is.md)
+- [Archived MCP walkthrough](../../fast-mcp/walk-through-docs/walk-through.md)
+- [Archived MCP introduction](../../fast-mcp/01-what-mcp-is.md)
 - [Official MCP protocol reference](https://modelcontextprotocol.io/specification/2026-07-28/basic/index)
 
 Next: [Protocol versions and capability discovery](04-versions-discovery.md).

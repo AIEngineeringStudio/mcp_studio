@@ -109,7 +109,7 @@ the pinned framework when turning this model into runnable application code.
 ## Sources and next step
 
 - [Archived FastAPI lifecycle example](../fastMcp-fastApi-uvicorn-ngnix-docker/6_FastAPI_LifecycleManagement.md)
-- [Archived MCP walkthrough](../walk-through-docs/walkthrough_doc.md)
+- [Archived MCP walkthrough](../../fast-mcp/walk-through-docs/walkthrough_doc.md)
 - [Official reference](https://fastapi.tiangolo.com/advanced/events/) — checked 2026-11-15.
 
 Next: [Uvicorn, workers, and process state](18-process-runtime.md).

@@ -165,9 +165,9 @@ progress is meaningful and what the final result represents.
 
 ## Sources and next step
 
-- [Archived streamable transport notes](../streamable/streamable-3.md)
-- [Archived streaming notes](../streamable/streamable-4.md)
-- [Archived MCP walkthrough](../walk-through-docs/walkthrough_doc.md)
+- [Archived streamable transport notes](../../../_archive/streamable/streamable-3.md)
+- [Archived streaming notes](../../../_archive/streamable/streamable-4.md)
+- [Archived MCP walkthrough](../../fast-mcp/walk-through-docs/walkthrough_doc.md)
 - [Legacy progress distinctions](../elicitation/chunk-2.md)
 - [Legacy pinned progress exercise](../elicitation/chunk-4.md)
 - [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/progress) — checked 2026-11-15.

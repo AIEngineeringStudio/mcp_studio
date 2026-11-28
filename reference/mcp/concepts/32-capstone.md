@@ -105,7 +105,7 @@ responsibility belongs, then keep the MCP handler focused on translation.
 ## Sources and next step
 
 - [Complete synthetic lab](../fast-mcp-2026-07-28/labs/README.md)
-- [Archived MCP walkthrough](../walk-through-docs/walkthrough_doc.md)
+- [Archived MCP walkthrough](../../fast-mcp/walk-through-docs/walkthrough_doc.md)
 - [Official reference](https://modelcontextprotocol.io/specification/2026-07-28) — checked 2026-11-15.
 
 Return to the [course path](../README.md) or choose a concept to explore in depth.

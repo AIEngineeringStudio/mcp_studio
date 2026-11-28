@@ -101,8 +101,8 @@ workers from applying the write together.
 
 ## Sources and next step
 
-- [Archived reconnection and retry notes](../streamable/streamable-6.md)
-- [Archived MCP walkthrough](../walk-through-docs/walkthrough_doc.md)
+- [Archived reconnection and retry notes](../../../_archive/streamable/streamable-6.md)
+- [Archived MCP walkthrough](../../fast-mcp/walk-through-docs/walkthrough_doc.md)
 - [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/cancellation) — checked 2026-11-15.
 
 Next: [Pagination, caching, and subscriptions](26-pagination-cache.md).

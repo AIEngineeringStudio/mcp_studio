@@ -587,8 +587,8 @@ progress: received monotonic updates [1, 2, 3]
 
 For the transport-specific wire behavior, read:
 
-- [`12-progress-streaming.md`](../../../concepts/12-progress-streaming.md)
-- [`25-reliability.md`](../../../concepts/25-reliability.md)
+- [`12-progress-streaming.md`](../../../mcp/concepts/12-progress-streaming.md)
+- [`25-reliability.md`](../../../mcp/concepts/25-reliability.md)
 
 **Say it professionally:**
 

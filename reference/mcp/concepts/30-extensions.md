@@ -91,9 +91,9 @@ support implies Apps, Tasks, or Skills support.
 
 ## Sources and next step
 
-- [Archived roots notes](../fast-mcp/05-roots.md)
-- [Archived sampling notes](../fast-mcp/06-sampling.md)
-- [Archived MCP walkthrough](../walk-through-docs/walkthrough_doc.md)
+- [Archived roots notes](../../fast-mcp/05-roots.md)
+- [Archived sampling notes](../../fast-mcp/06-sampling.md)
+- [Archived MCP walkthrough](../../fast-mcp/walk-through-docs/walkthrough_doc.md)
 - [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning) — checked 2026-11-15.
 
 Next: [Reading and migrating legacy MCP examples](31-legacy-migration.md).

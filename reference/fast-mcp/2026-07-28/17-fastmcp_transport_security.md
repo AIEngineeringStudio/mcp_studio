@@ -137,8 +137,8 @@ verifier refuses to run if port `8781` is occupied and terminates only the
 process it starts.
 
 Read
-[`../concepts/19-origin-cors.md`](../../concepts/19-origin-cors.md) and
-[`../concepts/22-proxy-tls.md`](../../concepts/22-proxy-tls.md).
+[`../concepts/19-origin-cors.md`](../../mcp/concepts/19-origin-cors.md) and
+[`../concepts/22-proxy-tls.md`](../../mcp/concepts/22-proxy-tls.md).
 
 **Say it professionally:**
 

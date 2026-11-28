@@ -173,7 +173,7 @@ one particular tool.
 ## Sources and next step
 
 - [Archived elicitation lesson](../fastMcp-fastApi-uvicorn-ngnix-docker/81_MCP_Elicitation.md)
-- [Archived versioning and capability notes](../fast-mcp/2026-07-28/16-versioning-capability_negotiation.md)
+- [Archived versioning and capability notes](../../fast-mcp/2026-07-28/16-versioning-capability_negotiation.md)
 - [Official MCP protocol reference](https://modelcontextprotocol.io/specification/2026-07-28/basic/index)
 - [Course version baseline](../VERSIONS.md)
 

@@ -94,7 +94,7 @@ stream events, but it does not create progress events or make retries safe.
 
 - [Archived Docker and proxy example](../fastMcp-fastApi-uvicorn-ngnix-docker/9_Docker_DockerCompose.md)
 - [Archived TLS, authentication, and observability example](../fastMcp-fastApi-uvicorn-ngnix-docker/10_TLS_AuthN_AuthZ_Observability.md)
-- [Archived proxy-streaming notes](../streamable/streamable-7.md)
+- [Archived proxy-streaming notes](../../../_archive/streamable/streamable-7.md)
 - [Official reference](https://nginx.org/en/docs/http/ngx_http_proxy_module.html) — checked 2026-11-15.
 
 Next: [Configuration and reproducible environments](23-configuration.md).

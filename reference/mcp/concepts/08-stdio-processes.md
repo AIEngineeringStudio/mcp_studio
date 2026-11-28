@@ -99,7 +99,7 @@ alone does not decide the transport.
 ## Sources and next step
 
 - [Archived stdio and subprocess example](../fastMcp-fastApi-uvicorn-ngnix-docker/2_Real_stdio_Subprocess.md)
-- [Archived troubleshooting notes](../../temp/troubleshoot.md)
+- [Archived troubleshooting notes](../../../_archive/temp/troubleshoot.md)
 - [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio) — checked 2026-11-15.
 
 Next: [Resources, URIs, and templates](09-resources.md).

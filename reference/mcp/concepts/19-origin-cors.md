@@ -102,7 +102,7 @@ configuration in production.
 
 ## Sources and next step
 
-- [Archived FastMCP transport-security notes](../fast-mcp/2026-07-28/17-fastmcp_transport_security.md)
+- [Archived FastMCP transport-security notes](../../fast-mcp/2026-07-28/17-fastmcp_transport_security.md)
 - [Archived Streamable HTTP and Uvicorn example](../fastMcp-fastApi-uvicorn-ngnix-docker/5_StreamableHttp_Uvicorn.md)
 - [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http) — checked 2026-11-15.
 

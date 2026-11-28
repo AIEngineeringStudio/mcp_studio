@@ -147,8 +147,8 @@ domain and protocol test suites remain useful for layer isolation, but this
 exercise directly proves the state lifetimes taught here.
 
 Read
-[`../concepts/17-application-lifespan.md`](../../concepts/17-application-lifespan.md)
-and [`../concepts/18-process-runtime.md`](../../concepts/18-process-runtime.md).
+[`../concepts/17-application-lifespan.md`](../../mcp/concepts/17-application-lifespan.md)
+and [`../concepts/18-process-runtime.md`](../../mcp/concepts/18-process-runtime.md).
 
 **Say it professionally:**
 

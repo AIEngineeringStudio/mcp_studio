@@ -176,7 +176,7 @@ cd reference/mcp/fast-mcp-2026-07-28
 UV_CACHE_DIR=../labs/.uv-cache uv run --project ../labs --locked python verify_primitives.py --transport in-memory --focus prompts
 ```
 
-Read [`../concepts/10-prompts.md`](../../../concepts/10-prompts.md) for a deeper
+Read [`../concepts/10-prompts.md`](../../../mcp/concepts/10-prompts.md) for a deeper
 trace.
 
 ## Official references

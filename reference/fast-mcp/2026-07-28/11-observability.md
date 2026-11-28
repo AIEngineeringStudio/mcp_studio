@@ -136,7 +136,7 @@ The complete runnable files are
 omits the ticket ID to demonstrate source-level redaction.
 
 Read
-[`../concepts/28-observability.md`](../../concepts/28-observability.md) for the
+[`../concepts/28-observability.md`](../../mcp/concepts/28-observability.md) for the
 production evidence model.
 
 **Say it professionally:**

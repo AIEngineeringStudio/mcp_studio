@@ -188,7 +188,7 @@ to exercise the actual method, metadata, and response handling.
 ## Sources and next step
 
 - [Archived Streamable HTTP and Uvicorn example](../fastMcp-fastApi-uvicorn-ngnix-docker/5_StreamableHttp_Uvicorn.md)
-- [Archived streamable transport notes](../streamable/streamable-3.md)
+- [Archived streamable transport notes](../../../_archive/streamable/streamable-3.md)
 - [Legacy definitions and prerequisites](../elicitation/chunk-1.md)
 - [Legacy problem-first transport explanation](../elicitation/chunk-2.md)
 - [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http) —

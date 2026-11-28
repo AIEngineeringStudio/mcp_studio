@@ -269,7 +269,7 @@ two reads. `--transport stdio` runs the adjacent server in a subprocess;
 `--transport http` requires a separately running server at
 `http://127.0.0.1:8000/mcp`.
 
-Read [`../concepts/09-resources.md`](../../../concepts/09-resources.md) for the
+Read [`../concepts/09-resources.md`](../../../mcp/concepts/09-resources.md) for the
 deeper resource-design lesson.
 
 ## Official references

@@ -170,7 +170,7 @@ server's access checks.
 ## Sources and next step
 
 - [Archived in-process tool example](../fastMcp-fastApi-uvicorn-ngnix-docker/1_FirstMCPTool_InProcess.md)
-- [Archived definitions](../../temp/definitions.md)
+- [Archived definitions](../../../_archive/temp/definitions.md)
 - [Official MCP architecture guide](https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture)
 
 Next: [JSON-RPC requests, responses, and notifications](03-json-rpc.md).

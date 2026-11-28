@@ -100,7 +100,7 @@ gateway responsibilities that need their own tests.
 ## Sources and next step
 
 - [Archived secure gateway example](../auth/01-Secure-MCP-gateway.md)
-- [Archived reconnect and state notes](../streamable/streamable-6.md)
+- [Archived reconnect and state notes](../../../_archive/streamable/streamable-6.md)
 - [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning) — checked 2026-11-15.
 
 Next: [Optional extensions and deprecated features](30-extensions.md).

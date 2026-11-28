@@ -59,7 +59,7 @@ authorization guidance.
 17. [Transport security](17-fastmcp_transport_security.md)
 
 For the more granular maintained curriculum, use
-[Learn MCP progressively](../../README.md). The original handshake-era material
+[Learn MCP progressively](../../mcp/README.md). The original handshake-era material
 is preserved in `../fast-mcp-2025-11-25/` for compatibility study.
 
 ## Hands-on environment

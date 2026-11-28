@@ -501,7 +501,7 @@ The script also prints the actual generated schemas and the ticket JSON. Its
 `http://127.0.0.1:8000/mcp`. The `--focus tools` choice runs only this check.
 
 Read [
-`../concepts/05-tool-contracts.md`](../../../concepts/05-tool-contracts.md) for
+`../concepts/05-tool-contracts.md`](../../../mcp/concepts/05-tool-contracts.md) for
 the deeper contract-design lesson.
 
 ## Official references

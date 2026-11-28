@@ -98,7 +98,7 @@ policy, not just a dictionary.
 ## Sources and next step
 
 - [Archived resources and prompts example](../fastMcp-fastApi-uvicorn-ngnix-docker/3_Resources_Prompts.md)
-- [Archived resource notes](../fast-mcp/03-resources.md)
+- [Archived resource notes](../../fast-mcp/03-resources.md)
 - [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/server/resources) — checked 2026-11-15.
 
 Next: [Reusable MCP prompts](10-prompts.md).

@@ -128,8 +128,8 @@ protocol-era checks use real FastMCP client/server calls in memory.
 The calendar lab uses real MCP HTTP authorization middleware but fake token
 records and a mock downstream credential broker. It is not a real authorization
 server, Microsoft Entra OBO exchange, Google consent flow, or Calendar API. Read
-[OAuth discovery](../../../concepts/20-oauth-discovery.md) and
-[authorization](../../../concepts/21-authorization.md) for the production evolution.
+[OAuth discovery](../../../mcp/concepts/20-oauth-discovery.md) and
+[authorization](../../../mcp/concepts/21-authorization.md) for the production evolution.
 
 ## Diagnose the boundary
 

@@ -190,8 +190,8 @@ interaction; the application still defines what “ticket not found” means.
 
 ## Sources and next step
 
-- [Archived MCP introduction](../fast-mcp/01-what-mcp-is.md)
-- [Archived MCP learning guide](../../temp/mcp_learning_guide.md)
+- [Archived MCP introduction](../../fast-mcp/01-what-mcp-is.md)
+- [Archived MCP learning guide](../../../_archive/temp/mcp_learning_guide.md)
 - [Official MCP specification](https://modelcontextprotocol.io/specification/2026-07-28)
 
 Next: [Host, client, model, and server](02-host-client-server.md).

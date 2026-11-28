@@ -82,7 +82,7 @@ change. Restore the name after the experiment.
 ## Sources and next step
 
 - [Archived testing and tracing example](../fastMcp-fastApi-uvicorn-ngnix-docker/11_AutomatedTests_Metrics_DistributedTracing.md)
-- [Archived observability notes](../fast-mcp/2026-07-28/11-observability.md)
+- [Archived observability notes](../../fast-mcp/2026-07-28/11-observability.md)
 - [Official reference](https://gofastmcp.com/docs/clients/client) — checked 2026-11-15.
 
 Next: [Logs, metrics, and traces](28-observability.md).

@@ -104,7 +104,7 @@ Apple Silicon test.
 ## Sources and next step
 
 - [Archived Docker and Compose example](../fastMcp-fastApi-uvicorn-ngnix-docker/9_Docker_DockerCompose.md)
-- [Archived troubleshooting notes](../../temp/troubleshoot.md)
+- [Archived troubleshooting notes](../../../_archive/temp/troubleshoot.md)
 - [Official reference](https://docs.docker.com/build/building/multi-platform/) — checked 2026-11-15.
 
 Next: [Timeouts, cancellation, retries, and idempotency](25-reliability.md).

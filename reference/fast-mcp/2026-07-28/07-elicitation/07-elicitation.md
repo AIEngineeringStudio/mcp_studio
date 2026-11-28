@@ -765,9 +765,9 @@ the application behavior below MRTR; it does not pretend to be a user interface
 or a raw MCP wire implementation.
 
 Then read
-[`../concepts/13-elicitation.md`](../../../concepts/13-elicitation.md) and
+[`../concepts/13-elicitation.md`](../../../mcp/concepts/13-elicitation.md) and
 [
-`../concepts/14-continuation-state.md`](../../../concepts/14-continuation-state.md).
+`../concepts/14-continuation-state.md`](../../../mcp/concepts/14-continuation-state.md).
 
 ## Official references
 

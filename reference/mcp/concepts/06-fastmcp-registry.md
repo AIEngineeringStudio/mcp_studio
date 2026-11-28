@@ -197,7 +197,7 @@ before copying features from another generation.
 
 ## Sources and next step
 
-- [Archived definitions](../../temp/definitions.md)
+- [Archived definitions](../../../_archive/temp/definitions.md)
 - [Archived in-process FastMCP example](../fastMcp-fastApi-uvicorn-ngnix-docker/1_FirstMCPTool_InProcess.md)
 - [Official FastMCP getting-started guide](https://gofastmcp.com/docs/getting-started/welcome)
 - [Official Python SDK migration guide](https://github.com/modelcontextprotocol/python-sdk/blob/main/docs/migration.md)

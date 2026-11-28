@@ -111,9 +111,9 @@ placeholder names when developers need to know which values to supply.
 
 ## Sources and next step
 
-- [Archived MCP walkthrough](../walk-through-docs/walkthrough_doc.md)
-- [Archived MCP notes](../../temp/mcp_notes.md)
-- [Archived troubleshooting notes](../../temp/troubleshoot.md)
+- [Archived MCP walkthrough](../../fast-mcp/walk-through-docs/walkthrough_doc.md)
+- [Archived MCP notes](../../../_archive/temp/mcp_notes.md)
+- [Archived troubleshooting notes](../../../_archive/temp/troubleshoot.md)
 - [Official reference](https://docs.pydantic.dev/latest/concepts/pydantic_settings/) — checked 2026-11-15.
 
 Next: [Docker packaging and networking](24-containers.md).

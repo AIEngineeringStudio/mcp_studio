@@ -268,9 +268,9 @@ Before publishing a tool, confirm:
 
 ## Sources and next step
 
-- [Archived definitions](../../temp/definitions.md)
+- [Archived definitions](../../../_archive/temp/definitions.md)
 - [Archived in-process FastMCP example](../fastMcp-fastApi-uvicorn-ngnix-docker/1_FirstMCPTool_InProcess.md)
-- [Archived tool notes](../fast-mcp/02-tools.md)
+- [Archived tool notes](../../fast-mcp/02-tools.md)
 - [Official MCP tools reference](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)
 
 Next: [FastMCP registration and dispatch](06-fastmcp-registry.md).

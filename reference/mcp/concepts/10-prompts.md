@@ -101,7 +101,7 @@ Check host support: a host may support tools but expose no prompt-picker UI.
 ## Sources and next step
 
 - [Archived resources and prompts example](../fastMcp-fastApi-uvicorn-ngnix-docker/3_Resources_Prompts.md)
-- [Archived prompt notes](../fast-mcp/04-prompts.md)
+- [Archived prompt notes](../../fast-mcp/04-prompts.md)
 - [Official reference](https://modelcontextprotocol.io/specification/2026-07-28/server/prompts) — checked 2026-11-15.
 
 Next: [Streamable HTTP](11-streamable-http.md).
